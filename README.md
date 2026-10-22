@@ -135,12 +135,20 @@ dataset/out_ru/<Plugin>/<type>/NNN.png     + labels.jsonl     # 12 типов, �
 
 ## Как обучить, остановить, продолжить и опубликовать
 
-Полный runbook — **[`docs/HOW_TO_TRAIN.md`](docs/HOW_TO_TRAIN.md)**. Рецепт публикации — **три шага**:
+Полный runbook — **[`docs/HOW_TO_TRAIN.md`](docs/HOW_TO_TRAIN.md)**. Рецепт публикации — **три шага**.
+Все команды — **из корня репозитория** (каталог, где лежат `AGENTS.md` и `dataset/`).
+
+Токена Hugging Face у вас ещё нет? Создайте каталог `.hf-cache` в корне репозитория и положите туда
+свой токен (`hf auth login` кладёт его в `%USERPROFILE%\.cache\huggingface\token`; скопируйте его в
+`.hf-cache\token`) либо задайте `HF_HOME` на свой общий кэш. **Токен не печатать и не коммитить.**
 
 ```powershell
 # 0) окно: JAVA_HOME для javac, HF_HOME для токена, .venv-gpu — единственный интерпретатор с CUDA
 $env:PYTHONIOENCODING="utf-8"
-$env:HF_HOME="C:\Users\Title\Projects\CapthaModel\.hf-cache"
+
+# из корня репозитория: HF_HOME = каталог .hf-cache (там лежит token, в git он не идёт)
+$env:HF_HOME      = (Resolve-Path .\.hf-cache).Path
+$env:HF_HUB_CACHE = $env:HF_HOME
 
 # 1) дообучить с мягким lr=1e-5  →  train\run_ppocr\<прогон>\best.pt
 .venv-gpu\Scripts\python.exe train\finetune_ppocr.py --out train\run_ppocr\big `

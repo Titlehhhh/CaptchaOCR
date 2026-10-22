@@ -15,7 +15,7 @@ browser  ──HTTP──>  webapp/app.py  ──torch──>  PP-OCRv6 (train/r
 
 ## 1. Start it (one command)
 
-From the **repository root** (`C:\Users\Title\Projects\CapthaModel`):
+From the **repository root** (the directory that contains `AGENTS.md` and `dataset/`):
 
 ```powershell
 $env:PYTHONIOENCODING="utf-8"
@@ -32,7 +32,7 @@ Then open **<http://127.0.0.1:8765/>**.
 The startup banner prints what is being served:
 
 ```
-[webapp] repository root: C:\Users\Title\Projects\CapthaModel
+[webapp] repository root: <корень репозитория>
 [webapp] dataset types: 46  demo types: out/Archy-X/Krypton/map, out/FeelingAlive0/...
 [webapp] checkpoint: train\run_ppocr\big\best.pt (ppocr)
 [webapp] serving http://127.0.0.1:8765/  (Ctrl+C to stop)

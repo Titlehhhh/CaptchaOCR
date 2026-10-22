@@ -1,5 +1,8 @@
 # LOCAL_ENV — локальный тулчейн этой машины
 
+> Этот файл — про **эту машину**; переносимые инструкции для любого пользователя — в
+> [`docs/HOW_TO_TRAIN.md`](HOW_TO_TRAIN.md) и [`docs/ONBOARDING.md`](ONBOARDING.md).
+
 **Дата:** 2026-10-22. Все пути проверены на этом компьютере: JDK и `hf` — запуском, пути харнесса —
 чтением установленного пакета `@deepseek-ai/dsh-skill-filesystem` и `@deepseek-ai/dsh-launch-environment`
 (`C:\Users\Title\AppData\Local\npm-cache\_npx\1e7f6d9597241db0\node_modules\@deepseek-ai\`).

@@ -53,7 +53,7 @@
 - [docs/HOW_TO_TRAIN.md](docs/HOW_TO_TRAIN.md): **runbook** — обучение → остановка → продолжение → оценка → интерполяция → экспорт → публикация.
 - [docs/INPUT_PIPELINE.md](docs/INPUT_PIPELINE.md): как PNG доходит до модели (кроп по полосе, масштаб, нормализация, размер тензора).
 - [docs/OCR_MODELS_101.md](docs/OCR_MODELS_101.md): обзор ландшафта моделей — OCR, VLM, CTC, «жидкие» модели.
-- [docs/LOCAL_ENV.md](docs/LOCAL_ENV.md): локальный тулчейн машины — JDK 21 (`I:\ForAndroid\Java\21`), HF-токен, `.venv-gpu`, слои `.env`.
+- [docs/LOCAL_ENV.md](docs/LOCAL_ENV.md): локальный тулчейн машины — JDK 21 (путь на этой машине), HF-токен, `.venv-gpu`, слои `.env`.
 - [docs/DATASET.md](docs/DATASET.md): где лежит датасет, как его скачать, что осталось в git.
 - [docs/PLUGINS.md](docs/PLUGINS.md): 23 плагина-источника, 46 типов, лицензии и режимы (25 faithful · 16 clean-room · 5 reconstructed по типам).
 - [docs/LICENSES.md](docs/LICENSES.md): что покрыто MIT, а что — лицензией апстрима.

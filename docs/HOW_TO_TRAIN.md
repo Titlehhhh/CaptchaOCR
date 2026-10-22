@@ -46,11 +46,20 @@
 
 ## 0. Подготовка окна (один раз на окно PowerShell)
 
+Откройте PowerShell **в корне репозитория** (каталог, где лежат `AGENTS.md` и `dataset/`) — все
+команды этого runbook копипастятся оттуда как есть.
+
+> **Токена ещё нет?** Создайте каталог `.hf-cache` в корне репозитория и положите туда свой токен
+> (`hf auth login` кладёт его в `%USERPROFILE%\.cache\huggingface\token`; скопируйте его в
+> `.hf-cache\token`) либо задайте `HF_HOME` на свой общий кэш. **Токен не печатать, не копировать
+> в репозиторий и не коммитить.**
+
 ```powershell
-cd C:\Users\Title\Projects\CapthaModel
 $env:PYTHONIOENCODING="utf-8"          # без этого кириллица в логах ломается
-$env:HF_HOME="C:\Users\Title\Projects\CapthaModel\.hf-cache"
-$env:HF_HUB_CACHE="C:\Users\Title\Projects\CapthaModel\.hf-cache"
+
+# из корня репозитория: HF_HOME = каталог .hf-cache (там лежит token, в git он не идёт)
+$env:HF_HOME      = (Resolve-Path .\.hf-cache).Path
+$env:HF_HUB_CACHE = $env:HF_HOME
 ```
 
 Проверка, что GPU виден (должно быть `True`):
@@ -344,8 +353,8 @@ resumable checkpoint written: ...\ckpt/final.pt (epoch 7, step 1600)
 ### 6.1 Экспорт дообученных весов PP-OCRv6 (рекомендуемый путь)
 
 ```powershell
-$env:HF_HOME="C:\Users\Title\Projects\CapthaModel\.hf-cache"
-$env:HF_HUB_CACHE="C:\Users\Title\Projects\CapthaModel\.hf-cache"
+$env:HF_HOME      = (Resolve-Path .\.hf-cache).Path
+$env:HF_HUB_CACHE = $env:HF_HOME
 
 # ВАРИАНТ A (рекомендуемый): экспортировать интерполяцию --soup-alpha 0.4.
 # Скрипт сам считает theta = alpha*theta_ft + (1-alpha)*theta_base по той же формуле.
@@ -394,7 +403,8 @@ $env:HF_HUB_CACHE="C:\Users\Title\Projects\CapthaModel\.hf-cache"
 ### 6.3 Выкладка на Hugging Face
 
 ```powershell
-$env:HF_HOME="C:\Users\Title\Projects\CapthaModel\.hf-cache"
+$env:HF_HOME      = (Resolve-Path .\.hf-cache).Path
+$env:HF_HUB_CACHE = $env:HF_HOME
 hf auth whoami                                   # ✓ Logged in / user: Titlehhhh
 hf upload Titlehhhh/captchaocr-ppocrv6 train\run_ppocr\big\export --repo-type model
 ```
@@ -439,7 +449,7 @@ hf repo-files Titlehhhh/captchaocr-ppocrv6
 | симптом | причина | что делать |
 |---|---|---|
 | `CUDA out of memory` | батч 32 при 48×320 на 11.8 ГБ не влезает (или параллельно идёт другая задача) | `--batch-size 16` (шагов в эпоху станет 408 вместо 204 — расписание LR удлинится вдвое), при необходимости `--batch-size 8` и `--workers 4` |
-| `PermissionError` / нет доступа к `HF_HOME` | не задан `HF_HOME` | `$env:HF_HOME="C:\Users\Title\Projects\CapthaModel\.hf-cache"` (и `HF_HUB_CACHE` так же) |
+| `PermissionError` / нет доступа к `HF_HOME` | не задан `HF_HOME` | `$env:HF_HOME = (Resolve-Path .\.hf-cache).Path` (и `HF_HUB_CACHE = $env:HF_HOME`) — из корня репозитория |
 | `torch.cuda.is_available() == False` | вызван системный `python` | только `.venv-gpu\Scripts\python.exe` |
 | `hf` не авторизован | не задан `HF_HOME` | `$env:HF_HOME=...`, затем `hf auth whoami` |
 | «`build.ps1` не запускается» / «AuthorizationManager check failed» | на этой машине выполнение `.ps1` заблокировано | выполняйте логику инлайн (ниже) |

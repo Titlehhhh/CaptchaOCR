@@ -46,13 +46,17 @@
 
 | что | где | примечание |
 |---|---|---|
-| Java 21 | JDK 21 в `I:\ForAndroid\Java\21`; `JAVA_HOME` задан на уровне пользователя Windows | **`java`/`javac` НЕ на `PATH`** — зовите `"$env:JAVA_HOME\bin\javac.exe"` |
+| Java 21 | нужен **JDK 21** — поставьте его отдельно и задайте `JAVA_HOME` (например `$env:JAVA_HOME = "C:\Program Files\Java\jdk-21"`); путь в документации проекта не фиксирован | **`java`/`javac` НЕ на `PATH`** — зовите `"$env:JAVA_HOME\bin\javac.exe"` |
 | Python с GPU | `.venv-gpu\Scripts\python.exe` (`torch 2.14.1+cu126`) | системный `python` — **CPU-only**, обучать на нём нельзя |
 | GPU | GTX 1080 Ti, 11.8 ГБ | VLM-модели сюда не помещаются |
 | Hugging Face | токен в `.hf-cache\token`, нужен `$env:HF_HOME` = путь к `.hf-cache` | токен не печатать и не коммитить |
 | PowerShell | только Windows PowerShell 5.1, бинаря `pwsh` нет | выполнение `.ps1` заблокировано → **`build.ps1` запустить нельзя** |
 
 Полная таблица путей и слоёв окружения — [`docs/LOCAL_ENV.md`](LOCAL_ENV.md).
+
+Токена Hugging Face ещё нет? Создайте каталог `.hf-cache` в корне репозитория и положите туда свой
+токен (`hf auth login` кладёт его в `%USERPROFILE%\.cache\huggingface\token`; скопируйте его в
+`.hf-cache\token`) либо задайте `HF_HOME` на свой общий кэш. **Токен не печатать и не коммитить.**
 
 ## Шаг 1. Собрать генераторы (нужно только для пересборки датасета)
 
@@ -114,7 +118,7 @@ python tools\check_band_vs_answer.py dataset\out_ru
 > ⚠️ **Генераторы не засеяны.** Перерисовка даёт **другие пиксели** тех же 46 типов. Это не
 > «тот же датасет, но больше» — это новый датасет. Три правила, которые нельзя забыть, — внизу.
 
-Все команды — **из корня репозитория** (`C:\Users\Title\Projects\CapthaModel`).
+Все команды — **из корня репозитория** (каталог, где лежат `AGENTS.md` и `dataset/`).
 Если папки `build\classes` / `build\classes_ru` ещё нет — сначала [Шаг 1](#шаг-1-собрать-генераторы-нужно-только-для-пересборки-датасета).
 
 ### 1. Отрисовать оба дерева
@@ -159,8 +163,9 @@ python tools\check_band_vs_answer.py dataset\out_ru
 Без перезаливки картинки на диске и на HF разойдутся (см. правило 1 ниже).
 
 ```powershell
-$env:HF_HOME="C:\Users\Title\Projects\CapthaModel\.hf-cache"
-$env:HF_HUB_CACHE="C:\Users\Title\Projects\CapthaModel\.hf-cache"
+# из корня репозитория: HF_HOME = каталог .hf-cache (там лежит token, в git он не идёт)
+$env:HF_HOME      = (Resolve-Path .\.hf-cache).Path
+$env:HF_HUB_CACHE = $env:HF_HOME
 
 python tools\upload_dataset.py             # загрузить (батчи по типам, сравнение по sha256)
 python tools\upload_dataset.py --verify    # проверить удалённое дерево
@@ -272,8 +277,9 @@ GradScaler + номер эпохи и шага — это точное прод�
 ## Шаг 7. Экспортировать и опубликовать
 
 ```powershell
-$env:HF_HOME="C:\Users\Title\Projects\CapthaModel\.hf-cache"
-$env:HF_HUB_CACHE="C:\Users\Title\Projects\CapthaModel\.hf-cache"
+# из корня репозитория: HF_HOME = каталог .hf-cache (там лежит token, в git он не идёт)
+$env:HF_HOME      = (Resolve-Path .\.hf-cache).Path
+$env:HF_HUB_CACHE = $env:HF_HOME
 
 # экспорт весов в папку Hugging Face
 .venv-gpu\Scripts\python.exe train\export_ppocr_hf.py --ckpt train\run_ppocr\big\soup_best.pt `
