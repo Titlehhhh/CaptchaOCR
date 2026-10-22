@@ -17,7 +17,7 @@
 Опубликовано на Hugging Face: **датасет** <https://huggingface.co/datasets/Titlehhhh/captchaocr-dataset>
 и **модель с весами** <https://huggingface.co/Titlehhhh/captchaocr-ppocrv6>.
 
-## Четыре типичные цели
+## Типичные цели
 
 | Я хочу | Что делать | Подробности |
 |---|---|---|
@@ -25,6 +25,7 @@
 | **Скачать датасет** | одна команда | `python tools\fetch_dataset.py` — скачивает опубликованный датасет (23 000 PNG) в `dataset/full/`. Флаги: `--dry-run`, `--types`, `--cache-dir`. Подробности — [`docs/DATASET.md`](DATASET.md) |
 | **Обучить модель** | runbook + отдельная среда | [`docs/HOW_TO_TRAIN.md`](HOW_TO_TRAIN.md) — полный маршрут: обучение → остановка → продолжение → оценка → интерполяция → экспорт → публикация. Флаги тренажёра CRNN — [`train/README.md`](../train/README.md) |
 | **Добавить свой тип капчи** | один Java-файл | `dataset/generator/dev/captcha/gens/<Имя>.java` — класс с публичным конструктором без аргументов, реализующий `dev.captcha.Cg`. Реестр править не надо: `dev.captcha.Gen` находит классы рефлексией. House rules — [`dataset/generator/AGENTS.md`](../dataset/generator/AGENTS.md) |
+| **Увеличить датасет** | одна команда + 3 правила | [«Увеличить датасет»](#увеличить-датасет) — параллельный рендер `--jobs 36`, проверки, перезаливка на Hugging Face |
 
 ## Что здесь вообще есть
 
@@ -73,9 +74,9 @@ $core  = Get-ChildItem -File dataset\generator\dev\captcha\*.java | % FullName  
 ## Шаг 2. Перегенерировать и провалидировать датасет
 
 ```powershell
-& $java "-Djava.awt.headless=true" -cp build\classes    dev.captcha.Gen      dataset\out    500
+& $java "-Djava.awt.headless=true" -cp build\classes    dev.captcha.Gen      dataset\out    500 --jobs 36
 & $java "-Djava.awt.headless=true" -cp build\classes    dev.captcha.Validate dataset\out
-& $java "-Djava.awt.headless=true" -cp build\classes_ru dev.captcha.Gen      dataset\out_ru 500
+& $java "-Djava.awt.headless=true" -cp build\classes_ru dev.captcha.Gen      dataset\out_ru 500 --jobs 36
 & $java "-Djava.awt.headless=true" -cp build\classes_ru dev.captcha.Validate dataset\out_ru
 python tools\restore_real_shots.py     # вернуть real_shots/ после пересборки
 ```
@@ -84,6 +85,12 @@ python tools\restore_real_shots.py     # вернуть real_shots/ после �
 `Validate <outDir>` печатает `n / minColors / blank / dupes / labels` по типам. Все три работают
 headless. Ожидаемо: **34 типа в `dataset/out/` и 12 в `dataset/out_ru/`**, по **500** PNG на тип
 (23 000 суммарно) + **517** эталонных скриншотов.
+
+`--jobs 36` — параллельный рендер (по умолчанию столько же: `min(ядер, 64)`).
+
+Хотите **больше** картинок (1 000 на тип и т. д.) — см. раздел
+[«Увеличить датасет»](#увеличить-датасет): там команда с `--jobs 36`, проверки, перезаливка на
+Hugging Face и три правила, которые нельзя забыть.
 
 ## Шаг 3. Проверить метки и полосы
 
@@ -95,6 +102,93 @@ python tools\check_band_vs_answer.py dataset\out_ru
 
 Правило полосы и контракт `labels.jsonl` — [`docs/DATASET_FORMAT.md`](DATASET_FORMAT.md);
 термины (`text` vs `answer`, группы A/B/C) — [`docs/GLOSSARY.md`](GLOSSARY.md).
+
+## Увеличить датасет
+
+`dev.captcha.Gen` рисует **параллельно**: флаг `--jobs N` — сколько потоков рендера
+(по умолчанию `min(ядер, 64)` = **36** на этой машине; `--jobs 1` — старое последовательное
+поведение). Измерено: **`dataset/out` 120.1 с → 16.1 с (×7.5)** и
+**`dataset/out_ru` 562.6 с → 24.1 с (×23.3)** на 36 воркерах — отчёт
+[`reports/GEN_PARALLEL.md`](../reports/GEN_PARALLEL.md).
+
+> ⚠️ **Генераторы не засеяны.** Перерисовка даёт **другие пиксели** тех же 46 типов. Это не
+> «тот же датасет, но больше» — это новый датасет. Три правила, которые нельзя забыть, — внизу.
+
+Все команды — **из корня репозитория** (`C:\Users\Title\Projects\CapthaModel`).
+Если папки `build\classes` / `build\classes_ru` ещё нет — сначала [Шаг 1](#шаг-1-собрать-генераторы-нужно-только-для-пересборки-датасета).
+
+### 1. Отрисовать оба дерева
+
+`<count>` — сколько картинок **на тип** (сейчас 500; всего 46 типов).
+
+```powershell
+$java = if ($env:JAVA_HOME) { "$env:JAVA_HOME\bin\java.exe" } else { "java" }
+
+& $java "-Djava.awt.headless=true" -cp build\classes    dev.captcha.Gen      dataset\out    500 --jobs 36
+& $java "-Djava.awt.headless=true" -cp build\classes_ru dev.captcha.Gen      dataset\out_ru 500 --jobs 36
+```
+
+### 2. Вернуть эталонные скриншоты `real_shots/`
+
+Перерисовка **стирает** `dataset\out_ru/*/real_shots/` — а это 517 чужих скриншотов, на которых
+опираются реконструированные генераторы. Вернуть их:
+
+```powershell
+python tools\restore_real_shots.py
+```
+
+### 3. Провалидировать оба дерева
+
+`Validate <outDir>` печатает `n / minColors / blank / dupes / labels` по типам.
+
+```powershell
+& $java "-Djava.awt.headless=true" -cp build\classes    dev.captcha.Validate dataset\out
+& $java "-Djava.awt.headless=true" -cp build\classes_ru dev.captcha.Validate dataset\out_ru
+```
+
+### 4. Проверить метки и полосы
+
+```powershell
+python tools\check_labels_and_roi.py dataset\out
+python tools\check_labels_and_roi.py dataset\out_ru
+python tools\check_band_vs_answer.py dataset\out_ru
+```
+
+### 5. Перезалить датасет на Hugging Face
+
+Без перезаливки картинки на диске и на HF разойдутся (см. правило 1 ниже).
+
+```powershell
+$env:HF_HOME="C:\Users\Title\Projects\CapthaModel\.hf-cache"
+$env:HF_HUB_CACHE="C:\Users\Title\Projects\CapthaModel\.hf-cache"
+
+python tools\upload_dataset.py             # загрузить (батчи по типам, сравнение по sha256)
+python tools\upload_dataset.py --verify    # проверить удалённое дерево
+```
+
+### Три правила, которые нельзя забыть
+
+1. **Перерисовка = новые пиксели.** Модель надо обучать **из той папки, в которую отрисовали**
+   (здесь — `dataset\out` и `dataset\out_ru`; датасет — артефакт машины), и после перерисовки
+   датасет **обязательно перезалить на HF**. Иначе на диске и в опубликованном датасете будут
+   разные картинки, и «продолжение» обучения увидит другие данные, чем те, что видела модель.
+2. **Правило полосы.** Полоса, которая не помещается в кадр, — **не полоса**: `roi` = `null`.
+   Неправильная полоса хуже, чем её отсутствие (на ней модель не обучается), а `Validate` такую
+   ошибку **не ловит** — ловят python-чекеры и глаза (`dataset\out\index.html`).
+3. **`real_shots` — восстановить, но никогда не публиковать.** `python tools\restore_real_shots.py`
+   после **каждой** перерисовки; в датасет на Hugging Face и в публичный репозиторий
+   `real_shots/` **не идут** (это чужие скриншоты).
+
+### Сколько это занимает
+
+Рендер на 36 потоках (`--jobs 36`), измерено на этой машине:
+
+| картинок на тип | `dataset\out` | `dataset\out_ru` | всего |
+|---|---|---|---|
+| **500** (сейчас на диске) | ≈ 16 с | ≈ 24 с | **≈ 40 с** |
+| **1 000** | ≈ 32 с | ≈ 48 с | **≈ 80 с** |
+
+Последовательно (без `--jobs`) тот же 500-на-тип снимался **120 с + 563 с ≈ 11 минут**.
 
 ## Шаг 4. Обучить — две разные ветки
 

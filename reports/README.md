@@ -33,6 +33,7 @@
 | `TRAINING_PPOCR_V6_BIG.md` + `.json` | дообучение PP-OCRv6_medium_rec на новом датасете + интерполяция весов | **да** | `train/run_ppocr/big/result.json`, `train/run_ppocr/big/log.txt` |
 | `TRAINING_TROCR_BIG.md` + `.json` | TrOCR-small-printed на тех же 7 удержанных типах против PP-OCRv6 | **да** | `train/run/trocr_big/result.json`, `train/run/trocr_big/log.txt` |
 | `HF_DATASET_UPLOAD.md` | как опубликован датасет 46×500 = 23 000 PNG в `Titlehhhh/captchaocr-dataset` | да | проверки HF API в самом отчёте, коммит `6248c5b9…` |
+| `GEN_PARALLEL.md` | **параллельный рендер** `dev.captcha.Gen`: флаг `--jobs N`, ускорение на 36 воркерах — `out` 120.1 → **16.1 с (×7.5)**, `out_ru` 562.6 → **24.1 с (×23.3)**; доказательство потокобезопасности и что не проверено | да | `dataset/generator/dev/captcha/Gen.java`; прогоны — `build/par_*` |
 | `HF_PUBLISH_REPORT.md` | публикация датасета и карточки модели на HF | на момент отчёта — **карточка без весов** (веса выложены позже, см. следующую строку) | `HfApi.repo_info(...)` в отчёте |
 | `HF_MODEL_UPLOAD.md` | выгрузка **настоящих весов** в `Titlehhhh/captchaocr-ppocrv6` (8 файлов, 77 085 348 Б, `model.safetensors` 76 747 448 Б) + проверка, что модель грузится и предсказывает | да | `HfApi.upload_file(...)` / `from_pretrained(...)` в самом отчёте |
 | `WEBAPP.md` | локальное веб-приложение для распознавания (http.server, без зависимостей) | да | `webapp/app.py`, проверки по HTTP в отчёте |

@@ -159,12 +159,12 @@ dataset/out_ru/<Plugin>/<type>/NNN.png     + labels.jsonl     # 12 типов, �
 # Пересборка датасета (логика build.ps1 — сам build.ps1 выполнить НЕЛЬЗЯ, см. §7)
 $javac = if ($env:JAVA_HOME) { "$env:JAVA_HOME\bin\javac.exe" } else { "javac" }
 $java  = if ($env:JAVA_HOME) { "$env:JAVA_HOME\bin\java.exe"  } else { "java" }
-$core  = Get-ChildItem -File dataset\generator\dev\captcha\*.java | % FullName   # общие классы: без них RU-дерево не собирается
+$core  = Get-ChildItem -File dataset\generator\dev\captcha\*.java | % FullName   # общие классы: нужны и RU-дереву
 & $javac -encoding UTF-8 -d build\classes    -sourcepath dataset\generator    $core (Get-ChildItem -Recurse -Filter *.java dataset\generator    | % FullName)
 & $javac -encoding UTF-8 -d build\classes_ru -sourcepath dataset\generator_ru $core (Get-ChildItem -Recurse -Filter *.java dataset\generator_ru | % FullName)
-& $java "-Djava.awt.headless=true" -cp build\classes    dev.captcha.Gen      dataset\out    100
+& $java "-Djava.awt.headless=true" -cp build\classes    dev.captcha.Gen      dataset\out    100 --jobs 36
 & $java "-Djava.awt.headless=true" -cp build\classes    dev.captcha.Validate dataset\out
-& $java "-Djava.awt.headless=true" -cp build\classes_ru dev.captcha.Gen      dataset\out_ru 100
+& $java "-Djava.awt.headless=true" -cp build\classes_ru dev.captcha.Gen      dataset\out_ru 100 --jobs 36
 & $java "-Djava.awt.headless=true" -cp build\classes_ru dev.captcha.Validate dataset\out_ru
 python tools\restore_real_shots.py            # вернуть real_shots/ после пересборки
 
@@ -172,16 +172,17 @@ python tools\restore_real_shots.py            # вернуть real_shots/ по�
 python tools\check_labels_and_roi.py dataset\out_ru
 python tools\check_band_vs_answer.py dataset\out_ru
 
-# Бенчмарк чужих моделей по единому протоколу
+# Бенчмарк чужих моделей
 python bench\bench_models.py --help
 
-# Обучение (CUDA-сборка в своём venv, системный python — CPU-only)
+# Обучение (venv с CUDA, системный python — CPU-only)
 .venv-gpu\Scripts\python.exe train\train.py --trees both --epochs 80 --val-types "haq/mapcha/map" "CaptchaVerifyZ/map"
 ```
 
-`Gen <outDir> <count>` рисует все генераторы, пишет PNG, `labels.jsonl` на тип и `index.html`.
-`Validate <outDir>` печатает `n / minColors / blank / dupes / labels` по типам. `Stats <png|dir>` —
-гистограмма цветов. Все три работают headless.
+`Gen <outDir> <count> [--jobs N]` рисует все генераторы, пишет PNG, `labels.jsonl` на тип и `index.html`.
+`--jobs N` — потоки рендера (36 по умолчанию), отчёт — `reports/GEN_PARALLEL.md`. `Validate <outDir>`
+печатает `n / minColors / blank / dupes / labels` по типам. `Stats <png|dir>` — гистограмма цветов.
+Все три работают headless.
 
 ## 5. Adding a captcha type
 
