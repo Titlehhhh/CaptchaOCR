@@ -11,15 +11,16 @@ param(
     [int]$Count = 100,
     [string]$Out = "dataset\out",
     [string]$OutRu = "dataset\out_ru",
-    [string]$JavaHome = "I:\ForAndroid\Java\21",
+    [string]$JavaHome = $env:JAVA_HOME,
     [switch]$SkipRu
 )
 
 $ErrorActionPreference = "Stop"
-$javac = Join-Path $JavaHome "bin\javac.exe"
-$java = Join-Path $JavaHome "bin\java.exe"
+# JDK 21 в PATH или переменная JAVA_HOME (см. AGENTS.md §4).
+$javac = if ($JavaHome) { Join-Path $JavaHome "bin\javac.exe" } else { "javac" }
+$java = if ($JavaHome) { Join-Path $JavaHome "bin\java.exe" } else { "java" }
 
-if (-not (Test-Path $javac)) { throw "javac not found at $javac" }
+if ($JavaHome -and -not (Test-Path $javac)) { throw "javac not found at $javac" }
 
 # The core (Cg, Img, McUi, Gen, Stats, Validate) is shared by both generators.
 $core = Get-ChildItem -File "dataset\generator\dev\captcha\*.java" | ForEach-Object { $_.FullName }

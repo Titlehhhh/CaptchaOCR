@@ -47,7 +47,7 @@
 - [reports/research2/](reports/research2): 10 отчётов по исследованию готовых моделей, проектов, коммерческих сервисов, методик обучения, runtime и семейства V1.
 - [docs/pipeline-design.md](docs/pipeline-design.md): конвейер кроппер → распознаватель → solver.
 
-## Команды (Windows, Java 21 в `I:\ForAndroid\Java\21`)
+## Команды (Windows, JDK 21 в PATH или переменная `JAVA_HOME`)
 
 - Сборка датасета: `.ps1` на этой машине не запускается — логика `build.ps1` выполняется inline, команды в `AGENTS.md` §4.
 - Проверка: `python tools\check_labels_and_roi.py dataset\out_ru`, `python tools\check_band_vs_answer.py dataset\out_ru`.

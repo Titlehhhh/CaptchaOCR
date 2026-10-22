@@ -66,14 +66,15 @@
 ## 4. Как проверить
 
 ```powershell
-$java = "I:\ForAndroid\Java\21\bin"
+$javac = if ($env:JAVA_HOME) { "$env:JAVA_HOME\bin\javac.exe" } else { "javac" }
+$java  = if ($env:JAVA_HOME) { "$env:JAVA_HOME\bin\java.exe"  } else { "java" }
 $core = Get-ChildItem -File dataset\generator\dev\captcha\*.java | % FullName
-& "$java\javac.exe" -encoding UTF-8 -d build\classes -sourcepath dataset\generator $core (Get-ChildItem -Recurse -Filter *.java dataset\generator | % FullName)
-& "$java\javac.exe" -encoding UTF-8 -d build\classes_ru -sourcepath dataset\generator_ru $core (Get-ChildItem -Recurse -Filter *.java dataset\generator_ru | % FullName)
-& "$java\java.exe" "-Djava.awt.headless=true" -cp build\classes    dev.captcha.Gen      dataset\out    100
-& "$java\java.exe" "-Djava.awt.headless=true" -cp build\classes    dev.captcha.Validate dataset\out
-& "$java\java.exe" "-Djava.awt.headless=true" -cp build\classes_ru dev.captcha.Gen      dataset\out_ru 100
-& "$java\java.exe" "-Djava.awt.headless=true" -cp build\classes_ru dev.captcha.Validate dataset\out_ru
+& $javac -encoding UTF-8 -d build\classes -sourcepath dataset\generator $core (Get-ChildItem -Recurse -Filter *.java dataset\generator | % FullName)
+& $javac -encoding UTF-8 -d build\classes_ru -sourcepath dataset\generator_ru $core (Get-ChildItem -Recurse -Filter *.java dataset\generator_ru | % FullName)
+& $java "-Djava.awt.headless=true" -cp build\classes    dev.captcha.Gen      dataset\out    100
+& $java "-Djava.awt.headless=true" -cp build\classes    dev.captcha.Validate dataset\out
+& $java "-Djava.awt.headless=true" -cp build\classes_ru dev.captcha.Gen      dataset\out_ru 100
+& $java "-Djava.awt.headless=true" -cp build\classes_ru dev.captcha.Validate dataset\out_ru
 python tools\restore_real_shots.py      # вернуть real_shots/ после пересборки
 python tools\check_labels_and_roi.py dataset\out_ru
 python tools\check_band_vs_answer.py dataset\out_ru
