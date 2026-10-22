@@ -92,8 +92,9 @@ else is either git-ignored or an empty leftover.
 | `dataset/generator/dev/captcha/gens/` | 16 files, 34 captcha types from 18 upstream plugins: `XProtect.java` (12 types), `Sonar.java` (3), `FabricCaptcha.java` (2), `Krypton.java` (2), `AdvancedCaptcha.java` (2), `ForgeCaptchas.java` (2 — `laforetbrut/are-you-sure` + `Mrbysco/Captcha`), `GuiChecks.java` (2 — `Yukun99/Captchas` + `China2B2T/Captcha`), `GuiPlugins.java` (2 — `Z4OLLIEZ4/reCaptcha` + `Joey61021/captcha`), plus one type each: `InstantlyMoist.java`, `Minecaptcha.java`, `Mapcha.java`, `Prosto.java`, `AnBot.java`, `NCaptcha.java`, `ReproCaptcha.java`, and the shared helper `TextBand.java`. |
 | `dataset/generator_ru/dev/captcha/gens/` | 8 files, 12 captcha types for the GalleryCaptcha type group and the plugins identified from it: `LimboFilter.java` (map, symbols, framed2x2, framed3x3), `RussianCaptcha.java` (ru-numberword, ru-numberword-caption), `WebCaptcha.java` (ru-web), `ObjectCaptcha.java` (ru-object-swatch), `BotFilter.java` (map), `CaptchaVerifyZ.java` (map), `Supl1nCaptchaGui.java` (clickblock), `MapPalette.java` (shared palette, not a type). |
 | `dataset/generator_ru/dev/captcha/` (core) | **Empty on purpose.** The core (`Cg`, `Img`, `McUi`, `Gen`, `Stats`, `Validate`) is compiled from `dataset/generator` and shared by both trees — that is what `build.ps1` does. |
-| `dataset/out/` | **Generated.** 18 owner/repo dirs → 34 type dirs → 3400 PNGs + 34 `labels.jsonl` + `index.html`. |
-| `dataset/out_ru/` | **Generated.** 8 plugin dirs (5 of them carry samples) → 12 type dirs → 1200 PNGs + 12 `labels.jsonl` + `index.html`, plus 8 `real_shots/` folders with 517 reference images. |
+| `dataset/out/` | **Generated.** 18 owner/repo dirs → 34 type dirs → 3400 PNGs + 34 `labels.jsonl` + `index.html`. **The PNGs are no longer tracked by git** (`.gitignore`: `dataset/out/**/*.png`) — the full set lives on Hugging Face; the labels stay in the index. |
+| `dataset/out_ru/` | **Generated.** 8 plugin dirs (5 of them carry samples) → 12 type dirs → 1200 PNGs + 12 `labels.jsonl` + `index.html`, plus 8 `real_shots/` folders with 517 reference images. The PNGs (and the `real_shots/`) are **not tracked**; only the labels and `index.html` are. |
+| `dataset/samples/` | **The showcase that stays in git.** 5 PNGs per type — `dataset/samples/<plugin>/<type>/001.png … 005.png`, 230 files, 2.21 MB — plus `README.md` (the type table) and `index.html` (a filterable contact sheet with the answers). The PNGs are byte-identical copies of the generated ones, never re-drawn. |
 
 ### 2.2 `train/`
 
@@ -130,6 +131,7 @@ else is either git-ignored or an empty leftover.
 | `tools/measure_glyphs.py` | Measures the real glyph heights and band sizes of the generated maps (the input for the H=32 scaling plan). |
 | `tools/count_colors.py` | Distinct colours per sample, per type (the cheapest check that a composite is not palette-quantised). |
 | `tools/restore_real_shots.py` | **Puts the reference images back** into `dataset/out_ru/` after a regeneration (from `site/captchas/`, `research/refout/`, `research/jars/bf_dataset/`, `research/`). |
+| `tools/fetch_dataset.py` | **Downloads the full dataset back from Hugging Face** (`Titlehhhh/captchaocr-dataset` → `dataset/full/`). Flags: `--dry-run` (prints the plan, no network), `--types`, `--dest`, `--repo-id`, `--revision`, `--cache-dir`. The type list is read from the `labels.jsonl` files that stay in git, so the plan needs no network. |
 | `tools/contact_sheet.py` | Generated samples of a type next to a reference image, with per-cell colour counts. |
 | `tools/match_site_to_dataset.py` | For every site image, the nearest dataset image — evidence that a catalogue version is served by a plugin. |
 | `tools/cluster_site_captchas.py` | Clusters the 525 catalogue images into visual families (`site/clusters/`). |
@@ -209,6 +211,15 @@ dataset/out_ru/<Plugin>/<captchaType>/labels.jsonl
 - Each tree also has a top-level `index.html`: a contact sheet of the first 16 samples per type with
   their ground-truth answers. **This is the intended review surface** — no automation in this repo can
   look at an image, so eyeballing the contact sheet is part of using the dataset, not an extra.
+
+**The PNGs of the dataset are not in git** (ADR 0004): `.gitignore` carries
+`dataset/out/**/*.png` and `dataset/out_ru/**/*.png`, so only the `labels.jsonl` and the two
+`index.html` files stay tracked. The full dataset — 4600 PNG, 43.57 MB — is on Hugging Face
+(`Titlehhhh/captchaocr-dataset`); `python tools/fetch_dataset.py` pulls it back into
+`dataset/full/`. What stays visible in git is the **showcase**: 5 PNGs per type under
+`dataset/samples/<plugin>/<type>/` (230 files, 2.21 MB) and its contact sheet
+`dataset/samples/index.html`. The 517 `real_shots/` reference images are excluded too — they are
+other people's screenshots and are never published.
 
 ### 3.2 `labels.jsonl` — one JSON object per sample, in `NNN.png` order
 

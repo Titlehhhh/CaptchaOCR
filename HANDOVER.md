@@ -445,7 +445,9 @@ GPL-3.0, у трёх плагинов лицензии нет, LimboFilter — A
 | `reports/REVIEW_*.md` | три ревью: генераторы, честность отчётов, план модели |
 | `dataset/generator/` | Java-генератор 18 плагинов |
 | `dataset/generator_ru/` | Java-генератор каталога и найденных плагинов |
-| `dataset/out/`, `dataset/out_ru/` | сгенерированные датасеты |
+| `dataset/out/`, `dataset/out_ru/` | сгенерированные датасеты. **PNG в git не входят** (`.gitignore`: `dataset/out/**/*.png`, `dataset/out_ru/**/*.png`); в индексе остаются `labels.jsonl` (46 шт.) и два `index.html`. Полный набор — на Hugging Face |
+| `dataset/samples/` | **то, что видно в git**: по 5 PNG на каждый из 46 типов (230 файлов, 2.21 МБ) + `README.md` + витрина `index.html` |
+| `tools/fetch_dataset.py` | скачивание полного датасета с Hugging Face (`Titlehhhh/captchaocr-dataset` → `dataset/full/`); `--dry-run` печатает план без сети |
 | `site/captchas/` | 525 референсных картинок каталога + `manifest.json` |
 | `train/` | тренировочный код: `captcha_crnn.py`, `train.py`, `README.md` |
 | `.venv-gpu/` | torch 2.14.1+cu126 (CUDA) — отдельное окружение, системный python не тронут |

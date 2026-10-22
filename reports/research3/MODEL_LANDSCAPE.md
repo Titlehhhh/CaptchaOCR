@@ -286,7 +286,7 @@ VRAM и в 30–100 раз по скорости. **Как кандидат на
 **Вариант «если бы был paddle / другая GPU».**
 
 * *Если бы был paddlepaddle* (его нет под Windows + Python 3.14; чинить можно только через
-  отдельный venv на `Python312`, `C:\Users\Title\AppData\Local\Programs\Python\Python312\python.exe`):
+  отдельный venv на `Python312`, `python`):
   PP-OCRv6 medium/small/tiny обучались бы «родным» пайплайном PaddleOCR (собственный
   `MultiLabelEncode`, `NRTRLabelEncode`, готовый CTC-рецепт) — это убирает работу с
   самописным лоссом, но **не даёт выигрыша в качестве**: те же веса.
@@ -301,16 +301,16 @@ VRAM и в 30–100 раз по скорости. **Как кандидат на
 ## 5. Три команды проверки перед долгим прогоном
 
 > Общий контекст: кэш HF в этой машине **недоступен для записи** из дочерних процессов
-> (`C:\Users\Title\.cache\huggingface` → `PermissionError`). Поэтому **все три команды**
+> (`~/.cache/huggingface` → `PermissionError`). Поэтому **все три команды**
 > обязаны начинаться с установки `HF_HOME`/`HF_HUB_CACHE` на локальную папку репозитория
-> (она уже создана: `C:\Users\Title\Projects\CaptchaOCR\.hf-cache`).
-> Пути ниже — под этот репозиторий; выполнять из корня `C:\Users\Title\Projects\CaptchaOCR`.
+> (она уже создана: `<repo>`).
+> Пути ниже — под этот репозиторий; выполнять из корня `<repo>`.
 
 ### Команда 1 — окружение + весá грузятся в `transformers`
 
 ```powershell
-cd C:\Users\Title\Projects\CaptchaOCR
-$env:HF_HOME="C:\Users\Title\Projects\CaptchaOCR\.hf-cache"; $env:HF_HUB_CACHE="C:\Users\Title\Projects\CaptchaOCR\.hf-cache\hub"
+cd <repo>
+$env:HF_HOME="<repo>"; $env:HF_HUB_CACHE="<repo>"
 .venv-gpu\Scripts\python.exe -c "import torch,transformers;print('torch',torch.__version__,'tfm',transformers.__version__);print('cuda',torch.cuda.is_available(),torch.cuda.get_device_name(0),torch.cuda.get_device_capability(0));print('vram_GB',round(torch.cuda.get_device_properties(0).total_memory/1024**3,2));from transformers import PPOCRV6SmallRecForTextRecognition as M;m=M.from_pretrained('PaddlePaddle/PP-OCRv6_medium_rec_safetensors');print('params',sum(p.numel() for p in m.parameters()));print('classes',m.config.head_out_channels)"
 ```
 
@@ -324,7 +324,7 @@ $env:HF_HOME="C:\Users\Title\Projects\CaptchaOCR\.hf-cache"; $env:HF_HUB_CACHE="
 ### Команда 2 — проверка памяти GPU и «чистого» состояния карты
 
 ```powershell
-cd C:\Users\Title\Projects\CaptchaOCR
+cd <repo>
 nvidia-smi --query-gpu=name,memory.total,memory.used,memory.free,driver_version --format=csv
 .venv-gpu\Scripts\python.exe -c "import torch;torch.cuda.init();print('free_GB',round(torch.cuda.mem_get_info()[0]/1024**3,2),'total_GB',round(torch.cuda.mem_get_info()[1]/1024**3,2))"
 ```
@@ -336,8 +336,8 @@ nvidia-smi --query-gpu=name,memory.total,memory.used,memory.free,driver_version 
 ### Команда 3 — пробный forward + backward с таймингом (то, что запускать дольше всего)
 
 ```powershell
-cd C:\Users\Title\Projects\CaptchaOCR
-$env:HF_HOME="C:\Users\Title\Projects\CaptchaOCR\.hf-cache"; $env:HF_HUB_CACHE="C:\Users\Title\Projects\CaptchaOCR\.hf-cache\hub"
+cd <repo>
+$env:HF_HOME="<repo>"; $env:HF_HUB_CACHE="<repo>"
 $env:PYTHONIOENCODING="utf-8"
 .venv-gpu\Scripts\python.exe -c "import torch,torch.nn as nn,numpy as np;from PIL import Image;from transformers import AutoImageProcessor,PPOCRV6SmallRecForTextRecognition as M;repo='PaddlePaddle/PP-OCRv6_medium_rec_safetensors';m=M.from_pretrained(repo).cuda().train();p=AutoImageProcessor.from_pretrained(repo);opt=torch.optim.AdamW(m.parameters(),lr=1e-4);ctc=nn.CTCLoss(blank=0,zero_infinity=True);ims=[Image.fromarray((np.random.rand(48,320,3)*255).astype('uint8')) for _ in range(16)];lb=torch.randint(1,18710,(16,5));ln=torch.full((16,),5);s=0;import time;t0=time.time();[s for _ in range(0)];exec('for i in range(7):\n px=p(images=ims,return_tensors=\"pt\").pixel_values.cuda()\n o=m(pixel_values=px)\n lp=torch.log(o.last_hidden_state.clamp_min(1e-8)).permute(1,0,2)\n l=ctc(lp,lb.cuda(),torch.full((16,),lp.shape[0]),ln)\n l.backward();opt.step();opt.zero_grad()');torch.cuda.synchronize();dt=(time.time()-t0)/7;print('img_per_s',round(16/dt,1));print('peak_vram_GB',round(torch.cuda.max_memory_allocated()/1024**3,2));print('ok')"
 ```
@@ -352,7 +352,7 @@ $env:PYTHONIOENCODING="utf-8"
 ## 6. Проверено руками (фактический вывод)
 
 Все команды выполнены на этой машине 2026-10-22, интерпретатор
-`C:\Users\Title\Projects\CaptchaOCR\.venv-gpu\Scripts\python.exe`.
+`<repo>`.
 
 **6.1. Окружение (выход команды 1, до загрузки весов):**
 
@@ -384,7 +384,7 @@ VisionEncoderDecoderModel True
 
 **6.3. Реальный forward+backward на PP-OCRv6 (batch 16, вход 48×320, AdamW, ручной CTC-лосс).**
 Скрипт: `$env:TEMP\ppocr_bench.py`; запускался с
-`HF_HOME=C:\Users\Title\Projects\CaptchaOCR\.hf-cache`. Фактический вывод:
+`HF_HOME=<repo>`. Фактический вывод:
 
 ```
 REPO PaddlePaddle/PP-OCRv6_small_rec_safetensors CLASS PPOCRV6SmallRecForTextRecognition
@@ -489,9 +489,9 @@ ValueError: `tiktoken` is required to read a `tiktoken` file. Install it with `p
 9. **Данные, а не модель, могут быть узким местом.** 4600 картинок на 46 типов — мало;
    PP-OCRv6 при 19 M параметров склонна к запоминанию. План-«страховка»:
    сначала `small_rec` (5.3 M) на фолде, и только если обобщение есть — `medium_rec`.
-10. **Кэш HF.** Запись в `C:\Users\Title\.cache\huggingface` из дочерних процессов запрещена
+10. **Кэш HF.** Запись в `~/.cache/huggingface` из дочерних процессов запрещена
     (`PermissionError`) ⇒ все запуски обучения обязаны выставлять `HF_HOME`/`HF_HUB_CACHE`
-    на `C:\Users\Title\Projects\CaptchaOCR\.hf-cache`. Папка `.hf-cache/` сейчас **не** в
+    на `<repo>`. Папка `.hf-cache/` сейчас **не** в
     `.gitignore` и видна в `git status` как untracked — оркестратору стоит её добавить
     в `.gitignore` или удалить перед коммитом.
 

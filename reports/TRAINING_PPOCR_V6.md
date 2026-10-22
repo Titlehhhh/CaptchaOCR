@@ -1,7 +1,7 @@
 # TRAINING_PPOCR_V6 — дообучение PP-OCRv6_medium_rec на датасете CapthaModel
 
 **Дата:** 2026-10-22 · **Агент:** T1 (`train/finetune_ppocr.py`, `train/ppocr_data.py`)
-**Репозиторий:** `C:\Users\Title\Projects\CapthaModel`
+**Репозиторий:** `<repo>`
 **Статус:** ⚠️ **прогон остановлен автором на 6-й эпохе из 30** (шаг 240 из 1230). Все числа ниже —
 измеренные, но это **не завершённое обучение**.
 
@@ -206,8 +206,8 @@
 **Продолжить с чекпоинта (следующая сессия):**
 
 ```powershell
-$env:HF_HOME="C:\Users\Title\Projects\CapthaModel\.hf-cache"
-$env:HF_HUB_CACHE="C:\Users\Title\Projects\CapthaModel\.hf-cache\hub"
+$env:HF_HOME="<repo>"
+$env:HF_HUB_CACHE="<repo>"
 $env:PYTHONIOENCODING="utf-8"
 .venv-gpu\Scripts\python.exe train\finetune_ppocr.py --out train\run_ppocr\final --epochs 30 `
     --batch-size 32 --lr 1e-4 --head-lr 1e-4 --workers 6 --eval-every 2 --save-every 100 `

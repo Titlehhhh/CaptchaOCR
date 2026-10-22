@@ -1,6 +1,6 @@
 ---
 license: other
-license_name: mixed - per-plugin licences, see the table below
+license_name: mixed-per-plugin-licences
 tags:
 - captcha
 - ocr
@@ -152,6 +152,7 @@ for labels in root.rglob("labels.jsonl"):
 ## Licence
 
 * The **data** is published under the licences of the upstream plugins, one per type — see the
-  plugin table above. There is no single licence for the whole dataset.
+  plugin table above. There is no single licence for the whole dataset; that is what the YAML
+  field `license_name: mixed-per-plugin-licences` means.
 * The **generator code** of the project is under a separate licence.
 * A user of this dataset must comply with the licence of the plugin each row came from.

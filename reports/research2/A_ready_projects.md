@@ -309,7 +309,7 @@ py -3.12 -m venv %TEMP%\captcha_probe\venv
 ```
 python 3.12.10 (tags/v3.12.10:0cc8128, Apr  8 2025, 12:21:36) [MSC v.1943 64 bit (AMD64)]
 import ddddocr OK, ver ? elapsed 1.6s
-synthetic label: is0j8 -> C:\Users\Title\AppData\Local\Temp\captcha_probe\probe.png
+synthetic label: is0j8 -> <temp>/captcha_probe/probe.png
 model init 0.15s
 classification: 'is0j8' 0.034s
 avg over 20: 8.6 ms/img

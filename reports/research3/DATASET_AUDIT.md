@@ -1,6 +1,6 @@
 # DATASET_AUDIT — аудит датасета CaptchaOCR: что учить, как резать на train/val
 
-**Дата:** 2026-10-22 · **Репозиторий:** `C:\Users\Title\Projects\CaptchaOCR`
+**Дата:** 2026-10-22 · **Репозиторий:** `<repo>`
 **Автор:** агент R3 (файлы: `reports/research3/DATASET_AUDIT.md`, `reports/research3/audit_dataset.py`)
 **Источник истины:** `dataset/out/**/labels.jsonl` и `dataset/out_ru/**/labels.jsonl` — **только чтение**.
 
@@ -409,7 +409,7 @@ Yukun99/Captchas/itemslot     вне charset: <пробел> + '
 
 ```powershell
 $env:PYTHONIOENCODING="utf-8"
-C:\Users\Title\AppData\Local\Python\pythoncore-3.14-64\python.exe reports\research3\audit_dataset.py all
+python reports\research3\audit_dataset.py all
 #   table   — полная таблица 46 типов + сводки
 #   krypton — пиксельное измерение бага полосы
 #   reverse — измерение бага метки (prompt + пиксельный декодер)

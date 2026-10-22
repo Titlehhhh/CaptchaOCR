@@ -124,6 +124,7 @@ def patterns_for(types):
         rel = t["dir"]
         pats.append(rel + "/**")
         pats.append("**/" + rel + "/**")
+        pats.append("data/%s/%s/**" % (t["tree"], rel))
         pats.append(rel)
     return sorted(set(pats))
 
@@ -214,8 +215,59 @@ def do_download(args, types, selected, unknown, cache_dir):
     path = snapshot_download(**kwargs)
     print("done: %s" % path)
 
+    lifted = flatten_data_dir(dest)
+    if lifted:
+        print("  lifted out of data/: %s" % ", ".join(lifted))
     report(dest)
     return 0
+
+
+def merge_tree(src, dst):
+    """Move everything from src into dst, merging directories, overwriting files."""
+    moved = 0
+    for name in os.listdir(src):
+        s = os.path.join(src, name)
+        d = os.path.join(dst, name)
+        if os.path.isdir(s) and os.path.isdir(d):
+            moved += merge_tree(s, d)
+            continue
+        if os.path.isdir(s):
+            if os.path.exists(d):
+                shutil.rmtree(d)
+            shutil.move(s, d)
+        else:
+            if os.path.exists(d):
+                if os.path.getsize(d) == os.path.getsize(s):
+                    os.remove(s)  # identical file - keep the one already there
+                    continue
+                os.remove(d)
+            shutil.move(s, d)
+        moved += 1
+    return moved
+
+
+def flatten_data_dir(dest):
+    """The dataset repo stores the trees under data/; lift them up to dest/out and
+    dest/out_ru so the training code can use them unchanged."""
+    src = os.path.join(dest, "data")
+    if not os.path.isdir(src):
+        return []
+    lifted = []
+    for name in sorted(os.listdir(src)):
+        s = os.path.join(src, name)
+        d = os.path.join(dest, name)
+        if os.path.isdir(s) and os.path.isdir(d):
+            merge_tree(s, d)
+        else:
+            if os.path.exists(d):
+                if os.path.isdir(d):
+                    shutil.rmtree(d)
+                else:
+                    os.remove(d)
+            shutil.move(s, d)
+        lifted.append(name)
+    shutil.rmtree(src, ignore_errors=True)
+    return lifted
 
 
 def report(dest):

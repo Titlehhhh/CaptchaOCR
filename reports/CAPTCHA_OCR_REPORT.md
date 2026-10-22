@@ -131,7 +131,7 @@ pixel_values = processor(img, return_tensors="pt").pixel_values
 - Результаты выше показывают, что EasyOCR даёт текст, но для CAPTCHA с сильным шумом или нестандартными шрифтами результат может быть неполным (`pWb`, `#`, `eth`).
 
 **Код загрузки и тестирования сохранён:**  
-`C:\Users\Title\Projects\CaptchaOCR\test_models.py`
+`test_models.py`
 
 ## 5. Рекомендация
 
