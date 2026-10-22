@@ -137,3 +137,87 @@
 `tools/**`, `.venv-gpu/**`) и работа с API Hugging Face. Вспомогательные скрипты лежат в `%TEMP%`
 (`hf_finish_dataset.py`, `hf_create_model_repo.py`, `hf_verify_both.py`, `hf_card_verify.py`,
 `model_card_README.md`) — вне репозитория, в git не попадают.
+
+---
+
+# 7. C7 — правка опубликованных карточек по измерениям (2026-10-22)
+
+**Исполнитель:** субагент C7 · **Что изменилось на хабе:** карточка модели (текст + метаданные),
+файл лицензии в датасете, карточка датасета (упоминание файла лицензии).
+
+## 7.1 Карточка модели `Titlehhhh/captchaocr-ppocrv6`
+
+| было | стало |
+|---|---|
+| «A short probe run (2 epochs)» | «The main run reached **6 epochs of 30 planned (240 of 1230 steps)** and was stopped by the author» |
+| первоисточник нулевого шага — «`train/run_ppocr/` zero-step baseline» (каталога нет в git) | `reports/TRAINING_PPOCR_V6.json` → `zero_step.aggregate` (0.5586 micro / 0.60 median / 0.2561 CER) |
+| «a random split leaks the exact gold answer of **34 %** of the test samples» | число удалено, осталась качественная формулировка («several captcha types have only a few distinct answers…») — **первоисточника 34 % в репозитории нет** (`git grep "34 %\|34%" -- "*.md"` → 0; в `train/AGENTS.md` есть «34.3 %» без расчёта) |
+| «Both sources are files in the **CapthaModel** project repository» | «the **CaptchaOCR** project repository» |
+| «the weights are not published yet» | осталось и усилено: почему (прогон **ухудшил** метрику: медиана 0.60 → 0.41 на эпохе 1 и 0.24 на эпохе 3; 1 тип из 7 лучше, 6 хуже) и что будет дальше (меньший LR, замороженный бэкбон) |
+
+Числа в карточке теперь **не пишутся руками**: `tools/publish_hf.py` берёт их из
+`reports/TRAINING_PPOCR_V6.json` (`training_run`, `zero_step`, `after_training`) и из
+`reports/bench_models/ppocrv6-medium.json` (`modes.band.full.metrics.roi_types.acc_micro 0.5517`,
+`modes.frame.full… 0.0345`, `all_types… 0.4043`). Если эти файлы недоступны — в карточке остаются
+прочерки и инструмент предупреждает.
+
+## 7.2 Метаданные репозитория модели: до / после
+
+| поле | до | после |
+|---|---|---|
+| `library_name` | `transformers` | **нет** (нет файлов для загрузки) |
+| `pipeline_tag` | `image-to-text` | **нет** |
+| `base_model` (YAML) | `PaddlePaddle/PP-OCRv6_medium_rec_safetensors` | **нет** (в YAML-поле нет) |
+| тег `base_model:finetune:…` | был | **нет** |
+| тег `base_model:PaddlePaddle/PP-OCRv6_medium_rec_safetensors` | был | **остался** (честная ссылка на базу, без «finetune») |
+| теги `transformers`, `image-to-text`, `pytorch` | были | **нет** |
+| `transformersInfo.auto_model` | `AutoModel` | **нет** (`transformers_info: null`) |
+| `license` | `apache-2.0` | `apache-2.0` (без изменений) |
+| `usedStorage` | 0 | **0** (весов по-прежнему нет) |
+
+Проверка: `GET /api/models/Titlehhhh/captchaocr-ppocrv6` → `pipeline_tag: null`, `library_name: null`,
+`transformersInfo: null`, `tags: [captcha, ocr, minecraft, anti-bot, pp-ocr,
+base_model:PaddlePaddle/PP-OCRv6_medium_rec_safetensors, license:apache-2.0, region:us]`.
+
+## 7.3 Датасет: файл лицензии
+
+`LICENSE` в корне `Titlehhhh/captchaocr-dataset` (собран из `tools/hf_dataset_license.md`):
+раскладка лицензий по плагинам (MIT 23 типа / GPL-3.0 5 / AGPL-3.0 4 / CC0-1.0 2 /
+BSD-2-Clause+запрет коммерческого хостинга 1 / без лицензии 11), оговорка, что все картинки —
+собственные рендеры наших генераторов, а лицензия строки определяется лицензией её плагина,
+отдельная оговорка про AGPL (`LimboFilter`) и про плагины без лицензии. Таблица не набрана руками —
+она считается из `labels.jsonl` при загрузке.
+
+## 7.4 Ловушка publish-пути устранена
+
+`tools/hf_model_card.md` — теперь шаблон карточки **PP-OCRv6**; шаблон **CRNN+CTC** вынесен в
+`tools/hf_model_card_crn.md`. `tools/publish_hf.py` выбирает шаблон сам: `--template` →
+`model_type` из `config.json` → вид ключей весов; если тип не определён, инструмент
+**останавливается**, а не затирает карточку PP-OCRv6 шаблоном CRNN. Дополнительно: у чекпоинта
+PP-OCRv6 нет `config.json`, и инструмент больше **не синтезирует** его (иначе архитектура была бы
+описана неверно) — предупреждает и просит скопировать `config.json` из базового репозитория.
+
+## 7.5 Что проверено (C7)
+
+| проверка | результат |
+|---|---|
+| `publish_hf.py check --repo-id Titlehhhh/captchaocr-dataset` | `файлов: 4650`, `README.md: есть`, `labels.jsonl: 46`, `PNG: 4600`, `dataset_inventory.json: есть`, exit 0 |
+| `publish_hf.py check --repo-id Titlehhhh/captchaocr-ppocrv6 --repo-type model` | `файлов: 2`, `README.md: есть`, exit 0 |
+| `GET /api/models/Titlehhhh/captchaocr-ppocrv6` | `usedStorage 0`, `pipeline_tag null`, `library_name null`, `transformersInfo null`, теги чистые |
+| `GET /api/datasets/Titlehhhh/captchaocr-dataset` | `usedStorage 46 049 012`, `cardData.license other`, `license_name mixed-per-plugin-licences`, `library_name datasets`, `format imagefolder`, `modality image`, `size_categories 1K<n<10K`; в корне `LICENSE` |
+| диff карточки датасета «до/после» (HF, коммиты) | **13 строк**: только два абзаца про `LICENSE` — ни одно число не изменилось |
+| `detect_model_template()` (6 случаев) | `pp_ocrv6_small_rec` → ppocrv6; `captha` → crnn; веса `model.backbone.*/head.*` → ppocrv6; веса `rnn.*/fc.weight` → crnn; `--template crnn` → crnn; неизвестный → `SystemExit` с понятным текстом |
+| `Select-String 'bareapi\|BARE-API\|capmonster\|mit_ck\|mitelis'` по правленым файлам и залитым карточкам | **0 совпадений** |
+| рендер всех трёх шаблонов | неподставленных плейсхолдеров **0** |
+
+## 7.6 Что НЕ проверено (C7)
+
+* HTML-страницы хаба глазами не открывались (только API и `raw/main/README.md`).
+* Модель по-прежнему **не загружена**: `from_pretrained("Titlehhhh/captchaocr-ppocrv6")` не
+  сработает — грузить нечего (это осознанно, карточка об этом говорит).
+* `library:mlcroissant` и `library:datasets` в списке тегов репозитория датасета пока не
+  появились: хаб добавляет их асинхронно; в `cardData` нужные поля уже есть.
+* `reports/TRAINING_PPOCR_V6.json` лежит в **локальном** репозитории проекта; публичный
+  GitHub-репозиторий по решению автора приватный, поэтому ссылка на файл в карточке указывает
+  на путь внутри проекта, а не на публичную ссылку.
+* Коммитов в git не делал (правило сессии).

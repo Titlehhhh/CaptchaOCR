@@ -24,7 +24,7 @@ import java.util.jar.JarFile;
  * Generates samples for every captcha type reimplemented in {@code dev.captcha.gens}.
  *
  * <p>Generators are discovered automatically: every public class under
- * {@code dev/captha/gens} that implements {@link Cg} and exposes a public no-arg
+ * {@code dev/captcha/gens} that implements {@link Cg} and exposes a public no-arg
  * constructor is registered. Adding a captcha therefore means adding a generator file
  * (or a {@code public static} nested class) and nothing else - no edit to this class,
  * so parallel contributors never collide here.
@@ -126,7 +126,7 @@ public final class Gen {
         }
     }
 
-    /** Binary names of every class file under {@code dev/captha/gens}, dirs and jars alike. */
+    /** Binary names of every class file under {@code dev/captcha/gens}, dirs and jars alike. */
     private static List<String> classNames() {
         String rel = GENS_PKG.replace('.', '/') + "/";
         Set<String> names = new LinkedHashSet<>();

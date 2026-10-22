@@ -82,7 +82,7 @@ rectangle holding only part of the answer. 29 of the 46 types carry a band; the 
 A type with **no** band is the ill-posed "find the string somewhere in this picture" task — it teaches
 the model to read the wrong line, so it is dropped by default.
 
-`text` is what is **drawn**, `answer` is what the player types. They differ in 8 of the 46 types (the
+`text` is what is **drawn**, `answer` is what the player types. They differ in 9 of the 46 types (the
 Russian number words and the arithmetic types). A recogniser is trained on `text`; the conversion to
 `answer` is the solver's step. Comparing a prediction with `answer` for those types scores zero by
 construction.

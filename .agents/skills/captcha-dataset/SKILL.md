@@ -11,7 +11,7 @@ train from that folder**. Regenerating for every run means a "continuation" sees
 
 ## Machine facts (verified on this box)
 
-- **Java 21**: `I:\ForAndroid\Java\21` → `bin\javac.exe`, `bin\java.exe`. `Test-Path` it before use.
+- **Java 21**: JDK 21 in `PATH` (`java -version` → 21) or the `JAVA_HOME` variable → `bin\javac.exe`, `bin\java.exe`.
 - **No `pwsh`** — Windows PowerShell 5.1 only. Use `powershell`-style syntax; never invoke `pwsh`.
 - **Executing a `.ps1` file is blocked** ("AuthorizationManager check failed"), even for a file in the
   workspace and even with an execution-policy flag. **Never run `build.ps1`** — run the equivalent logic
@@ -33,7 +33,7 @@ sample: `file`, `plugin`, `captcha`, `answer` (what the player types), `text` (w
 ## Build (inline — `build.ps1` cannot be executed here)
 
 ```powershell
-$java = "I:\ForAndroid\Java\21\bin"
+$java = if ($env:JAVA_HOME) { "$env:JAVA_HOME\bin" } else { "java" }
 $core = Get-ChildItem -File dataset\generator\dev\captha\*.java | % FullName
 
 # --- tree 1: the 18 upstream plugins -> dataset/out ---
@@ -97,6 +97,6 @@ renders no image gets no generator. Full rules: `AGENTS.md` §5.
 ## Never
 
 - run `build.ps1` or any other `.ps1` file;
-- delete or overwrite `real_shots/`, `dataset/out/`, `dataset/out_ru/` or `site/captchas/`;
+- delete or overwrite `real_shots/`, `dataset/out/` or `dataset/out_ru/`;
 - edit a measured result JSON in `reports/` to make something look better — re-run the measurement;
 - invent a GitHub URL or a method name to fill in a `source()` field.

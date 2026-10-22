@@ -160,8 +160,8 @@ python bench\bench_models.py --models easyocr
 Сохранённые в `reports/bench_results_others.json` предсказания старого прогона EasyOCR **читают не полосу**:
 например, для типа `JSH32/Minecaptcha/map` (у него полоса есть) старое предсказание — `"Type this in chat Tries
 Left:"`, тогда как наш прогон по полосе даёт `"PTAY"` — точный ответ. То есть старый прогон кормил EasyOCR **целый
-кадр** (значение `roi` появилось в `labels.jsonl` позже, во втором коммите `7ffd0b8` «Regenerate the dataset with
-the fixed rendering»), а пересчёт в `reports/TRAINING_MINIMAL_LATIN.md` пересчитал именно эти сохранённые
+кадр** (значение `roi` появилось в `labels.jsonl` позже — во втором коммите той старой, переписанной истории,
+«Regenerate the dataset with the fixed rendering»), а пересчёт в `reports/TRAINING_MINIMAL_LATIN.md` пересчитал именно эти сохранённые
 предсказания. **Вывод: цифра 0.047 / CER 2.564 относится к целым кадрам, а не к полосам; сегодня по полосе EasyOCR
 даёт 0.328 / 0.383.** Менял я в этом ничего не могу — старый JSON не переписывал.
 

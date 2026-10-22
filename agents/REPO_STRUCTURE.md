@@ -14,7 +14,6 @@ git показывает их в кавычках) — это 5927 файлов 
 | путь | отслеживается | на диске | что это |
 |---|---|---|---|
 | `dataset/` | 5927 | 79.4 МБ | генераторы (Java) + сгенерированный датасет (46 типов × 100) + 1240 эталонов |
-| `site/` | 570 | 49.4 МБ | сайт-атлас (HTML/CSS/JS, данные `site/data/*.js`) + 525 референсов GalleryCaptcha в `site/captchas/` |
 | `research/` | 181 | 36.3 МБ | исходники апстримов, декомпиляция, заметки по идентификации плагинов |
 | `reports/` | 79 | 18.9 МБ | 9+ измеренных отчётов и 36 JSON с результатами бенчмарков |
 | `tools/` | 35 | 0.1 МБ | 35 скриптов-измерителей и чекеров |
@@ -62,7 +61,6 @@ CaptchaOCR/
 │   ├── out/  out_ru/    # сгенерированный датасет (в git)
 │   └── real_shots/      # эталонные скриншоты (в git, но это НЕ обучающие данные)
 ├── train/  bench/  tools/   # без изменений: код обучения, харнессы, измерители
-├── site/                # без изменений: сайт-атлас (человек + агент)
 ├── research/            # без переименования: находки и исходники апстримов
 ├── reports/             # измеренные результаты (никогда не править руками)
 ├── agents/              # документация для ИИ: INDEX, AGENT_LOG, DSH_HARNESS, REPO_STRUCTURE
@@ -81,7 +79,7 @@ CaptchaOCR/
 - **`docs/glossary.md`** — у нас 46 типов, свой словарь (`roi`, `text` vs `answer`, группа A/B/C, `band`).
   Без глоссария агент тратит токены на выяснение терминов.
 - **`dataset/` не трогаем.** Формат `dataset/out/<owner>/<repo>/<type>/` — это контракт, на который
-  ссылаются `paths.py`, `build.ps1`, Java-генераторы, харнессы и `site/data/types.js`. Переименование
+  ссылаются `paths.py`, `build.ps1`, Java-генераторы, харнессы и `<atlas>/data/types.js`. Переименование
   даст ноль выигрыша и много поломок.
 - **`research/` не переименовывать** — там лежат лицензионно-чувствие исходники апстримов; переезд
   ничего не улучшает, а историю git придётся переписывать.
@@ -101,7 +99,7 @@ git mv reports/REVIEW_MODEL_PLAN.md    docs/adr/0002-recogniser-architecture-and
 git mv reports/REVIEW_RESEARCH.md      docs/adr/0003-plugin-identification-method.md
 
 # 2. Сайт-атлас остаётся, но его данные — рядом с ним (уже так)
-#    (site/data/types.js, site/data/meta.js — без изменений)
+#    (<atlas>/data/types.js, <atlas>/data/meta.js — без изменений)
 
 # 3. Личный файл в корне — прочь (не mv, а удаление):
 git rm _shot.html
@@ -114,8 +112,8 @@ git rm _shot.html
 | путь `reports/PIPELINE_DESIGN.md` | `HANDOVER.md` §8 «Где что лежит», `agents/INDEX.md` §2, `reports/CAPTCHA_SYSTEM_OVERVIEW.md` | заменить на `docs/pipeline-design.md` |
 | пути `reports/REVIEW_*.md` | `HANDOVER.md` §1.1, §6.5, `agents/INDEX.md` §2 | заменить на `docs/adr/...` |
 | `reports/bench_results*.json` | **не трогаем** — это измеренные результаты, пути в `bench/*.py` остаются валидными | — |
-| `dataset/out/...` | `paths.py`, `build.ps1`, `dataset/generator/dev/captcha/Gen.java`, `train/captcha_crnn.py` (`OUT_DIRS`), `bench/*.py`, `site/data/types.js` (`src_prefix`), `site/build_data.py` | **ничего не меняется** — датасет не переезжает |
-| `site/captchas/` | `site/build_data.py`, `tools/*.py` | не меняется (референсы остаются в `site/`) |
+| `dataset/out/...` | `paths.py`, `build.ps1`, `dataset/generator/dev/captcha/Gen.java`, `train/captcha_crnn.py` (`OUT_DIRS`), `bench/*.py`, `<atlas>/data/types.js` (`src_prefix`), `<atlas>/build_data.py` | **ничего не меняется** — датасет не переезжает |
+| `<gallery-refs>/` | `<atlas>/build_data.py`, `tools/*.py` | не меняется (референсы остаются в каталоге референсов) |
 | новый `llms.txt` | — | только новый файл, ссылки в нём указывают на существующие пути |
 
 **Порядок:** (1) `git rm _shot.html`; (2) создать `docs/` и `docs/adr/`; (3) `git mv` записки; (4) разом
@@ -133,7 +131,7 @@ git rm _shot.html
 | объект | решение | обоснование |
 |---|---|---|
 | `dataset/out/`, `dataset/out_ru/`, `real_shots/` | остаются в git | без датасета модель не обучаема; 79 МБ — приемлемо, клонирование быстрое |
-| `site/captchas/` (525 референсов) | остаются в git | это единственные настоящие скриншоты группы типов GalleryCaptcha; **но это референсы, а не обучающие данные**, и их нельзя использовать для обучения без проверки правил GalleryCaptcha (см. `reports/research2/H_v1_family.md`) |
+| `<gallery-refs>/` (525 референсов) | остаются в git | это единственные настоящие скриншоты группы типов GalleryCaptcha; **но это референсы, а не обучающие данные**, и их нельзя использовать для обучения без проверки правил GalleryCaptcha (см. `reports/research2/H_v1_family.md`) |
 | `research/` | не переименовывать | там лицензионно-чувствие исходники; переезд не даёт выигрыша |
 | `build/scratch/` (1.4 ГБ, вне git) | **не удалять вслепую** | внутри — исходники C#-рантайма и релиз ORT (по отчёту T2). Их стоит сначала перенести в `research/runtime/` или `bench/runtime/`, и только потом чистить |
 | `build/hf_cache` (4.16 ГБ) | удалён | кэш скачанных весов, восстанавливается одной командой |
@@ -188,7 +186,7 @@ git rm _shot.html
 5. Обновить `agents/INDEX.md` под новую раскладку.
 
 **Отдельно отмечу, чего я не делал:** ничего не переименовывал и не перемещал, `.gitignore` поправил
-только на непокрытые пути (`pip-*`, `torchinductor_*`, `*.raw`; `site/captchas/**` в игнор **не добавлял**,
+только на непокрытые пути (`pip-*`, `torchinductor_*`, `*.raw`; `<gallery-refs>/**` в игнор **не добавлял**,
 потому что эти 525 файлов уже отслеживаются и игнор просто не сработал бы), коммит не делал.
 
 ---
@@ -214,9 +212,9 @@ git rm _shot.html
 выигрывает), `research/runtime/` (исходники C#-рантайма и релиз ORT, вынесенные из `build/scratch/`),
 `llms.txt` обновлён на новые пути.
 
-**Что осталось как было:** `dataset/`, `train/`, `bench/`, `tools/`, `site/`, `research/`, `reports/`,
+**Что осталось как было:** `dataset/`, `train/`, `bench/`, `tools/`, `research/`, `reports/`,
 `agents/` — на своих местах; пути в `paths.py`, `build.ps1`, Java-генераторах, `train/`, `bench/`,
-`site/data/types.js` не менялись, потому что датасет не переезжал.
+`<atlas>/data/types.js` не менялись, потому что датасет не переезжал.
 
 **Имена `REVIEW_DATASET.md`, `REVIEW_MODEL_PLAN.md`, `REVIEW_RESEARCH.md`, `PIPELINE_DESIGN.md` в этом
 файле — историческая запись плана миграции, а не битые ссылки: они стоят внутри блока с командами

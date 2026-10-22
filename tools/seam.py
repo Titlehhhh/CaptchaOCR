@@ -1,7 +1,12 @@
-﻿import os,sys
+import os,sys
 from PIL import Image
 import numpy as np
-base=os.path.join(os.path.dirname(__file__),"..","site","captchas")
+# The GalleryCaptcha reference gallery was removed from this repository on 2026-10-22
+# (it held third-party screenshots). Point CAPTCHA_GALLERY_DIR at a local copy to use it.
+base=os.environ.get("CAPTCHA_GALLERY_DIR","")
+if not base:
+    raise SystemExit("the reference gallery is no longer part of this repository (2026-10-22); "
+                     "set CAPTCHA_GALLERY_DIR to a local copy to run this script")
 def seams(path,gx=3,gy=3):
     im=Image.open(path).convert("RGB"); a=np.asarray(im).astype(int); H,W,_=a.shape
     xs=[round(i*W/gx) for i in range(gx+1)]; ys=[round(i*H/gy) for i in range(gy+1)]

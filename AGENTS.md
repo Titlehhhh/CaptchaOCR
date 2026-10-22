@@ -43,8 +43,8 @@ context: the brief *is* the contract, so it must be self-contained.
 2. **Input data** — the exact paths, relative to the repo root.
 3. **Files owned** — the files this agent may write.
 4. **Files forbidden** — everything else, named explicitly: the precious things
-   (`dataset/out/`, `dataset/out_ru/`, `site/captchas/` (каталог удалён), the `real_shots/` reference images, the
-   measured result JSONs in `reports/`) and the files owned by other agents.
+   (`dataset/out/`, `dataset/out_ru/`, the `real_shots/` reference images, the measured result JSONs in
+   `reports/`) and the files owned by other agents.
 5. **Definition of done** — the observable end state.
 6. **How to self-check** — the exact command that proves it, and what its output should look like.
 7. **Report format** — files touched / what was verified / what was **not** verified / what is
@@ -113,12 +113,12 @@ this repository's history: `McUi.drawColored` and `TextBand`. Everything else go
 | **Dataset** | A Java 21 generator that re-renders, pixel-faithfully, the captchas that real open-source Minecraft anti-bot plugins produce — 46 types, 4600 labelled PNGs. | `dataset/generator/`, `dataset/generator_ru/`, output in `dataset/out/` and `dataset/out_ru/` |
 | **Models** | Benchmark harnesses over existing OCR/captcha models, and a CRNN+CTC trained from scratch on our data. | `bench/`, `train/` |
 
-Measured baselines are bad (the best of them is ≈ 0.16 exact match on our data), which is the reason the
-project exists. Details, dataset contract and the type table: `agents/INDEX.md`.
+Measured baselines are bad (the best of them is 0.404 exact match on the answer band and 0.078 on the whole
+frame — `reports/bench_models/ppocrv6-medium.json`), which is the reason the project exists. Details, dataset contract and the type table: `agents/INDEX.md`.
 
 ## 2. The goal (stated by the project owner)
 
-> Сделать открытую модель (или модели) для решения капт, чтобы потом залить на Hugging Face.
+> Сделать открытую модель (или модели) для решения капчи, чтобы потом залить на Hugging Face.
 > Это моя лабораторная работа. Хочу потыкать самые современные модели для этого.
 
 In practice: broaden the dataset to cover the captcha styles that appear in production, try the most
@@ -156,13 +156,15 @@ dataset/out_ru/<Plugin>/<type>/NNN.png     + labels.jsonl     # 12 типов, �
 
 ```powershell
 # Пересборка датасета (логика build.ps1 — сам build.ps1 выполнить НЕЛЬЗЯ, см. §7)
-$java = "I:\ForAndroid\Java\21\bin"
-& "$java\javac.exe" -encoding UTF-8 -d build\classes -sourcepath dataset\generator (Get-ChildItem -Recurse -Filter *.java dataset\generator | % FullName)
-& "$java\javac.exe" -encoding UTF-8 -d build\classes_ru -sourcepath dataset\generator_ru (Get-ChildItem -Recurse -Filter *.java dataset\generator_ru | % FullName)
-& "$java\java.exe" "-Djava.awt.headless=true" -cp build\classes    dev.captcha.Gen      dataset\out    100
-& "$java\java.exe" "-Djava.awt.headless=true" -cp build\classes    dev.captcha.Validate dataset\out
-& "$java\java.exe" "-Djava.awt.headless=true" -cp build\classes_ru dev.captcha.Gen      dataset\out_ru 100
-& "$java\java.exe" "-Djava.awt.headless=true" -cp build\classes_ru dev.captcha.Validate dataset\out_ru
+$javac = if ($env:JAVA_HOME) { "$env:JAVA_HOME\bin\javac.exe" } else { "javac" }
+$java  = if ($env:JAVA_HOME) { "$env:JAVA_HOME\bin\java.exe"  } else { "java" }
+$core  = Get-ChildItem -File dataset\generator\dev\captcha\*.java | % FullName   # общие классы: без них RU-дерево не собирается
+& $javac -encoding UTF-8 -d build\classes    -sourcepath dataset\generator    $core (Get-ChildItem -Recurse -Filter *.java dataset\generator    | % FullName)
+& $javac -encoding UTF-8 -d build\classes_ru -sourcepath dataset\generator_ru $core (Get-ChildItem -Recurse -Filter *.java dataset\generator_ru | % FullName)
+& $java "-Djava.awt.headless=true" -cp build\classes    dev.captcha.Gen      dataset\out    100
+& $java "-Djava.awt.headless=true" -cp build\classes    dev.captcha.Validate dataset\out
+& $java "-Djava.awt.headless=true" -cp build\classes_ru dev.captcha.Gen      dataset\out_ru 100
+& $java "-Djava.awt.headless=true" -cp build\classes_ru dev.captcha.Validate dataset\out_ru
 python tools\restore_real_shots.py            # вернуть real_shots/ после пересборки
 
 # Проверки меток и полос
@@ -205,12 +207,16 @@ pretty, дефекты апстрима воспроизводятся, `source(
   была на 4 px ýже текста (резала 5-й символ) — теперь `band()` прибавляет `code.length()-1`;
   в `text` типа `LagBug/XProtect/reverse` лежала **перевёрнутая** строка — теперь `text()`
   возвращает нарисованный код.
-- **Не сделано**: экспорт в HF (`train/export_hf.py` написан, но **никогда не запускался**), выкладка
-  на Hugging Face, per-family репозитории по лицензиям, дообучение на публичном корпусе.
+- **Сделано**: датасет **опубликован** на Hugging Face (22.10.2026,
+  <https://huggingface.co/datasets/Titlehhhh/captchaocr-dataset> — 4600 PNG + разметка),
+  репозиторий модели **создан** (22.10.2026, <https://huggingface.co/Titlehhhh/captchaocr-ppocrv6>);
+  в нём пока только карточка, **весов нет**.
+- **Не сделано**: выгрузка весов модели (`train/export_hf.py` написан, но **никогда не запускался**),
+  per-family репозитории по лицензиям, дообучение на публичном корпусе.
 
 ## 7. Environment notes (Windows, this machine)
 
-- **Java 21** — `I:\ForAndroid\Java\21` (проверь `Test-Path` перед использованием).
+- **Java 21** — JDK 21 в `PATH` (`java -version` → 21) или переменная `JAVA_HOME`.
 - **GPU**: NVIDIA GeForce GTX 1080 Ti (11.8 ГБ, sm_61), драйвер 581.57. CUDA-сборка torch живёт в
   `.venv-gpu/` (`torch 2.14.1+cu126` — в нём ещё есть sm_61), **системный python — CPU-only**.
   Тренировка: `.venv-gpu\Scripts\python.exe train\train.py ...`.
@@ -229,7 +235,7 @@ pretty, дефекты апстрима воспроизводятся, `source(
 ## 8. Safety and honesty rules for agents in this repo
 
 - **Never fabricate a source location.** If a plugin's upstream source cannot be found, say so plainly and
-  reconstruct the captcha from the reference screenshots in `site/captchas/` (каталог удалён), marking it clean-room / reconstructed.
+  reconstruct the captcha from the reference screenshots in `real_shots/`, marking it clean-room / reconstructed.
   Do not invent a GitHub URL or a method name to make a record look complete.
 - **Never "fix" an upstream defect** in a generator. Document it instead.
 - **Do not delete the `real_shots/` reference images.** They are the ground truth for the reconstructions.

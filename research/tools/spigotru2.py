@@ -1,5 +1,7 @@
-import sys, io, re, html, urllib.parse, requests
+import sys, io, re, os, html, urllib.parse, requests
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
+
+HERE = os.path.dirname(os.path.abspath(__file__))
 
 UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
 H = {"User-Agent": UA, "Accept-Language": "ru-RU,ru;q=0.9,en;q=0.7",
@@ -20,7 +22,7 @@ def post_search(q):
     r = s.post(url, data=data, timeout=40)
     print("POST", url, r.status_code, len(r.text), r.url)
     t = r.text
-    open(r"C:\Users\Title\Projects\CapthaModel\research\tools\_spigotru_post.html", "w", encoding="utf-8").write(t)
+    open(os.path.join(HERE, "_spigotru_post.html"), "w", encoding="utf-8").write(t)
     for m in re.finditer(r'href="(/threads/[^"]+)"[^>]*>(.*?)</a>', t, re.S):
         txt = strip_tags(m.group(2))
         if txt:

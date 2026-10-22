@@ -22,7 +22,7 @@ $java = Join-Path $JavaHome "bin\java.exe"
 if (-not (Test-Path $javac)) { throw "javac not found at $javac" }
 
 # The core (Cg, Img, McUi, Gen, Stats, Validate) is shared by both generators.
-$core = Get-ChildItem -File "dataset\generator\dev\captha\*.java" | ForEach-Object { $_.FullName }
+$core = Get-ChildItem -File "dataset\generator\dev\captcha\*.java" | ForEach-Object { $_.FullName }
 
 function Build-Generator {
     param(

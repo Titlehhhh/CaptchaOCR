@@ -1,7 +1,7 @@
 # HANDOVER — состояние проекта перед обучением
 
-**Дата:** 2026-10-21 · **Репозиторий:** `C:\Users\Title\Projects\CaptchaOCR`
-**Цель:** открытая модель (или модели) для решения капт, под выгрузку на Hugging Face.
+**Дата:** 2026-10-21 · **Репозиторий:** CaptchaOCR (git, ветка `main`)
+**Цель:** открытая модель (или модели) для решения капчи, под выгрузку на Hugging Face.
 
 Этот файл — точка входа. Он отвечает на три вопроса: **что уже есть**, **на чём учить** и **как
 запустить обучение так, чтобы его можно было оставить на ночь и продолжить завтра**.
@@ -94,7 +94,7 @@
 
 | Модель | acc | CER |
 |---|---|---|
-| **EasyOCR** | **0.115** | 1.861 |
+| **EasyOCR** | **0.115** | 1.835 |
 | `anuashok/ocr-captcha-v3` | 0.077 | 0.785 |
 | `captCHAD` (onnx fp32/int8) | 0.000 | ~1.0 |
 | `phpwind-captcha-ocr` (onnx) | 0.000 | 0.990 |
@@ -448,7 +448,7 @@ GPL-3.0, у трёх плагинов лицензии нет, LimboFilter — A
 | `dataset/out/`, `dataset/out_ru/` | сгенерированные датасеты. **PNG в git не входят** (`.gitignore`: `dataset/out/**/*.png`, `dataset/out_ru/**/*.png`); в индексе остаются `labels.jsonl` (46 шт.) и два `index.html`. Полный набор — на Hugging Face |
 | `dataset/samples/` | **то, что видно в git**: по 5 PNG на каждый из 46 типов (230 файлов, 2.21 МБ) + `README.md` + витрина `index.html` |
 | `tools/fetch_dataset.py` | скачивание полного датасета с Hugging Face (`Titlehhhh/captchaocr-dataset` → `dataset/full/`); `--dry-run` печатает план без сети |
-| `site/captchas/` | 525 референсных картинок каталога + `manifest.json` |
+| `<gallery-refs>/` | 525 референсных картинок каталога + `manifest.json` |
 | `train/` | тренировочный код: `captcha_crnn.py`, `train.py`, `README.md` |
 | `.venv-gpu/` | torch 2.14.1+cu126 (CUDA) — отдельное окружение, системный python не тронут |
 | `bench/` | харнессы бенчмарков |

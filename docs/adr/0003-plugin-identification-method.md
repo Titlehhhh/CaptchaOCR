@@ -38,7 +38,7 @@
 
 **Nothing was modified.** The only file written by this review is this one. All scratch work is under
 `build/audit/` (compiled classes, jar downloads, image crops, measurement scripts). `research/`,
-`dataset/`, `reports/` (other than this file) and `site/` are untouched.
+`dataset/` and `reports/` (other than this file) are untouched.
 
 ---
 
@@ -132,8 +132,8 @@ doing the action. A repo-wide grep for `coal|уголь` finds exactly one hit: 
 > "Example: site V1 #275 is Cyrillic `ЬЯШНИ` in a blackletter face on cream; its nearest neighbour
 > is `irootdev/AnBot/captcha` (`eth` in blue italic on white), at 0.0231."
 
-**Truth.** The *image* description is correct — I opened `site/captchas/s00_…_V1/275.png` and it is
-Cyrillic blackletter on cream. The *nearest neighbour* is wrong. From `site/site_matches.json`:
+**Truth.** The *image* description is correct — I opened `<gallery-refs>/s00_…_V1/275.png` and it is
+Cyrillic blackletter on cream. The *nearest neighbour* is wrong. From `<gallery-refs>/site_matches.json`:
 
 ```
 V1/275.png  best: jonesdevelopment/sonar/complex      0.0282
@@ -168,7 +168,7 @@ actual V1 false positive — is not in the list.
 
 *Document:* `reports/SITE_CAPTCHAS.md:150` — `| V2 | 0.023 / 0.105 |`
 
-**Truth.** Recomputed from `site/site_matches.json`: V2 min **0.0231** ✓, median **0.0980** ✗
+**Truth.** Recomputed from `<gallery-refs>/site_matches.json`: V2 min **0.0231** ✓, median **0.0980** ✗
 (claimed 0.105). Every other row reproduces to within rounding (V1 0.0228/0.1230, V1.1
 0.0231/0.0854, V3 0.0303/0.0977, V4 0.0781/0.1502, V5 0.0332/0.1332, V52 0.0562/0.0562,
 V53 0.0900/0.1089, V6 0.0304/0.0919, V8 0.1042/0.1920). Note 0.098 is **V3's** median — this looks
@@ -338,7 +338,7 @@ exist** in `dataset/out_ru/BotFilter/real_shots/`. Either add it or drop the cro
 > "The Goku cutout on a flat green field has the sprite's pieces in the middle column and the flat
 > field in the outer columns"
 
-**Truth.** In `site/captchas/s04_API_V4_Пазл_капчи/005.png` the sprite fragments (hair, an eye and
+**Truth.** In `<gallery-refs>/s04_API_V4_Пазл_капчи/005.png` the sprite fragments (hair, an eye and
 face, hands, a blue/white body) are in **all nine cells**; the flat `#146032` field is in the outer
 columns *and* in parts of the middle column. The "middle column vs outer columns" reading is not
 supported by the picture. (The adjacent claim — "a 150×90 downscale of `s04/027.png` shows a
@@ -728,7 +728,7 @@ and that it renders no image *itself* are consistent with everything I measured.
 **Measurements re-derived from the reference images** (`build/audit/*.py`):
 
 12. **Section inventory** — the §2 table is exact: 343 / 24 / 14 / 11 / 28 / 13 / 1 / 7 / 70 / 0 / 14
-    = **525** PNGs in 11 sections, and `site/captchas/manifest.json` has 525 entries.
+    = **525** PNGs in 11 sections, and `<gallery-refs>/manifest.json` has 525 entries.
 13. **3×3 grid boundaries x {0, 83, 167, 250}, y {0, 50, 100, 150}** — confirmed twice over:
     (a) per-column/per-row seam analysis (`tools/analyze_grid.py`'s method) puts the two strongest
     column seams at 83/167 and the two strongest row seams at 50/100 in most V4/V5 samples; (b) the
@@ -827,7 +827,7 @@ and that it renders no image *itself* are consistent with everything I measured.
 
 ## 7. What I did not touch
 
-No file in `dataset/`, `research/`, `reports/` (other than this new file), `site/` or `tools/` was
+No file in `dataset/`, `research/`, `reports/` (other than this new file) or `tools/` was
 modified. Scratch artefacts live in `build/audit/` only:
 
 * `build/audit/cvz/` — the six CaptchaVerifyZ jars and the extracted renderer classes

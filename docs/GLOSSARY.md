@@ -40,7 +40,7 @@
 источников (группа GalleryCaptcha 674, BotFilter 510, LimboFilter 49, CaptchaVerifyZ 5, WeatherActionCaptcha 2).
 Это материал для сверки, и удалять их нельзя.
 
-**`site/captchas/`** — 525 референсов группы типов GalleryCaptcha (11 секций по версиям API). Тоже **не**
+**`<gallery-refs>/`** — 525 референсов группы типов GalleryCaptcha (11 секций по версиям API). Тоже **не**
 обучающие данные: истинного ответа по ним нет, поэтому любая «точность» на них не проверяема.
 
 **faithful / clean-room / reconstructed** — режим, в котором сделан генератор:

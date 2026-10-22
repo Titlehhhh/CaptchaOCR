@@ -4,8 +4,8 @@
 > 23 чужих плагина, из них собрано 46 типов × 100 картинок с разметкой; свой распознаватель
 > CRNN+CTC (4.6 млн параметров) обучается на этом датасете. Измеренный результат: 100 % на
 > типах, на которых модель доучена, и 0 % на невиданных — узкое место в данных, а не в архитектуре.
-> Ключевой измеренный факт: **решает кроппер, а не модель** (один и тот же коммерческий сервис даёт
-> 0 % на целых кадрах и 78 % на полосах `roi`).
+> Ключевой измеренный факт: **решает кроппер, а не модель** (на 29 типах с полосой
+> `PP-OCRv6_medium_rec` даёт 0.552 exact match по полосе и 0.035 по целому кадру — в 16 раз хуже).
 
 ## Правила и состояние
 
@@ -17,6 +17,11 @@
 - [agents/DSH_HARNESS.md](agents/DSH_HARNESS.md): что DeepSeek Harness читает из репозитория (AGENTS.md, лимит 64 КБ, корни скиллов) и что не читает.
 - [agents/REPO_CONVENTIONS_RESEARCH.md](agents/REPO_CONVENTIONS_RESEARCH.md): как принято устраивать репозиторий для ИИ-агентов (arXiv:2602.11988, llms.txt, agents.md) и наши вердикты.
 - [docs/ONBOARDING.md](docs/ONBOARDING.md): маршрут для человека или нового агента.
+- [docs/DATASET.md](docs/DATASET.md): где лежит датасет, как его скачать, что осталось в git.
+- [docs/PLUGINS.md](docs/PLUGINS.md): 23 плагина-источника, 46 типов, лицензии и режимы.
+- [docs/LICENSES.md](docs/LICENSES.md): что покрыто MIT, а что — лицензией апстрима.
+- [docs/UPSTREAM_DEFECTS.md](docs/UPSTREAM_DEFECTS.md): дефекты апстрима, которые воспроизводятся.
+- [docs/DATASET_FORMAT.md](docs/DATASET_FORMAT.md): контракт `labels.jsonl`, `text` vs `answer`, правило полосы.
 - [docs/GLOSSARY.md](docs/GLOSSARY.md): термины — `text` vs `answer`, `roi`/полоса, группы A/B/C, faithful/clean-room/reconstructed.
 - [docs/adr/](docs/adr): принятые решения (почему так).
 

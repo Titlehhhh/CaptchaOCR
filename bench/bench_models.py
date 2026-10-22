@@ -53,7 +53,11 @@ os.environ.setdefault("HF_HOME", os.path.join(os.path.dirname(os.path.dirname(
     os.path.abspath(__file__))), "build", "hf_cache"))
 
 RESULTS_DIR = os.path.join(REPORTS, "bench_models")
-OLD_HUB = os.path.expanduser(r"~\.cache\huggingface\hub")
+# The user's pre-existing Hugging Face cache: read-only, but readable. An explicit
+# HF_HUB_CACHE wins; otherwise the default location of the platform is used.
+# It is deliberately NOT the HF_HOME set above - that one points into the workspace.
+OLD_HUB = os.environ.get("HF_HUB_CACHE") or os.path.join(
+    os.path.expanduser("~"), ".cache", "huggingface", "hub")
 
 # The 13 types of the old benchmark (bench/bench_hf.py: TEXT_TYPES).
 LEGACY_TYPES = [
@@ -271,10 +275,11 @@ def aggregate(items, preds):
 def hf_file(repo: str, filename: str):
     """Return (path, revision) for a file of a HF repo.
 
-    The machine's pre-existing cache (C:\\Users\\Title\\.cache\\huggingface) is
-    readable but not writable by the sandboxed python process, so it is used
-    as-is when the file is already there; everything else is downloaded into
-    the workspace cache (build/hf_cache).
+    The user's pre-existing Hugging Face cache (~/.cache/huggingface/hub, or
+    $HF_HUB_CACHE when it is set) is readable but not writable by the
+    sandboxed python process, so it is used as-is when the file is already
+    there; everything else is downloaded into the workspace cache
+    (build/hf_cache).
     """
     from huggingface_hub import hf_hub_download
     slug = "models--" + repo.replace("/", "--")

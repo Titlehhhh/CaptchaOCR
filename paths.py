@@ -19,8 +19,10 @@ GENERATOR = os.path.join(DATASET, "generator")
 OUT = os.path.join(DATASET, "out")
 OUT_RU = os.path.join(DATASET, "out_ru")
 REPORTS = os.path.join(REPO, "reports")
-SITE = os.path.join(REPO, "site", "captchas")
 TOOLS = os.path.join(REPO, "tools")
+# The GalleryCaptcha reference gallery was removed from this repository on
+# 2026-10-22 - it held third-party screenshots. Its path constant is gone with
+# it; nothing in bench/, train/ or tools/ imports it any more.
 
 
 def results(name):

@@ -11,9 +11,9 @@
 
 ## 1. Как добавить тип капчи
 
-1. Создай файл `dataset/generator/dev/captha/gens/<Plugin>.java`
-   (для галерейных семейств `GalleryCaptcha` — `dataset/generator_ru/dev/captha/gens/<Plugin>.java`).
-2. Реализуй интерфейс `dev.captcha.Cg` (`dataset/generator/dev/captha/Cg.java`):
+1. Создай файл `dataset/generator/dev/captcha/gens/<Plugin>.java`
+   (для галерейных семейств `GalleryCaptcha` — `dataset/generator_ru/dev/captcha/gens/<Plugin>.java`).
+2. Реализуй интерфейс `dev.captcha.Cg` (`dataset/generator/dev/captcha/Cg.java`):
 
 | метод | обязателен | смысл |
 |---|---|---|
@@ -27,7 +27,7 @@
 | `String text()` | нет | что **нарисовано**; по умолчанию = `answer()` |
 
 3. **Больше ничего править не надо.** `dev.captcha.Gen` находит все публичные конкретные классы
-   в `dev/captha/gens` рефлексией, поэтому новый тип — это один новый файл. Вложенные
+   в `dev/captcha/gens` рефлексией, поэтому новый тип — это один новый файл. Вложенные
    `public static` классы внутри существующего файла тоже работают.
 4. Пересобери и проверь (см. §4).
 
@@ -45,7 +45,7 @@
 - **`source()` обязателен и не выдумывается.** Не найден апстрим — пишем «не найдено» и `reconstructed`.
 - **Случайность:** один `new Random()` на экземпляр генератора; `Gen` создаёт новый генератор на
   каждый сэмпл. Не дели статический `Random` между классами.
-- **Пользуйся `Img` и `McUi`** (общее ядро `dataset/generator/dev/captha/`) для холстов, шрифтов,
+- **Пользуйся `Img` и `McUi`** (общее ядро `dataset/generator/dev/captcha/`) для холстов, шрифтов,
   шума и Minecraft-UI поверхностей, а не изобретай свои.
 - **Плагину, который не рисует картинку, генератор не полагается** — он документируется в
   `reports/SITE_CAPTCHAS.md`. Выдуманная картинка была бы выдумкой, а не перереализацией.
@@ -67,7 +67,7 @@
 
 ```powershell
 $java = "I:\ForAndroid\Java\21\bin"
-$core = Get-ChildItem -File dataset\generator\dev\captha\*.java | % FullName
+$core = Get-ChildItem -File dataset\generator\dev\captcha\*.java | % FullName
 & "$java\javac.exe" -encoding UTF-8 -d build\classes -sourcepath dataset\generator $core (Get-ChildItem -Recurse -Filter *.java dataset\generator | % FullName)
 & "$java\javac.exe" -encoding UTF-8 -d build\classes_ru -sourcepath dataset\generator_ru $core (Get-ChildItem -Recurse -Filter *.java dataset\generator_ru | % FullName)
 & "$java\java.exe" "-Djava.awt.headless=true" -cp build\classes    dev.captcha.Gen      dataset\out    100

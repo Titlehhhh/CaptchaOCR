@@ -41,7 +41,8 @@ on Hugging Face. Two halves, deliberately separated:
 | **Models** | Benchmark harnesses that run existing OCR / captcha models over the dataset, and training code that produces our own checkpoints. | `bench/`, `train/` |
 
 The dataset exists because no off-the-shelf OCR model handles this domain. The measured baselines are
-bad: the best of them sit around **acc 0.077–0.115 / CER 0.785–1.861** (see
+bad: the best of them sit around **acc 0.077–0.115 / CER 0.785–1.835** (the 0.077 figure is measured on the
+whole frame and the 0.115 on the `roi` crop — they are **different protocols**, see
 `reports/CAPTCHA_OCR_REPORT.md` and `reports/bench_results*.json`). That gap is the reason the project
 exists.
 
@@ -54,7 +55,7 @@ lever that makes those comparisons meaningful.
 
 Every top-level entry that actually exists in the working tree. `git ls-files` tracks only:
 `.gitignore`, `AGENTS.md`, `CONTINUE.md`, `HANDOVER.md`, `README.md`, `build.ps1`, `llms.txt`, `paths.py`,
-`bench/`, `dataset/`, `docs/`, `reports/`, `research/`, `site/`, `tools/`, `train/`, `agents/`. Everything
+`bench/`, `dataset/`, `docs/`, `reports/`, `research/`, `tools/`, `train/`, `agents/`. Everything
 else is either git-ignored or an empty leftover.
 
 | Path | What it holds | Owner(s) / who touches it | Regen or hand-written |
@@ -64,7 +65,7 @@ else is either git-ignored or an empty leftover.
 | `tools/` | 35 helper scripts (34 Python + 1 PowerShell): checkers, site analysis, report builders, one-off probes. | tools agent | hand-written |
 | `reports/` | Measured results (JSON — **never edit them**), Markdown/HTML reports, the big overview, and `research2/` (10 research reports). | bench / review / research agents | hand-written; **the JSONs are measured results — never edit them** |
 | `research/` | Upstream jars, decompiled sources, reference renders, and `runtime/` (the C# runtime source + its config). | research agents | **mixed** — `jars/`, `decompiled/`, `cvz*/` are downloaded and git-ignored; the `.md`/`.py`/`.cs` findings are hand-written |
-| `site/` | **The atlas site** (`index.html`, `style.css`, `app.js`, `data/*.js`). Каталог с чужими скриншотами удалён из публичного репозитория. | site agent / research agents | hand-written site |
+| — | **Сайт-атлас и каталог референсов удалены из публичного репозитория** (2026-10-22). Эталонные скриншоты остались в `dataset/out_ru/*/real_shots/` и не публикуются. | — | — |
 | `docs/` | Human-facing documentation: `ONBOARDING.md`, `GLOSSARY.md`, `adr/` (three decisions), `pipeline-design.md`. | docs agent | hand-written |
 | `build/` | `javac` output (`classes/`, `classes_ru/`) **and** all scratch experiments. | nobody — scratch space | regenerable, git-ignored |
 | `.venv-gpu/` | The CUDA Python env: `torch 2.14.1+cu126`, numpy, pillow, transformers 5.19.0, onnxruntime 1.30. | nobody — environment | regenerable, git-ignored (one command, see `train/README.md`) |
@@ -130,11 +131,11 @@ else is either git-ignored or an empty leftover.
 | `tools/summarise_roi.py` | Per type: how many samples have a band, how many cover the whole picture, median band size. |
 | `tools/measure_glyphs.py` | Measures the real glyph heights and band sizes of the generated maps (the input for the H=32 scaling plan). |
 | `tools/count_colors.py` | Distinct colours per sample, per type (the cheapest check that a composite is not palette-quantised). |
-| `tools/restore_real_shots.py` | **Puts the reference images back** into `dataset/out_ru/` after a regeneration (from `site/captchas/`, `research/refout/`, `research/jars/bf_dataset/`, `research/`). |
+| `tools/restore_real_shots.py` | **Puts the reference images back** into `dataset/out_ru/` after a regeneration (from `<gallery-refs>/`, `research/refout/`, `research/jars/bf_dataset/`, `research/`). |
 | `tools/fetch_dataset.py` | **Downloads the full dataset back from Hugging Face** (`Titlehhhh/captchaocr-dataset` → `dataset/full/`). Flags: `--dry-run` (prints the plan, no network), `--types`, `--dest`, `--repo-id`, `--revision`, `--cache-dir`. The type list is read from the `labels.jsonl` files that stay in git, so the plan needs no network. |
 | `tools/contact_sheet.py` | Generated samples of a type next to a reference image, with per-cell colour counts. |
 | `tools/match_site_to_dataset.py` | For every site image, the nearest dataset image — evidence that a catalogue version is served by a plugin. |
-| `tools/cluster_site_captchas.py` | Clusters the 525 catalogue images into visual families (`site/clusters/`). |
+| `tools/cluster_site_captchas.py` | Clusters the 525 catalogue images into visual families (`<gallery-refs>/clusters/`). |
 | `tools/alpha.py` | Alpha-channel statistics of the catalogue images. |
 | `tools/analyze_cells.py`, `tools/analyze_green2.py`, `tools/analyze_grid.py` | Cell / grid / green-channel probes of the catalogue images. |
 | `tools/colors.py` | Colour histogram of a catalogue image. |
@@ -144,7 +145,7 @@ else is either git-ignored or an empty leftover.
 | `tools/glyphs.py` | Connected-component glyph extraction from the catalogue images. |
 | `tools/jigsaw2.py`, `tools/jigsaw3.py` | Jigsaw-tile matching over the catalogue (the puzzle family hunt). |
 | `tools/links.py`, `tools/urls.py`, `tools/strip_html.py` | HTML / URL scraping helpers. |
-| `tools/man.py` | Groups `site/captchas/manifest.json` by section. |
+| `tools/man.py` | Groups `<gallery-refs>/manifest.json` by section. |
 | `tools/png_meta.py` | PNG chunk reader. |
 | `tools/seam.py` | Detects the seams of a jigsaw image. |
 | `tools/sg.ps1` | Sourcegraph code search. **A `.ps1` file — cannot be executed on this machine.** |
@@ -174,13 +175,17 @@ Python reads them fine; an editor that does not expect a BOM may show a stray ch
 | `reports/captcha_pdf_embedded.html` | The PDF/HTML report with the images embedded (321 KB). |
 | `reports/image_b64.json` | The base64 image payload for the above (310 KB). |
 
-### 2.6 `site/`, `research/`, `build/`
+### 2.6 `research/`, `build/`
 
 | Path | What it holds |
 |---|---|
-| `site/captchas/` | The GalleryCaptcha type group: 525 PNGs in 11 sections (`s00`…`s10`; `s09_API_V7_Пазл_капчи` exists but is **empty**), plus `manifest.json` (image → source URL → section) and `download.ps1` / `montage.ps1` (**`.ps1`, not executable here**). |
-| `site/clusters/` | 22 cluster contact sheets + `clusters.json` (the visual-family clustering of the 525). |
-| `site/site_matches.json`, `site/cluster_report.txt` | The output of the site→dataset matching and of the clustering. |
+| `<gallery-refs>/` | The GalleryCaptcha type group: 525 PNGs in 11 sections (`s00`…`s10`; `s09_API_V7_Пазл_капчи` exists but is **empty**), plus `manifest.json` (image → source URL → section) and `download.ps1` / `montage.ps1` (**`.ps1`, not executable here**). |
+| `<gallery-refs>/clusters/` | 22 cluster contact sheets + `clusters.json` (the visual-family clustering of the 525). |
+| `<gallery-refs>/site_matches.json`, `<gallery-refs>/cluster_report.txt` | The output of the catalogue→dataset matching and of the clustering. |
+
+> **Легенда.** `<gallery-refs>/` — каталог эталонных скриншотов GalleryCaptcha, `<atlas>/` — сайт-атлас.
+> Оба каталога **удалены из публичного репозитория** (2026-10-22); в документах они оставлены как
+> указатели на то, где лежали данные, из которых сделан тот или иной вывод. |
 | `research/` | Upstream jars (`jars/`, 526 files), decompiled sources (`decompiled/`, `cvz1.2/` 2687 files), reference renders (`refout/`, `myout/`, `reassembled/`), the pixel-diff probe `DiffCaptchaVerifyZ.java`, the web-research scratch (`.py`, `.html`, `.ps1`), and the findings `RU_CAPTCHA_SOURCES.md`, `WEB_CAPTCHA_V6_FINDINGS.md`. |
 | `research/jars/bf_dataset/` | The 510 real upstream BotFilter renders (file name = answer). The source of `dataset/out_ru/BotFilter/real_shots/`. |
 | `build/classes/`, `build/classes_ru/` | The compiled generators (regenerable). |
@@ -391,7 +396,7 @@ Nothing here is a recogniser's job; do **not** put these into a recogniser's tra
 
 ```powershell
 # --- generator 1 (the 18 upstream plugins) ---
-$java = "I:\ForAndroid\Java\21\bin"                      # Java 21 lives here; Test-Path it first
+$java = if ($env:JAVA_HOME) { "$env:JAVA_HOME\bin" } else { "java" }   # JDK 21 in PATH or JAVA_HOME
 $core = Get-ChildItem -File dataset\generator\dev\captha\*.java | % FullName
 & "$java\javac.exe" -encoding UTF-8 -d build\classes -sourcepath dataset\generator $core (Get-ChildItem -Recurse -Filter *.java dataset\generator | % FullName)
 & "$java\java.exe" "-Djava.awt.headless=true" -cp build\classes dev.captcha.Gen      dataset\out    100
@@ -505,8 +510,8 @@ charset (poison: an empty CTC target).
 | | |
 |---|---|
 | **No `pwsh`** | Only Windows PowerShell 5.1. Use `powershell`-style syntax; never invoke `pwsh`. |
-| **`.ps1` execution is blocked** | "AuthorizationManager check failed", even for a workspace script and even with an execution-policy flag. Run the logic **inline** in the tool call. This affects `build.ps1`, `tools/sg.ps1`, `site/captchas/download.ps1`, `site/captchas/montage.ps1` and the `research/*.ps1` probes. |
-| **Java 21** | `I:\ForAndroid\Java\21` (`bin\java.exe`, `bin\javac.exe`) — verified present on 2026-10-21. Override with `build.ps1 -JavaHome`. |
+| **`.ps1` execution is blocked** | "AuthorizationManager check failed", even for a workspace script and even with an execution-policy flag. Run the logic **inline** in the tool call. This affects `build.ps1`, `tools/sg.ps1`, `<gallery-refs>/download.ps1`, `<gallery-refs>/montage.ps1` and the `research/*.ps1` probes. |
+| **Java 21** | JDK 21 in `PATH` (`java -version` → 21) or the `JAVA_HOME` variable. |
 | **GPU** | NVIDIA GeForce GTX 1080 Ti, 11.8 GB, sm_61. The system Python carries `torch 2.14.1+cpu`; the CUDA build is in `.venv-gpu` (`torch 2.14.1+cu126`, because the newer wheels dropped the sm_61 kernels). Verified: `torch.cuda.get_arch_list()` contains `sm_61`, `torch.cuda.is_available()` is True. The system environment is untouched. |
 | **`ddgs` and Cyrillic** | Set `$env:PYTHONIOENCODING="utf-8"` first, or it crashes on Cyrillic output. |
 | **Web search** | The built-in `web_search` tool is disabled in this setup. Use the **`web-search` skill** (`ddgs`). |
@@ -580,15 +585,14 @@ python tools\restore_real_shots.py
 ### 6.5 Upstream defects are reproduced, never "fixed"
 
 A charset that makes a letter unreachable, a dead kick branch, a substring-match verification, a title
-bar that prints the answer, a `Math.random()` instead of a `SecureRandom` — reproduce it and document
-it. A solver is only useful against the plugins it will meet in production. The full table is in
-`README.md` §"Faithful reproduction of upstream defects" (27 rows).
+bar that prints the answer — reproduce it and document it. A solver is only useful against the plugins
+it will meet in production. The table is in `docs/UPSTREAM_DEFECTS.md`.
 
 The licensing vocabulary: `Faithful` = a line-by-line re-implementation from upstream (only where the
 licence permits). `Clean-room` = the algorithm was read from upstream and rewritten independently: no
 code, comments, identifiers or copyright headers carried over. `Reconstructed` = no upstream source was
-found; the generator is driven by the reference screenshots in `site/captchas/` and says so in its
-javadoc and in `source()`.
+found; the generator is driven by the reference screenshots in `real_shots/` and says so in its
+javadoc and in `source()`. The table of the reproduced defects is in `docs/UPSTREAM_DEFECTS.md`.
 
 ### 6.6 The dataset is an artefact, not a function
 
@@ -600,7 +604,7 @@ about a minute, so the cheapest way to continue is often to start over.
 ### 6.7 Never fabricate a source location
 
 If a plugin's upstream source cannot be found, say so plainly and reconstruct the captcha from the
-reference screenshots in `site/captchas/`, marking it clean-room / reconstructed. Do not invent a
+reference screenshots in `real_shots/`, marking it clean-room / reconstructed. Do not invent a
 GitHub URL or a method name to make a record look complete. `source()` and `labels.jsonl` are the audit
 trail; `tools/audit_sources.py` prints it.
 
@@ -671,7 +675,7 @@ Documented in the repository, but not built. Do not write a report claiming any 
 - **Report honestly**: what you verified, what you did not, what is broken. "Unverified" is a valid
   answer; a guess is not.
 - **The dataset and the `real_shots/` trees are precious.** Do not delete, move or rewrite anything
-  under `dataset/out/`, `dataset/out_ru/` or `site/captchas/`.
+  under `dataset/out/` or `dataset/out_ru/`.
 
 ### 8.3 Before you hand a task to a subagent
 
@@ -700,7 +704,7 @@ patches are in §10.
 | 10 | `HANDOVER.md` §1.1: "`tools/check_labels_and_roi.py` — 0 problems" | The checker exists and the tree passes it (the arithmetic "mismatches" it reports are by design — 300 rows in the three arithmetic types). But the **colour-level** band rule is not in `tools/` at all; it lives only in `build/scratch/roilabel.py`. Open finding N12. | medium |
 | 11 | `AGENTS.md` §4: `python bench\bench_hf.py` is listed as the HF harness | `bench_hf.py`'s own `predict_trocr` calls `load_image(p)` **without** the `roi`, so the HF/TrOCR path is measured on the **whole frame**, while `bench_others.py` / `bench_onnx.py` use `load_band` (cropped). `CONTINUE.md` claims "the benchmark now crops by the `roi` band". The stored `bench_results.json` (acc 0.0769) was produced by the uncropped path. | **medium — the baselines are not all measured on the same input** |
 | 12 | `AGENTS.md` §6 "Not started": "checkpoint export" | `train/export_hf.py` exists (72 369 bytes), parses cleanly, and documents its design decisions in detail. It was **never executed**. "Not started" overstates; "written but unverified" is accurate. | low |
-| 13 | `site/captchas/`: "525 images across 11 API-version sections" | **525 images in 11 section directories — but `s09_API_V7_Пазл_капчи` is empty (0 files).** Ten sections hold images. | low |
+| 13 | `<gallery-refs>/`: "525 images across 11 API-version sections" | **525 images in 11 section directories — but `s09_API_V7_Пазл_капчи` is empty (0 files).** Ten sections hold images. | low |
 | 14 | `README.md` §"Dataset at a glance": "`dataset/out/` tree 33.1 MB" | **34.2 MB** measured on 2026-10-21 (the PNG payload alone is 32.4 MB, so the rest is consistent — the tree grew slightly with the last regeneration). | trivial |
 | 15 | `README.md` §"Plugins covered": 18 plugins, 34 types | **Correct** — 18 `owner/repo` dirs, 34 type dirs, 100 samples each. | — |
 | 16 | `AGENTS.md` §6: "517 reference images in the `real_shots/` folders" | **Correct**, but three of the eight `real_shots/` folders hold **0** PNGs (`GalleryCaptcha`, `Captcha`, `CaptchaGUI`, `LimboFilter` top level, `SmartCaptcha`); the LimboFilter references live in its `framed2x2/` and `framed3x3/` sub-folders. | low |

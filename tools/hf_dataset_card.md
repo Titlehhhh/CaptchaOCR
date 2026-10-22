@@ -10,6 +10,10 @@ tags:
 language:
 - en
 - ru
+library_name: datasets
+format: imagefolder
+modality: image
+size_categories: 1K<n<10K
 ---
 
 # CaptchaOCR dataset — captchas of Minecraft anti-bot plugins, rendered
@@ -27,6 +31,22 @@ screenshots of the upstream plugins stay in the project's working tree.
 The dataset is published as **plain files** (PNG + `labels.jsonl`), not as a loading script:
 every sample is a PNG next to a one-line JSON record, so any training loop can read it
 without `datasets`, without a network round-trip and without trusting remote code.
+
+## What these captchas look like
+
+Real frames from this dataset — one per style. The caption gives the type and the **gold answer**
+from `labels.jsonl` (what the player has to type). Paths are relative to the root of this
+repository.
+
+| | | |
+|---|---|---|
+| ![Map captcha](data/out/haq/mapcha/map/001.png) | ![Web captcha](data/out_ru/GalleryCaptcha/ru-web/001.png) | ![Cyrillic symbols](data/out_ru/LimboFilter/symbols/001.png) |
+| `haq/mapcha/map` — 128×128 Minecraft map, 4 Latin characters · answer `s8TO` | `GalleryCaptcha/ru-web` — 150×90 web-style captcha, white background · answer `DpZ7D` | `LimboFilter/symbols` — 128×128, dark background, 3 Cyrillic characters · answer `ЪМИ` |
+| ![Puzzle frame](data/out_ru/LimboFilter/framed2x2/001.png) | ![GUI scene](data/out/LagBug/XProtect/gui/001.png) | ![Digits in an anvil GUI](data/out/n1zamu/NCaptcha/anvil/001.png) |
+| `LimboFilter/framed2x2` — 256×256, 2×2 puzzle frame, the number spelled out in words · answer `638` | `LagBug/XProtect/gui` — 380×260 GUI scene (chat log + inventory) · answer `Glowstone` | `n1zamu/NCaptcha/anvil` — 420×150 anvil GUI, digits · answer `28612` |
+
+Every picture above is a render of this project's own generators — see
+*Provenance and honesty* below.
 
 ## What is inside
 
@@ -56,6 +76,8 @@ Concretely, the local generator tree `{DATA_DIR}` is uploaded as-is under `data/
 * `data/<tree>/<...>/<type>/NNN.png` — the images,
 * `data/<tree>/<...>/<type>/labels.jsonl` — the labels of that type,
 * `README.md` — this card,
+* `LICENSE` — the per-plugin licence breakdown of the data (the same table as below, plus what
+  each licence means for you),
 * `dataset_inventory.json` — the machine-readable summary of everything below.
 
 {TREE_TABLE}
@@ -154,5 +176,8 @@ for labels in root.rglob("labels.jsonl"):
 * The **data** is published under the licences of the upstream plugins, one per type — see the
   plugin table above. There is no single licence for the whole dataset; that is what the YAML
   field `license_name: mixed-per-plugin-licences` means.
+* The **file `LICENSE`** in the root of this repository holds the same breakdown in full: the
+  per-plugin table, what each licence means for you, and an explicit note about the plugins that
+  granted no licence at all.
 * The **generator code** of the project is under a separate licence.
 * A user of this dataset must comply with the licence of the plugin each row came from.

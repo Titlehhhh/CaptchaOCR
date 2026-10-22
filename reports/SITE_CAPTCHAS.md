@@ -2,8 +2,10 @@
 
 **Source:** архивная страница демо-витрины (снимок в веб-архиве).
 **Fetched:** 2026-10-21
-**Local copy:** `site/captchas/` — 525 PNGs + `manifest.json` (image → source URL → section)
-**Montages:** `site/captchas/MONTAGE_<section>.png` — one contact sheet per section
+**Local copy:** `<gallery-refs>/` — 525 PNGs + `manifest.json` (image → source URL → section).
+**The directory was removed from the public repository on 2026-10-22**; `<gallery-refs>/` is the
+placeholder used in the reports for that catalogue, `<atlas>/` for the atlas site.
+**Montages:** `<gallery-refs>/MONTAGE_<section>.png` — one contact sheet per section
 
 
 ---
@@ -234,7 +236,7 @@ the base art's own renderer is not.
 
 `tools/match_site_to_dataset.py` downsamples every site image and every one of the 3400 generated
 `dataset/out` images to 16×16 grayscale and takes the nearest neighbour, per site image, over the whole
-dataset (`site/site_matches.json`).
+dataset (`<gallery-refs>/site_matches.json`).
 
 | Section | best-match distance (min / median) |
 |---|---|

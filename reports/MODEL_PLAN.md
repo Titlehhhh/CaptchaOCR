@@ -694,12 +694,12 @@ a strong precedent and a reference implementation to crib the shape from.
   unseen captcha style".
 * **Secondary (comparison) number — the in-domain 13-type benchmark.** The existing
   `bench/bench_hf.py` set (13 types × 8 images = 104) with the same metrics, so the new model is
-  directly comparable to the published baselines (EasyOCR 0.115 / CER 1.861, `anuashok/ocr-captcha-v3`
+  directly comparable to the published baselines (EasyOCR 0.115 / CER 1.835, `anuashok/ocr-captcha-v3`
   0.077 / 0.785, captCHAD and phpwind 0.000). These types *are* in training, so this number is
   optimistic by construction — say so on the card, and label it "in-domain".
 * **Third number — the leaderboard.** Keep a small, frozen, *never-trained-on* set of real upstream
-  renders (`dataset/out_ru/*/real_shots/`, the `site/captchas/` catalogue) for a final sanity check
-  that the model works on pixels it did not generate. `site/captchas/` has 525 real images from 11
+  renders (`dataset/out_ru/*/real_shots/`, the `<gallery-refs>/` catalogue) for a final sanity check
+  that the model works on pixels it did not generate. `<gallery-refs>/` has 525 real images from 11
   API-version sections.
 
 **Why hold out whole types — the argument:**
@@ -1013,7 +1013,7 @@ upstream licences are not uniform:
 | `Elytrium/LimboFilter` (`LimboFilter/*`) | **AGPL-3.0** | the strongest copyleft in the set. The generator is a clean-room rewrite, so the renders are the project's own work, but the upstream's terms should be named in the card |
 | `Leymooo/BungeeCord` (`BotFilter/map`) | **BSD 2-clause + a non-commercial hosting clause** | the generator is clean-room, so the render is the project's own work; name the upstream's terms in the card |
 | `mateita254` / `CaptchaVerifyZ` (`CaptchaVerifyZ/map`) | **all rights reserved** (`LicenseRef-All-Rights-Reserved`) | the generator is clean-room, so the render is the project's own work; name the upstream's terms in the card |
-| `GalleryCaptcha/*` (reconstructions from `site/captchas/`) | n/a (reconstructed) | publish as the project's own work, with the reconstruction note |
+| `GalleryCaptcha/*` (reconstructions from `<gallery-refs>/`) | n/a (reconstructed) | publish as the project's own work, with the reconstruction note |
 
 > **Corrected (2026-10-21, later the same day).** `irootdev/AnBot` was in the MIT/CC0 row; it is
 > **GPL-3.0** — the upstream `LICENSE` file says so, and `README.md` has said so all along. That is

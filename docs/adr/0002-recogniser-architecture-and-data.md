@@ -815,7 +815,7 @@ construction — say so on the card, and label it 'in-domain'."* But L660-L662 t
 > 13 types; our in-domain number on the same 13 types is **directly comparable**, and our unseen-style number
 > is a **stricter** claim."*
 
-It is not directly comparable: the baselines (EasyOCR 0.115 / CER 1.861, `anuashok/ocr-captcha-v3`
+It is not directly comparable: the baselines (EasyOCR 0.115 / CER 1.835, `anuashok/ocr-captcha-v3`
 0.077 / 0.785 — both verified in `reports/bench_results*.json`, n = 104) were scored on a **test** set; our
 model would be scored on its **training** set. The plan is right that the unseen-style number is the
 stricter claim; it is wrong that the two are "directly comparable". If the in-domain number goes on the card
@@ -1006,7 +1006,7 @@ the right call.
 | L909-L912 | `optimum-onnx` 0.1.0 declares `transformers<4.58.0,>=4.36`; `optimum` 2.3.0 declares `transformers>=4.29` | ✅ PyPI metadata, exact |
 | L393-L395, L1196-L1199 | `albumentations==2.0.8` deps satisfiable; `onnxscript` 0.7.2, `datasets` 5.1.0, `evaluate` 0.4.6 | ✅ PyPI: albumentations 2.0.8 requires numpy>=1.24.4, scipy>=1.10.0, pydantic>=2.9.2, albucore==0.0.24, opencv-python-headless>=4.9.0.80 (all satisfied: pydantic 2.13.4, opencv 5.0.0.93); onnxscript 0.7.2, datasets 5.1.0, evaluate 0.4.6 are the current releases |
 | L60-L84 | environment table | ✅ **every** value: Python 3.14.5, torch 2.14.1+cpu (`cuda False`, 0 devices, 18 threads), torchvision 0.29.1, transformers 5.19.0, hub 1.33.0, tokenizers 0.23.2, safetensors 0.8.0, accelerate 1.15.0, numpy 2.4.6, scipy 1.18.1, scikit-image 0.26.0, shapely 2.1.2, pillow 12.2.0, opencv 5.0.0.93, onnxruntime 1.30.0, easyocr 1.7.2, diffusers 0.41.0, pydantic 2.13.4; and the "absent" list (datasets, albumentations, evaluate, optimum, peft, timm, tensorboard) is **exactly** right |
-| L313, L635 | EasyOCR 0.115 / CER 1.861; 388 ms/image | ✅ `bench_results_others.json`: accuracy 0.1154, mean_cer 1.8614, 40.3 s / 104 = **387.5 ms** |
+| L313, L635 | EasyOCR 0.115 / CER 1.835; 388 ms/image | ✅ `bench_results_others.json`: accuracy 0.1154, mean_cer 1.8353, 40.3 s / 104 = **387.5 ms** |
 | L254-L255, L635 | `anuashok/ocr-captcha-v3` 0.077 / 0.785 | ✅ `bench_results.json`: acc 0.0769, cer 0.7853, n = 104 |
 | L1079-L1086 | `keras-io/ocr-for-captcha` fails (no `from_pretrained_keras`); `04RR/Florence-base-Captcha` fails on `forced_bos_token_id` | ✅ both error strings in `reports/bench_results_others.json` are exactly as described |
 

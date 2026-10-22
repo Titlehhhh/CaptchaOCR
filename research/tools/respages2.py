@@ -5,7 +5,7 @@ sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="repla
 UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
 H = {"User-Agent": UA, "Accept-Language": "ru-RU,ru;q=0.9,en;q=0.7",
      "Accept": "text/html,application/xhtml+xml"}
-OUT = r"C:\Users\Title\Projects\CapthaModel\research\candidates"
+OUT = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "candidates")
 os.makedirs(OUT, exist_ok=True)
 S = requests.Session()
 S.headers.update(H)

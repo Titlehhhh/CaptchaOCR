@@ -1,0 +1,30 @@
+# CaptchaOCR — зависимости Python.
+# Версии зафиксированы по рабочей среде проекта (.venv-gpu, Python 3.13, CUDA 12.6).
+#
+#   python -m venv .venv-gpu
+#   .venv-gpu\Scripts\python.exe -m pip install -r requirements.txt
+#
+# torch: сборка с CUDA ставится отдельно, см. train/README.md:
+#   pip install torch==2.14.1+cu126 --index-url https://download.pytorch.org/whl/cu126
+#
+# Что зачем:
+#   torch, torchvision      — своя модель CRNN+CTC и тренажёр (train/)
+#   transformers           — харнессы для чужих OCR-моделей (bench/)
+#   onnxruntime, onnx      — экспорт и прогон ONNX (bench/export_onnx.py)
+#   safetensors            — чтение весов safetensors
+#   numpy, pillow          — картинки и массивы
+#   huggingface_hub        — скачивание датасета и публикация на HF
+#   txtcaptcha             — харнесс jtrecenti/txtcaptcha-crnn
+#   pyyaml                 — конфиги
+
+torch==2.14.1+cu126
+torchvision==0.29.1
+transformers==5.19.0
+onnxruntime==1.30.0
+onnx==1.23.2
+safetensors==0.8.0
+numpy==2.5.4
+pillow==13.0.0
+huggingface_hub==1.33.0
+txtcaptcha==0.1.0
+pyyaml==6.0.3

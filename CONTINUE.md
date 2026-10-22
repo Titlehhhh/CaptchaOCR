@@ -5,10 +5,42 @@
 
 ---
 
+## 0. План следующей сессии
+
+По приоритету, каждая строка — готовая команда или конкретное действие.
+
+1. **Дообучить PP-OCRv6 (главное).** Продолжить с чекпоинта:
+   `.venv-gpu\Scripts\python.exe train\finetune_ppocr.py --out train\run_ppocr\final --epochs 30 --batch-size 32 --lr 1e-4 --head-lr 1e-4 --workers 6 --eval-every 2 --save-every 100 --max-minutes 55 --resume`
+   **Измеренный факт: прошлый прогон ухудшил метрику** — нулевой шаг: медиана 0.600 / CER 0.158;
+   после 6 эпох: 0.410 / 0.288 (`reports/TRAINING_PPOCR_V6.json` → `zero_step` / `after_training`).
+   Гипотеза «дообучить на 13 типах с LR 1e-4» **не сработала**. Следующие гипотезы: меньший LR
+   (`1e-5`), заморозка бэкбона, больше типов, `--glyph-scale glyph`, `--norm imagenet`.
+2. **Кириллица.** В словаре PP-OCRv6 (18 710 записей) **нет ни одной кириллической буквы**
+   (0 кодовых точек U+0400–U+04FF) — 5 кириллических типов выпадают из обучения. Нужен либо словарь
+   с кириллицей, либо отдельная модель B.
+3. **Выкладка весов** (когда обучение удастся): `train/export_hf.py` написан, но **никогда не
+   запускался**; для PP-OCRv6 — `python tools\publish_hf.py model --template ppocrv6`. Карточка без
+   весов уже залита и честно об этом говорит.
+4. **Быстрый старт обучения с нуля** (CRNN+CTC): `python train\train.py --trees both --epochs 80` —
+   честное измерение (1.000 на знакомых типах, 0.000 на невиданных) в
+   `reports/TRAINING_MINIMAL_LATIN.md`.
+5. **Публикация.** Датасет уже на <https://huggingface.co/datasets/Titlehhhh/captchaocr-dataset>,
+   репозиторий модели — <https://huggingface.co/Titlehhhh/captchaocr-ppocrv6>; перезаливка карточек —
+   `python tools\publish_hf.py` (шаблоны: `tools/hf_model_card.md` — PP-OCRv6,
+   `tools/hf_model_card_crn.md` — CRNN, `tools/hf_dataset_license.md` — лицензия датасета).
+6. **Открыть репозиторий на GitHub.** <https://github.com/Titlehhhh/CaptchaOCR> сейчас **приватный**;
+   решение — за автором: `gh repo edit Titlehhhh/CaptchaOCR --visibility public --accept-visibility-change-consequences`.
+7. **Остаток правок вне зоны документации** (отчёт C6): `dataset/generator/AGENTS.md:69` (личный
+   путь), `dataset/out_ru/BotFilter/real_shots/README.md` (битая ссылка),
+   `dataset/out_ru/WeatherActionCaptcha/real_shots/README.txt` (windows-1251),
+   `tools/restore_real_shots.py` и `tools/man.py` (ссылки на удалённый каталог галереи).
+
+---
+
 ## 1. Что это за проект
 
 **CaptchaOCR** — лаборатория моделей для решения капч с открытой выкладкой на Hugging Face.
-Цель владельца: «сделать открытую модель (или модели) для решения капт, чтобы потом залить на
+Цель владельца: «сделать открытую модель (или модели) для решения капчи, чтобы потом залить на
 Hugging Face… Хочу потыкать самые современные модели для этого».
 
 Две половины:
@@ -20,7 +52,7 @@ Hugging Face… Хочу потыкать самые современные мо
 - **Модели** — бенчмарки чужих OCR-движков и свой CRNN+CTC (4.62M параметров), обучаемый на нашем
   датасете.
 
-**Репозиторий:** `C:\Users\Title\Projects\CaptchaOCR` (git, `origin` настроен, ветка `main`).
+**Репозиторий:** CaptchaOCR (git, `origin` настроен, ветка `main`).
 
 ## 2. Правила (кратко; полные — в `AGENTS.md`)
 
@@ -45,7 +77,6 @@ Hugging Face… Хочу потыкать самые современные мо
 | `llms.txt` | машинная карта репозитория |
 | `HANDOVER.md` | состояние проекта и все цифры |
 | `reports/CAPTCHA_SYSTEM_OVERVIEW.md` | большой документ: как устроено распознавание внутри, что готово, план |
-| `site/index.html` | сайт-атлас: все капчи крупно, проценты решения, визуализация кропа, пайплайн |
 
 ## 4. На чём мы остановились (измерено, не «должно быть»)
 
@@ -58,9 +89,9 @@ Hugging Face… Хочу потыкать самые современные мо
 
 **Где лежит датасет.** Полный набор (4600 PNG, ≈ 43.6 МБ) **вынесен из git в датасет-репозиторий
 на Hugging Face**: решение зафиксировано в `docs/adr/0004-dataset-lives-on-huggingface.md`.
-Причина — размер: git хранит каждую ревизию навсегда, и вся история репозитория с датасетом
-весит около 142 МБ (`git count-objects -vH`) при 43.6 МБ полезной нагрузки. В git остаются
-генераторы, `labels.jsonl` и по 3–5 картинок на тип. Скачать полный набор:
+Причина — размер: git хранит каждую ревизию навсегда, и история с датасетом разрослась до
+~142 МБ. Сейчас история переписана: в git остались только код, разметка и 230 образцов
+(**10.5 МиБ**, `git count-objects -vH`), а картинки лежат на Hugging Face. Скачать полный набор:
 
 ```powershell
 python -c "from huggingface_hub import snapshot_download; snapshot_download(repo_id='Titlehhhh/captchaocr-dataset', repo_type='dataset', local_dir='dataset/full')"

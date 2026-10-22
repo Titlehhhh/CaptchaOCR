@@ -271,7 +271,7 @@ generated `ru-puzzle3x3` samples have to be regenerated.
 The javadoc claims:
 
 > *"One of the reference samples is exactly this - three rows of six characters in a monospace
-> face, nothing else on the canvas."* — referring to `site/captchas/s02_API_V2_Русские_капчи/001.png`
+> face, nothing else on the canvas."* — referring to `<gallery-refs>/s02_API_V2_Русские_капчи/001.png`
 
 **Measured** on that exact file (`build/review/v8_geom.py`, ink projection per text row):
 
@@ -365,7 +365,7 @@ reference, s02/014 and s06/001). Either add it (red, top) or drop it from the pr
 **N4 — `WebCaptcha`'s javadoc claims the character count is taken from the samples; it is fixed.**
 `WebCaptcha.java:50-51` says *"the canvas size, the character count, the character set … are taken
 from the samples"*, but `LENGTH = 5` (`:75`). The 70 V6 references show strings of 3, 4, 5 and 6
-characters (measured over `site/captchas/s08_API_V6_Веб_капчи`: e.g. `8X8`=3, `LНОМ`=4, `12824`=5,
+characters (measured over `<gallery-refs>/s08_API_V6_Веб_капчи`: e.g. `8X8`=3, `LНОМ`=4, `12824`=5,
 `K243KK`=6, `e068fe`=6) and the charset even contains a hyphen (`N-9K`, `O-5K`) that the generator's
 `CHARSET` lacks. Draw the length from the same distribution as the references and extend the charset,
 or state the fixed length in the javadoc.

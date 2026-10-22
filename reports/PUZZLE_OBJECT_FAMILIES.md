@@ -3,7 +3,7 @@
 **Status:** the **puzzle** family is **identified** — it is **LimboFilter** by *Elytrium*
 (<https://github.com/Elytrium/LimboFilter>), a **Velocity** anti-bot plugin, AGPL-3.0. The
 **object** family (V8) is still **not identified**; it is a *web* widget, not Minecraft software.
-Everything below was measured from `site/captchas/` (the the reference gallery) and from public
+Everything below was measured from `<gallery-refs>/` (the the reference gallery) and from public
 code search.
 
 Companion document: `reports/SITE_CAPTCHAS.md` (catalogue inventory, version → plugin table) and

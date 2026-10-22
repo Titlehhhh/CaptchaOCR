@@ -6,8 +6,12 @@
    честную сводку (``dataset_inventory.json``), собирает карточку из шаблона
    ``tools/hf_dataset_card.md`` и загружает всё в репозиторий типа ``dataset``.
 2. ``model`` — берёт чекпоинт (``train/run/.../ckpt/step_*.pt`` или уже готовый
-   HF-репозиторий), приводит веса к ``model.safetensors``, собирает карточку из
-   ``tools/hf_model_card.md`` и загружает всё в репозиторий типа ``model``.
+   HF-репозиторий), приводит веса к ``model.safetensors``, собирает карточку из шаблона
+   и загружает всё в репозиторий типа ``model``. Шаблон выбирается по типу модели:
+   ``tools/hf_model_card.md`` — для PP-OCRv6, ``tools/hf_model_card_crn.md`` — для нашего
+   CRNN+CTC (можно указать явно флагом ``--template``; по умолчанию тип определяется
+   по ``model_type`` из ``config.json`` и по ключам весов, а если он не определён,
+   инструмент останавливается, а не затирает карточку PP-OCRv6 шаблоном CRNN).
 3. ``check`` — открывает репозиторий через API и печатает, что в нём есть.
 
 Правила, которые инструмент держит:
@@ -82,7 +86,22 @@ INVENTORY_NAME = "dataset_inventory.json"
 
 #: Шаблоны карточек (лежат рядом со скриптом).
 DATASET_CARD_TEMPLATE = HERE / "hf_dataset_card.md"
+#: Шаблон файла лицензии датасета (грузится в корень репозитория как ``LICENSE``).
+DATASET_LICENSE_TEMPLATE = HERE / "hf_dataset_license.md"
+#: Шаблон карточки модели для PP-OCRv6 (текущий, опубликованный).
 MODEL_CARD_TEMPLATE = HERE / "hf_model_card.md"
+#: Шаблон карточки модели для нашего CRNN+CTC (обучен с нуля, лицензия MIT).
+MODEL_CARD_TEMPLATE_CRNN = HERE / "hf_model_card_crn.md"
+#: Шаблоны карточек модели по ключу: какой шаблон для какой модели.
+MODEL_CARD_TEMPLATES = {
+    "ppocrv6": MODEL_CARD_TEMPLATE,
+    "crnn": MODEL_CARD_TEMPLATE_CRNN,
+}
+
+#: Отчёт об обучении PP-OCRv6 — первоисточник чисел карточки модели.
+TRAINING_REPORT_JSON = REPO_ROOT / "reports" / "TRAINING_PPOCR_V6.json"
+#: Архивный бенчмарк базовой модели — второй первоисточник чисел карточки модели.
+BENCH_JSON = REPO_ROOT / "reports" / "bench_models" / "ppocrv6-medium.json"
 
 
 # =====================================================================================
@@ -616,6 +635,74 @@ def dataset_card_values(inventory: dict, repo_id: str) -> dict[str, str]:
 
 
 # =====================================================================================
+# Файл лицензии датасета
+# =====================================================================================
+
+def licence_summary_block(inventory: dict) -> str:
+    """Сводка «лицензия → сколько типов и PNG» по плагинам датасета."""
+    groups: dict[str, dict] = {}
+    for p in inventory["plugins"]:
+        entry = groups.setdefault(p["licence"], {"types": 0, "png": 0,
+                                                  "plugins": []})
+        entry["types"] += len(p["types"])
+        entry["png"] += p["png_files"]
+        entry["plugins"].append(p["plugin"])
+    lines = ["| licence | upstream plugins | captcha types | PNG |",
+             "|---|---|---|---|"]
+    for licence in sorted(groups):
+        entry = groups[licence]
+        names = ", ".join(f"`{name}`" for name in sorted(entry["plugins"]))
+        lines.append(f"| {licence} | {names} | {entry['types']} | {entry['png']} |")
+    return "\n".join(lines)
+
+
+def no_licence_note(inventory: dict) -> str:
+    """Оговорка про плагины без лицензии (их имена берутся из данных)."""
+    without = [p["plugin"] for p in inventory["plugins"]
+               if "no licence" in p["licence"].lower()
+               or "all rights reserved" in p["licence"].lower()
+               or "не установлена" in p["licence"].lower()]
+    if not without:
+        return ("All upstream plugins in this dataset ship a licence, so no row is "
+                "published without permission.")
+    names = ", ".join(f"`{name}`" for name in sorted(without))
+    return (f"Those rows ({names}) are published for research use; the upstream author "
+            f"granted nothing, so no permission can be derived from this repository — "
+            f"ask the upstream author before any other use.")
+
+
+def agpl_note(inventory: dict) -> str:
+    """Оговорка про AGPL-типы (если такие есть в данных)."""
+    agpl = [p["plugin"] for p in inventory["plugins"]
+            if "agpl" in p["licence"].lower()]
+    if not agpl:
+        return ("No upstream plugin in this dataset is licensed under AGPL, so the "
+                "network-use obligation of the AGPL does not reach this dataset.")
+    names = ", ".join(f"`{name}`" for name in sorted(agpl))
+    return (f"**{names}**: the renders of these types reproduce the upstream algorithm, so "
+            f"the AGPL-3.0 terms of the upstream plugin apply to those rows — including the "
+            f"requirement to offer the corresponding source to users of a network service. "
+            f"The upstream notice must be kept.")
+
+
+def dataset_license_values(inventory: dict, repo_id: str) -> dict[str, str]:
+    """Значения для подстановки в шаблон файла лицензии датасета."""
+    values = dataset_card_values(inventory, repo_id)
+    values.update({
+        "LICENCE_SUMMARY": licence_summary_block(inventory),
+        "NO_LICENCE_NOTE": no_licence_note(inventory),
+        "AGPL_NOTE": agpl_note(inventory),
+    })
+    return values
+
+
+def render_dataset_license(inventory: dict, repo_id: str) -> tuple[str, list[str]]:
+    """Собрать текст файла ``LICENSE`` для репозитория датасета."""
+    template = DATASET_LICENSE_TEMPLATE.read_text(encoding="utf-8")
+    return render_template(template, dataset_license_values(inventory, repo_id))
+
+
+# =====================================================================================
 # Загрузка датасета
 # =====================================================================================
 
@@ -668,7 +755,8 @@ def ensure_repo(api, repo_id: str, repo_type: str, token: str,
                     exist_ok=True)
 
 
-def upload_dataset(args, inventory: dict, card: str, types: list[TypeDir]) -> int:
+def upload_dataset(args, inventory: dict, card: str, types: list[TypeDir],
+                   license_text: str = "") -> int:
     """Залить датасет в репозиторий. Возвращает число загруженных файлов."""
     token = require_token(args.token)
     api = api_for(token)
@@ -681,6 +769,7 @@ def upload_dataset(args, inventory: dict, card: str, types: list[TypeDir]) -> in
 
     inventory_bytes = json.dumps(inventory, ensure_ascii=False, indent=2).encode("utf-8")
     card_bytes = card.encode("utf-8")
+    license_bytes = license_text.encode("utf-8")
 
     # План: (путь в репозитории, локальный путь или None для bytes, размер)
     plan: list[tuple[str, Path | None, bytes | None, int]] = []
@@ -691,6 +780,8 @@ def upload_dataset(args, inventory: dict, card: str, types: list[TypeDir]) -> in
         plan.append((f"{t.repo_dir()}/labels.jsonl", t.labels_path, None,
                      t.labels_path.stat().st_size))
     plan.append(("README.md", None, card_bytes, len(card_bytes)))
+    if license_bytes:
+        plan.append(("LICENSE", None, license_bytes, len(license_bytes)))
     plan.append((INVENTORY_NAME, None, inventory_bytes, len(inventory_bytes)))
 
     todo = [item for item in plan
@@ -840,7 +931,224 @@ def model_card_values(args, info: dict) -> dict[str, str]:
         "RESULTS_WARNING": info.get("results_warning", ""),
         "PENDING": "<!-- ЗАПОЛНИТЬ ВРУЧНУЮ -->",
     }
+    # Значения, специфичные для выбранного шаблона (PP-OCRv6 и т. п.).
+    values.update(info.get("card_values") or {})
     return values
+
+
+# =====================================================================================
+# Карточка PP-OCRv6: числа берутся из отчёта об обучении, а не пишутся руками
+# =====================================================================================
+
+def load_json_file(path: Path) -> dict | None:
+    """Прочитать JSON-файл. Нет файла или битый JSON — ``None`` (числа не выдумываются)."""
+    try:
+        with open(path, encoding="utf-8") as handle:
+            data = json.load(handle)
+    except (OSError, ValueError) as exc:
+        warn(f"Не удалось прочитать {path}: {type(exc).__name__}: {exc}")
+        return None
+    return data if isinstance(data, dict) else None
+
+
+def num(value, digits: int = 4) -> str:
+    """Число для карточки: float округляется, ``None`` превращается в прочерк."""
+    if value is None:
+        return "—"
+    if isinstance(value, float):
+        return f"{round(value, digits)}"
+    return str(value)
+
+
+def grouped_int(value) -> str:
+    """Целое с пробелами-разделителями: 19134326 → ``19 134 326``."""
+    if not isinstance(value, int):
+        return str(value)
+    return f"{value:,}".replace(",", " ")
+
+
+def zero_step_table(report: dict) -> str:
+    """Таблица «нулевой шаг» (базовая модель до дообучения) по удержанным типам."""
+    zero = report.get("zero_step") or {}
+    per_type = zero.get("per_type") or {}
+    agg = zero.get("aggregate") or {}
+    lines = ["| held-out type | exact match | CER |", "|---|---|---|"]
+    for name in sorted(per_type):
+        row = per_type[name] or {}
+        lines.append(f"| `{name}` | {num(row.get('exact_match'))} | {num(row.get('cer'))} |")
+    items = sum(int((row or {}).get("n") or 0) for row in per_type.values())
+    types = agg.get("types", len(per_type))
+    lines.append(f"| **median over {types} types** | **{num(agg.get('exact_match_median'))}** "
+                 f"| **{num(agg.get('cer_median'))}** |")
+    lines.append(f"| **micro ({items} images)** | **{num(agg.get('exact_match_micro'))}** "
+                 f"| **{num(agg.get('cer_micro'))}** |")
+    return "\n".join(lines)
+
+
+def train_run_block(report: dict, source: str) -> str:
+    """Блок «что отработало»: команда, эпохи, шаги, лосс, скорость, чекпоинт."""
+    run = report.get("training_run") or {}
+    command = str(run.get("command") or "—")
+    epochs = run.get("epochs_completed")
+    steps = run.get("steps_completed")
+    planned_steps = run.get("planned_steps")
+    match = re.search(r"--epochs\s+(\d+)", command)
+    planned_epochs = match.group(1) if match else "—"
+    timeline = run.get("loss_timeline") or []
+    loss_first = (timeline[0] or {}).get("loss") if timeline else None
+    loss_last = (timeline[-1] or {}).get("loss") if timeline else None
+    speeds = [(t or {}).get("img_per_s") for t in timeline if (t or {}).get("img_per_s")]
+    speed = f"{min(speeds)}–{max(speeds)} img/s" if speeds else "—"
+    lines = [
+        "| | |",
+        "|---|---|",
+        f"| command | `{command}` |",
+        f"| epochs completed | **{num(epochs)} of {planned_epochs} planned** — "
+        f"stopped: {run.get('stopped', 'by the author')} |",
+        f"| steps completed | **{num(steps)} of {num(planned_steps)}** |",
+        f"| train loss | {num(loss_first)} (epoch 0) → {num(loss_last)} "
+        f"(epoch {len(timeline) - 1}) |",
+        f"| speed | {speed} |",
+        f"| checkpoint (not published) | `{run.get('checkpoint', '—')}` |",
+        f"| source | `{source}` → `training_run` |",
+    ]
+    return "\n".join(lines)
+
+
+def bench_values(report: dict) -> dict[str, str]:
+    """Числа архивного бенчмарка базовой модели (полоса / кадр)."""
+    modes = report.get("modes") or {}
+    band = ((modes.get("band") or {}).get("full") or {}).get("metrics") or {}
+    frame = ((modes.get("frame") or {}).get("full") or {}).get("metrics") or {}
+    roi_band = band.get("roi_types") or {}
+    roi_frame = frame.get("roi_types") or {}
+    all_band = band.get("all_types") or {}
+    return {
+        "BAND_ACC_ROI": num(roi_band.get("acc_micro")),
+        "FRAME_ACC_ROI": num(roi_frame.get("acc_micro")),
+        "ALL_TYPES_BAND_ACC": num(all_band.get("acc_micro")),
+        "N_ROI_TYPES": str(roi_band.get("types", "—")),
+    }
+
+
+def ppocrv6_card_values(args, info: dict, dataset_totals: dict | None) -> dict[str, str]:
+    """Значения для шаблона карточки PP-OCRv6.
+
+    Все числа — из ``reports/TRAINING_PPOCR_V6.json`` и
+    ``reports/bench_models/ppocrv6-medium.json``. Если файла нет, плейсхолдер
+    остаётся плейсхолдером и инструмент предупреждает: ничего не выдумывается.
+    """
+    dataset_repo = args.dataset_repo or "Titlehhhh/captchaocr-dataset"
+    values: dict[str, str] = {
+        "REPO_ID": args.repo_id,
+        "DATASET_REPO": dataset_repo,
+        "DATASET_URL": f"https://huggingface.co/datasets/{dataset_repo}",
+        "BASE_MODEL": "PaddlePaddle/PP-OCRv6_medium_rec_safetensors",
+        "BASE_MODEL_URL": ("https://huggingface.co/PaddlePaddle/"
+                           "PP-OCRv6_medium_rec_safetensors"),
+        "BASE_LICENCE": "Apache-2.0",
+        "MODEL_CLASS": "PPOCRV6SmallRecForTextRecognition",
+        "BACKBONE": "PP-LCNetV4",
+        "N_PARAMS": "—",
+        "HIDDEN_SIZE": "—",
+        "HEAD_CLASSES": "—",
+        "EPOCHS_COMPLETED": "—",
+        "PLANNED_EPOCHS": "—",
+        "STEPS_COMPLETED": "—",
+        "PLANNED_STEPS": "—",
+        "ZERO_STEP_MEDIAN": "—",
+        "AFTER_MEDIAN": "—",
+        "BEST_EPOCH": "—",
+        "LAST_EVAL_EPOCH": "—",
+        "LAST_EVAL_MEDIAN": "—",
+        "TRAIN_RUN_BLOCK": "_(отчёт об обучении не найден)_",
+        "ZERO_STEP_TABLE": "_(отчёт об обучении не найден)_",
+    }
+    if dataset_totals:
+        values.update({
+            "N_TYPES": str(dataset_totals.get("types", "—")),
+            "N_SAMPLES": str(dataset_totals.get("samples", "—")),
+            "N_PNG_FILES": str(dataset_totals.get("png_files", "—")),
+            "N_PLUGINS": str(dataset_totals.get("plugins", "—")),
+            "N_ROI_TYPES": str(dataset_totals.get("types_with_roi", "—")),
+        })
+
+    report = load_json_file(TRAINING_REPORT_JSON)
+    if report:
+        source = Path(os.path.relpath(TRAINING_REPORT_JSON, REPO_ROOT)).as_posix()
+        model = report.get("model") or {}
+        values["BASE_MODEL"] = model.get("repo") or values["BASE_MODEL"]
+        values["BASE_MODEL_URL"] = f"https://huggingface.co/{values['BASE_MODEL']}"
+        values["BASE_LICENCE"] = model.get("license") or values["BASE_LICENCE"]
+        values["MODEL_CLASS"] = str(model.get("class") or "").split(".")[-1] \
+            or values["MODEL_CLASS"]
+        values["BACKBONE"] = model.get("backbone") or values["BACKBONE"]
+        values["N_PARAMS"] = grouped_int(model.get("params"))
+        values["HIDDEN_SIZE"] = num(model.get("hidden_size"))
+        values["HEAD_CLASSES"] = grouped_int(model.get("head_out_channels"))
+        zero = (report.get("zero_step") or {}).get("aggregate") or {}
+        values["ZERO_STEP_MEDIAN"] = num(zero.get("exact_match_median"))
+        run = report.get("training_run") or {}
+        command = str(run.get("command") or "")
+        match = re.search(r"--epochs\s+(\d+)", command)
+        values["EPOCHS_COMPLETED"] = num(run.get("epochs_completed"))
+        values["PLANNED_EPOCHS"] = match.group(1) if match else "—"
+        values["STEPS_COMPLETED"] = num(run.get("steps_completed"))
+        values["PLANNED_STEPS"] = num(run.get("planned_steps"))
+        after = report.get("after_training") or {}
+        values["AFTER_MEDIAN"] = num((after.get("aggregate") or {}).get("exact_match_median"))
+        values["BEST_EPOCH"] = num(after.get("best_epoch"))
+        last = after.get("last_evaluation") or {}
+        values["LAST_EVAL_EPOCH"] = num(last.get("epoch"))
+        values["LAST_EVAL_MEDIAN"] = num(last.get("exact_match_median"))
+        values["TRAIN_RUN_BLOCK"] = train_run_block(report, source)
+        values["ZERO_STEP_TABLE"] = zero_step_table(report)
+    else:
+        warn(f"Отчёт об обучении не прочитан ({TRAINING_REPORT_JSON}) — в карточке модели "
+             f"останутся плейсхолдеры.")
+
+    bench = load_json_file(BENCH_JSON)
+    if bench:
+        values.update(bench_values(bench))
+    else:
+        warn(f"Файл бенчмарка не прочитан ({BENCH_JSON}) — в карточке модели останутся "
+             f"плейсхолдеры.")
+    return values
+
+
+def detect_model_template(args, info: dict) -> tuple[str, str]:
+    """Выбрать шаблон карточки модели.
+
+    Порядок: явный ``--template`` → ``model_type`` из ``config.json`` → вид ключей
+    весов. Если тип определить не удалось, инструмент **останавливается**: молча
+    выбрать шаблон CRNN значило бы затереть хорошую карточку PP-OCRv6.
+    """
+    choice = getattr(args, "template", "auto") or "auto"
+    if choice != "auto":
+        if choice not in MODEL_CARD_TEMPLATES:
+            raise SystemExit(f"Неизвестный шаблон --template {choice!r}. "
+                             f"Допустимо: auto, {', '.join(sorted(MODEL_CARD_TEMPLATES))}.")
+        return choice, f"выбран флагом --template {choice}"
+
+    model_type = str(info.get("model_type") or "").strip().lower()
+    if model_type:
+        flat = model_type.replace("_", "")
+        if "ppocrv6" in flat:
+            return "ppocrv6", f"model_type={model_type}"
+        if model_type == "captha":
+            return "crnn", f"model_type={model_type}"
+
+    keys = list(info.get("state_keys") or [])
+    joined = " ".join(keys)
+    if "backbone." in joined or any(k.startswith("head.") for k in keys):
+        return "ppocrv6", "ключи весов похожи на PP-OCRv6 (model.backbone.* / head.*)"
+    if any(k.startswith("rnn.") or k == "fc.weight" for k in keys):
+        return "crnn", "ключи весов похожи на наш CRNN (rnn.* / fc.weight)"
+
+    raise SystemExit(
+        "Не удалось определить тип модели — шаблон карточки не выбран.\n"
+        "  Укажите шаблон явно: --template ppocrv6 или --template crnn.\n"
+        "  (Это защита от перезаписи карточки PP-OCRv6 шаблоном CRNN.)")
 
 
 def _round(value) -> str:
@@ -921,6 +1229,7 @@ def collect_model(args) -> tuple[dict, list[tuple[str, Path]], dict]:
         ckpt_dir = ckpt.parent
         state, extra = load_checkpoint_state(ckpt)
         info.update(derive_geometry(state))
+        info["state_keys"] = list(state.keys())[:40]
         charset = str(extra.get("charset") or "")
         info["step"] = extra.get("step")
         info["epoch"] = extra.get("epoch")
@@ -934,6 +1243,7 @@ def collect_model(args) -> tuple[dict, list[tuple[str, Path]], dict]:
             best = max(safes, key=lambda p: p.stat().st_mtime)
             files.append((best.name, best))
             info["weights_source"] = str(best.relative_to(ckpt))
+            info["state_keys"] = []
         else:
             pts = sorted([p for p in ckpt.rglob("*")
                           if p.is_file() and p.suffix.lower() in (".pt", ".pth", ".ckpt")])
@@ -943,6 +1253,7 @@ def collect_model(args) -> tuple[dict, list[tuple[str, Path]], dict]:
             best = max(pts, key=lambda p: p.stat().st_mtime)
             state, extra = load_checkpoint_state(best)
             info.update(derive_geometry(state))
+            info["state_keys"] = list(state.keys())[:40]
             charset = str(extra.get("charset") or "")
             info["step"] = extra.get("step")
             info["epoch"] = extra.get("epoch")
@@ -964,24 +1275,41 @@ def collect_model(args) -> tuple[dict, list[tuple[str, Path]], dict]:
         info["hidden"] = config.get("hidden", info.get("hidden"))
         info["glyph_height"] = config.get("glyph_height", info.get("glyph_height"))
         charset = config.get("charset") or charset
+        info["model_type"] = config.get("model_type")
         info["config_source"] = "config.json из чекпоинта"
     else:
-        config = {
-            "architectures": ["CaptchaModel"],
-            "model_type": "captha",
-            "num_classes": info.get("num_classes"),
-            "hidden": info.get("hidden"),
-            "glyph_height": info.get("glyph_height"),
-            "charset": charset,
-            "blank_index": 0,
-        }
-        config = {k: v for k, v in config.items() if v is not None}
-        info["config_source"] = ("синтезирован из state_dict "
-                                  "(архитектура выведена из форм тензоров)")
-        warn("В чекпоинте нет config.json — он собран из форм тензоров. "
-             "Проверьте его перед публикацией.")
+        keys = list(info.get("state_keys") or [])
+        looks_ppocrv6 = ("backbone." in " ".join(keys)
+                         or any(k.startswith("head.") for k in keys))
+        if looks_ppocrv6:
+            # У PP-OCRv6 config.json копируется из базового репозитория (так делает
+            # train/run_ppocr/export_hf.py). Синтезировать «наш» config.json здесь
+            # нельзя: архитектура была бы описана неверно.
+            config = {}
+            info["config_source"] = ("НЕ СОЗДАН: у чекпоинта нет config.json, а веса "
+                                     "похожи на PP-OCRv6 — скопируйте config.json "
+                                     "из базового репозитория "
+                                     "(train/run_ppocr/export_hf.py)")
+            warn("У чекпоинта нет config.json, а веса похожи на PP-OCRv6 — config.json "
+                 "НЕ создан. Скопируйте его из базового репозитория перед публикацией.")
+        else:
+            config = {
+                "architectures": ["CaptchaModel"],
+                "model_type": "captha",
+                "num_classes": info.get("num_classes"),
+                "hidden": info.get("hidden"),
+                "glyph_height": info.get("glyph_height"),
+                "charset": charset,
+                "blank_index": 0,
+            }
+            config = {k: v for k, v in config.items() if v is not None}
+            info["config_source"] = ("синтезирован из state_dict "
+                                      "(архитектура выведена из форм тензоров)")
+            warn("В чекпоинте нет config.json — он собран из форм тензоров. "
+                 "Проверьте его перед публикацией.")
     info["charset"] = charset
-    config_bytes = json.dumps(config, ensure_ascii=False, indent=2).encode("utf-8")
+    config_bytes = json.dumps(config, ensure_ascii=False, indent=2).encode("utf-8") \
+        if config else b""
 
     # preprocessor_config.json: из чекпоинта, иначе — по флагам.
     pre_path = ckpt_dir / "preprocessor_config.json"
@@ -1213,6 +1541,11 @@ def build_parser() -> argparse.ArgumentParser:
     md.add_argument("--std", type=float, default=0.5, help="std препроцессора")
     md.add_argument("--dry-run", action="store_true",
                     help="только показать план, ничего не отправляя")
+    md.add_argument("--template", default="auto",
+                    choices=["auto", "ppocrv6", "crnn"],
+                    help="шаблон карточки модели: auto (по model_type/ключам весов, "
+                         "по умолчанию), ppocrv6 — tools/hf_model_card.md, "
+                         "crnn — tools/hf_model_card_crn.md")
     md.add_argument("--private", action="store_true", help="создать приватный репозиторий")
     md.add_argument("--confirm-create", action="store_true",
                     help="разрешить создание репозитория в чужом namespace")
@@ -1265,6 +1598,11 @@ def cmd_dataset(args) -> int:
         warn("В шаблоне карточки остались неподставленные плейсхолдеры: "
              + ", ".join(leftovers))
 
+    license_text, license_leftovers = render_dataset_license(inventory, args.repo_id)
+    if license_leftovers:
+        warn("В шаблоне файла лицензии остались неподставленные плейсхолдеры: "
+             + ", ".join(license_leftovers))
+
     totals = inventory["totals"]
     log("=== План загрузки датасета ===")
     log(f"  репозиторий:      {args.repo_id} (dataset)")
@@ -1284,6 +1622,7 @@ def cmd_dataset(args) -> int:
         f"{totals['types_clean_room']}, reconstructed {totals['types_reconstructed']}, "
         f"не определён {totals['types_mode_unknown']}")
     log(f"  размер карточки:  {len(card.encode('utf-8'))} Б")
+    log(f"  размер LICENSE:   {len(license_text.encode('utf-8'))} Б")
     log(f"  размер инвентаря: {len(json.dumps(inventory, ensure_ascii=False).encode('utf-8'))} Б")
     log("  первые файлы:")
     shown = 0
@@ -1306,7 +1645,7 @@ def cmd_dataset(args) -> int:
             log("  $env:HF_TOKEN = \"hf_...\"   или   .venv-gpu\\Scripts\\hf.exe auth login")
         return EXIT_OK
 
-    uploaded = upload_dataset(args, inventory, card, types)
+    uploaded = upload_dataset(args, inventory, card, types, license_text)
     log(f"Готово: загружено {uploaded} файлов в {args.repo_id}.")
     return EXIT_OK
 
@@ -1321,19 +1660,36 @@ def cmd_model(args) -> int:
         info["results_block"] = results_block
         info["results_warning"] = results_warning
 
-        if args.data_dir:
-            data_dir = Path(args.data_dir).resolve()
-            if data_dir.is_dir():
-                types = find_type_dirs(data_dir)
-                for t in types:
-                    collect_type(t)
-                inv = build_inventory(types, data_dir)
-                info["n_train_types"] = str(inv["totals"]["types"])
-                info["n_train_samples"] = str(inv["totals"]["samples"])
-            else:
-                warn(f"Каталог {data_dir} не найден — размер обучающей выборки не указан.")
+        # Шаблон карточки выбирается по типу модели (model_type / ключи весов) или
+        # флагом --template. Молча взять шаблон CRNN нельзя: это затрёт карточку
+        # PP-OCRv6. Если тип определить не удалось — инструмент останавливается.
+        template_key, template_reason = detect_model_template(args, info)
+        template_path = MODEL_CARD_TEMPLATES[template_key]
 
-        template = MODEL_CARD_TEMPLATE.read_text(encoding="utf-8")
+        # Сводка по датасету — для чисел карточки (типы, сэмплы, плагины).
+        dataset_totals: dict | None = None
+        data_dir = Path(args.data_dir).resolve() if args.data_dir \
+            else (REPO_ROOT / "dataset")
+        if data_dir.is_dir():
+            types = find_type_dirs(data_dir)
+            for t in types:
+                collect_type(t)
+            inv = build_inventory(types, data_dir)
+            dataset_totals = inv["totals"]
+            info["n_train_types"] = str(inv["totals"]["types"])
+            info["n_train_samples"] = str(inv["totals"]["samples"])
+        else:
+            warn(f"Каталог {data_dir} не найден — числа датасета в карточке не указаны.")
+
+        if template_key == "ppocrv6":
+            info["card_values"] = ppocrv6_card_values(args, info, dataset_totals)
+        else:
+            info["card_values"] = {
+                "DATASET_URL": (f"https://huggingface.co/datasets/{args.dataset_repo}"
+                                if args.dataset_repo else "не указан"),
+            }
+
+        template = template_path.read_text(encoding="utf-8")
         card, leftovers = render_template(template, model_card_values(args, info))
         if leftovers:
             warn("В шаблоне карточки остались неподставленные плейсхолдеры: "
@@ -1343,6 +1699,7 @@ def cmd_model(args) -> int:
 
         log("=== План загрузки модели ===")
         log(f"  репозиторий:      {args.repo_id} (model)")
+        log(f"  шаблон карточки:  {template_path.name} ({template_reason})")
         log(f"  чекпоинт:         {info.get('checkpoint')}")
         log(f"  веса:             {info.get('weights_source', 'model.safetensors')}")
         log(f"  config.json:      {info.get('config_source')}")

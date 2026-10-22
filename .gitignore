@@ -44,6 +44,14 @@ research/decompiled/
 research/__pycache__/
 research/tools/__pycache__/
 
+# AGPL-3.0 decompilation of Elytrium/LimboFilter (upstream headers intact). Not
+# redistributable in this repository: the plugin is open, its sources are not ours.
+# Kept on disk only - see research/README.md.
+research/limbofilter/
+
+# Output of research/DiffCaptchaVerifyZ.java - byte-identical to research/refout/
+research/myout/
+
 # A 3.3 MB sitemap of a forum, kept as a link instead
 research/spigotmcru_sitemap.xml
 
