@@ -1,0 +1,68 @@
+{
+ "checkpoint": "train\\run\\main\\ckpt\\step_0005700.pt",
+ "onnx": "bench\\models\\crnn_fp32.onnx",
+ "opset": 17,
+ "bytes": 18499690,
+ "parity": [
+  {
+   "width": 60,
+   "batch": 1,
+   "max_abs_diff": 5.7220458984375e-06,
+   "shape_torch": [
+    1,
+    15,
+    63
+   ],
+   "shape_onnx": [
+    1,
+    15,
+    63
+   ]
+  },
+  {
+   "width": 128,
+   "batch": 1,
+   "max_abs_diff": 5.7220458984375e-06,
+   "shape_torch": [
+    1,
+    32,
+    63
+   ],
+   "shape_onnx": [
+    1,
+    32,
+    63
+   ]
+  },
+  {
+   "width": 400,
+   "batch": 1,
+   "max_abs_diff": 5.7220458984375e-06,
+   "shape_torch": [
+    1,
+    100,
+    63
+   ],
+   "shape_onnx": [
+    1,
+    100,
+    63
+   ]
+  },
+  {
+   "width": 200,
+   "batch": 4,
+   "max_abs_diff": 7.62939453125e-06,
+   "shape_torch": [
+    4,
+    50,
+    63
+   ],
+   "shape_onnx": [
+    4,
+    50,
+    63
+   ]
+  }
+ ]
+}

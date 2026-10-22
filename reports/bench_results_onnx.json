@@ -1,0 +1,2531 @@
+{
+ "AndresDev/captCHAD [onnx fp32]": {
+  "model": "AndresDev/captCHAD [onnx fp32]",
+  "preds": [
+   {
+    "type": "Archy-X/Krypton/map",
+    "file": "001.png",
+    "gold": "32891",
+    "pred": "",
+    "pred_norm": "",
+    "cer": 1.0
+   },
+   {
+    "type": "Archy-X/Krypton/map",
+    "file": "002.png",
+    "gold": "CZKmG",
+    "pred": "amwm",
+    "pred_norm": "amwm",
+    "cer": 0.8
+   },
+   {
+    "type": "Archy-X/Krypton/map",
+    "file": "003.png",
+    "gold": "4oBd7",
+    "pred": "",
+    "pred_norm": "",
+    "cer": 1.0
+   },
+   {
+    "type": "Archy-X/Krypton/map",
+    "file": "004.png",
+    "gold": "MEh7h",
+    "pred": "nmrm",
+    "pred_norm": "nmrm",
+    "cer": 1.0
+   },
+   {
+    "type": "Archy-X/Krypton/map",
+    "file": "005.png",
+    "gold": "8v0pN",
+    "pred": "7",
+    "pred_norm": "7",
+    "cer": 1.0
+   },
+   {
+    "type": "Archy-X/Krypton/map",
+    "file": "006.png",
+    "gold": "53zaz",
+    "pred": "",
+    "pred_norm": "",
+    "cer": 1.0
+   },
+   {
+    "type": "Archy-X/Krypton/map",
+    "file": "007.png",
+    "gold": "2Ash2",
+    "pred": "77m",
+    "pred_norm": "77m",
+    "cer": 1.0
+   },
+   {
+    "type": "Archy-X/Krypton/map",
+    "file": "008.png",
+    "gold": "Am07O",
+    "pred": "mx",
+    "pred_norm": "mx",
+    "cer": 0.8
+   },
+   {
+    "type": "InstantlyMoist/Captcha/textcaptcha",
+    "file": "001.png",
+    "gold": "pwwol",
+    "pred": "zvxvMc",
+    "pred_norm": "zvxvMc",
+    "cer": 1.2
+   },
+   {
+    "type": "InstantlyMoist/Captcha/textcaptcha",
+    "file": "002.png",
+    "gold": "ocjys",
+    "pred": "ssszz",
+    "pred_norm": "ssszz",
+    "cer": 1.0
+   },
+   {
+    "type": "InstantlyMoist/Captcha/textcaptcha",
+    "file": "003.png",
+    "gold": "gjrfa",
+    "pred": "Qxsz",
+    "pred_norm": "Qxsz",
+    "cer": 1.0
+   },
+   {
+    "type": "InstantlyMoist/Captcha/textcaptcha",
+    "file": "004.png",
+    "gold": "noxen",
+    "pred": "nrzn",
+    "pred_norm": "nrzn",
+    "cer": 0.6
+   },
+   {
+    "type": "InstantlyMoist/Captcha/textcaptcha",
+    "file": "005.png",
+    "gold": "tffdx",
+    "pred": "mSsavx",
+    "pred_norm": "mSsavx",
+    "cer": 1.0
+   },
+   {
+    "type": "InstantlyMoist/Captcha/textcaptcha",
+    "file": "006.png",
+    "gold": "tmyqv",
+    "pred": "znizx",
+    "pred_norm": "znizx",
+    "cer": 1.0
+   },
+   {
+    "type": "InstantlyMoist/Captcha/textcaptcha",
+    "file": "007.png",
+    "gold": "zwjmz",
+    "pred": "xLMsxsx",
+    "pred_norm": "xLMsxsx",
+    "cer": 1.4
+   },
+   {
+    "type": "InstantlyMoist/Captcha/textcaptcha",
+    "file": "008.png",
+    "gold": "fyuqa",
+    "pred": "M24ZczEN",
+    "pred_norm": "M24ZczEN",
+    "cer": 1.6
+   },
+   {
+    "type": "JSH32/Minecaptcha/map",
+    "file": "001.png",
+    "gold": "7d0B",
+    "pred": "4S",
+    "pred_norm": "4S",
+    "cer": 1.0
+   },
+   {
+    "type": "JSH32/Minecaptcha/map",
+    "file": "002.png",
+    "gold": "BGwq",
+    "pred": "XZ2",
+    "pred_norm": "XZ2",
+    "cer": 1.0
+   },
+   {
+    "type": "JSH32/Minecaptcha/map",
+    "file": "003.png",
+    "gold": "oYFc",
+    "pred": "lQZZ",
+    "pred_norm": "lQZZ",
+    "cer": 1.0
+   },
+   {
+    "type": "JSH32/Minecaptcha/map",
+    "file": "004.png",
+    "gold": "EuFD",
+    "pred": "",
+    "pred_norm": "",
+    "cer": 1.0
+   },
+   {
+    "type": "JSH32/Minecaptcha/map",
+    "file": "005.png",
+    "gold": "LbFd",
+    "pred": "4Z",
+    "pred_norm": "4Z",
+    "cer": 1.0
+   },
+   {
+    "type": "JSH32/Minecaptcha/map",
+    "file": "006.png",
+    "gold": "ES09",
+    "pred": "ZXSS",
+    "pred_norm": "ZXSS",
+    "cer": 1.0
+   },
+   {
+    "type": "JSH32/Minecaptcha/map",
+    "file": "007.png",
+    "gold": "76uH",
+    "pred": "4",
+    "pred_norm": "4",
+    "cer": 1.0
+   },
+   {
+    "type": "JSH32/Minecaptcha/map",
+    "file": "008.png",
+    "gold": "q8xL",
+    "pred": "2",
+    "pred_norm": "2",
+    "cer": 1.0
+   },
+   {
+    "type": "haq/mapcha/map",
+    "file": "001.png",
+    "gold": "M0Vk",
+    "pred": "ZJ",
+    "pred_norm": "ZJ",
+    "cer": 1.0
+   },
+   {
+    "type": "haq/mapcha/map",
+    "file": "002.png",
+    "gold": "IhzG",
+    "pred": "L",
+    "pred_norm": "L",
+    "cer": 1.0
+   },
+   {
+    "type": "haq/mapcha/map",
+    "file": "003.png",
+    "gold": "1bDH",
+    "pred": "",
+    "pred_norm": "",
+    "cer": 1.0
+   },
+   {
+    "type": "haq/mapcha/map",
+    "file": "004.png",
+    "gold": "NfB3",
+    "pred": "MX3",
+    "pred_norm": "MX3",
+    "cer": 0.75
+   },
+   {
+    "type": "haq/mapcha/map",
+    "file": "005.png",
+    "gold": "iePG",
+    "pred": "",
+    "pred_norm": "",
+    "cer": 1.0
+   },
+   {
+    "type": "haq/mapcha/map",
+    "file": "006.png",
+    "gold": "3X3F",
+    "pred": "4",
+    "pred_norm": "4",
+    "cer": 1.0
+   },
+   {
+    "type": "haq/mapcha/map",
+    "file": "007.png",
+    "gold": "v1ao",
+    "pred": "Z",
+    "pred_norm": "Z",
+    "cer": 1.0
+   },
+   {
+    "type": "haq/mapcha/map",
+    "file": "008.png",
+    "gold": "875w",
+    "pred": "ZZ",
+    "pred_norm": "ZZ",
+    "cer": 1.0
+   },
+   {
+    "type": "LagBug/XProtect/code",
+    "file": "001.png",
+    "gold": "bQvHQK",
+    "pred": "reoA7y",
+    "pred_norm": "reoA7y",
+    "cer": 1.0
+   },
+   {
+    "type": "LagBug/XProtect/code",
+    "file": "002.png",
+    "gold": "3Vd9rD",
+    "pred": "zXnDR",
+    "pred_norm": "zXnDR",
+    "cer": 1.0
+   },
+   {
+    "type": "LagBug/XProtect/code",
+    "file": "003.png",
+    "gold": "7ynZO6",
+    "pred": "xKoa",
+    "pred_norm": "xKoa",
+    "cer": 1.0
+   },
+   {
+    "type": "LagBug/XProtect/code",
+    "file": "004.png",
+    "gold": "Jv02Ic",
+    "pred": "osSrS",
+    "pred_norm": "osSrS",
+    "cer": 1.0
+   },
+   {
+    "type": "LagBug/XProtect/code",
+    "file": "005.png",
+    "gold": "t9Fqcc",
+    "pred": "sRxa",
+    "pred_norm": "sRxa",
+    "cer": 1.0
+   },
+   {
+    "type": "LagBug/XProtect/code",
+    "file": "006.png",
+    "gold": "iHujh1",
+    "pred": "nhd",
+    "pred_norm": "nhd",
+    "cer": 0.8333333333333334
+   },
+   {
+    "type": "LagBug/XProtect/code",
+    "file": "007.png",
+    "gold": "PMTNhr",
+    "pred": "rmPNw",
+    "pred_norm": "rmPNw",
+    "cer": 0.8333333333333334
+   },
+   {
+    "type": "LagBug/XProtect/code",
+    "file": "008.png",
+    "gold": "xaPDZQ",
+    "pred": "xaFRa",
+    "pred_norm": "xaFRa",
+    "cer": 0.6666666666666666
+   },
+   {
+    "type": "LagBug/XProtect/map",
+    "file": "001.png",
+    "gold": "UQ7M7E",
+    "pred": "vxwmFy",
+    "pred_norm": "vxwmFy",
+    "cer": 1.0
+   },
+   {
+    "type": "LagBug/XProtect/map",
+    "file": "002.png",
+    "gold": "kY77Ir",
+    "pred": "x",
+    "pred_norm": "x",
+    "cer": 1.0
+   },
+   {
+    "type": "LagBug/XProtect/map",
+    "file": "003.png",
+    "gold": "LQWwqN",
+    "pred": "RwxaB",
+    "pred_norm": "RwxaB",
+    "cer": 1.0
+   },
+   {
+    "type": "LagBug/XProtect/map",
+    "file": "004.png",
+    "gold": "NU4RPm",
+    "pred": "uXYYmJ",
+    "pred_norm": "uXYYmJ",
+    "cer": 1.0
+   },
+   {
+    "type": "LagBug/XProtect/map",
+    "file": "005.png",
+    "gold": "w4dFBo",
+    "pred": "warL",
+    "pred_norm": "warL",
+    "cer": 0.8333333333333334
+   },
+   {
+    "type": "LagBug/XProtect/map",
+    "file": "006.png",
+    "gold": "xkBPln",
+    "pred": "kdehR",
+    "pred_norm": "kdehR",
+    "cer": 0.8333333333333334
+   },
+   {
+    "type": "LagBug/XProtect/map",
+    "file": "007.png",
+    "gold": "uM49qy",
+    "pred": "xKE3a",
+    "pred_norm": "xKE3a",
+    "cer": 1.0
+   },
+   {
+    "type": "LagBug/XProtect/map",
+    "file": "008.png",
+    "gold": "mhoU65",
+    "pred": "XKUaeJ",
+    "pred_norm": "XKUaeJ",
+    "cer": 1.0
+   },
+   {
+    "type": "irootdev/AnBot/captcha",
+    "file": "001.png",
+    "gold": "eth",
+    "pred": "Pzrz",
+    "pred_norm": "Pzrz",
+    "cer": 1.3333333333333333
+   },
+   {
+    "type": "irootdev/AnBot/captcha",
+    "file": "002.png",
+    "gold": "120",
+    "pred": "7ze",
+    "pred_norm": "7ze",
+    "cer": 1.0
+   },
+   {
+    "type": "irootdev/AnBot/captcha",
+    "file": "003.png",
+    "gold": "4ai",
+    "pred": "aar",
+    "pred_norm": "aar",
+    "cer": 0.6666666666666666
+   },
+   {
+    "type": "irootdev/AnBot/captcha",
+    "file": "004.png",
+    "gold": "950",
+    "pred": "sss",
+    "pred_norm": "sss",
+    "cer": 1.0
+   },
+   {
+    "type": "irootdev/AnBot/captcha",
+    "file": "005.png",
+    "gold": "3v1",
+    "pred": "srx7",
+    "pred_norm": "srx7",
+    "cer": 1.3333333333333333
+   },
+   {
+    "type": "irootdev/AnBot/captcha",
+    "file": "006.png",
+    "gold": "861",
+    "pred": "ss7",
+    "pred_norm": "ss7",
+    "cer": 1.0
+   },
+   {
+    "type": "irootdev/AnBot/captcha",
+    "file": "007.png",
+    "gold": "7ph",
+    "pred": "zRz",
+    "pred_norm": "zRz",
+    "cer": 1.0
+   },
+   {
+    "type": "irootdev/AnBot/captcha",
+    "file": "008.png",
+    "gold": "904",
+    "pred": "sea",
+    "pred_norm": "sea",
+    "cer": 1.0
+   },
+   {
+    "type": "jonesdevelopment/sonar/standard",
+    "file": "001.png",
+    "gold": "xszn",
+    "pred": "cezcZ7z",
+    "pred_norm": "cezcZ7z",
+    "cer": 1.5
+   },
+   {
+    "type": "jonesdevelopment/sonar/standard",
+    "file": "002.png",
+    "gold": "cedo",
+    "pred": "sgF2",
+    "pred_norm": "sgF2",
+    "cer": 1.0
+   },
+   {
+    "type": "jonesdevelopment/sonar/standard",
+    "file": "003.png",
+    "gold": "cpso",
+    "pred": "czDriZ",
+    "pred_norm": "czDriZ",
+    "cer": 1.25
+   },
+   {
+    "type": "jonesdevelopment/sonar/standard",
+    "file": "004.png",
+    "gold": "ecxx",
+    "pred": "x2xZS",
+    "pred_norm": "x2xZS",
+    "cer": 1.0
+   },
+   {
+    "type": "jonesdevelopment/sonar/standard",
+    "file": "005.png",
+    "gold": "zxd",
+    "pred": "z5zFcZ",
+    "pred_norm": "z5zFcZ",
+    "cer": 1.6666666666666667
+   },
+   {
+    "type": "jonesdevelopment/sonar/standard",
+    "file": "006.png",
+    "gold": "bytk",
+    "pred": "zPxQp",
+    "pred_norm": "zPxQp",
+    "cer": 1.25
+   },
+   {
+    "type": "jonesdevelopment/sonar/standard",
+    "file": "007.png",
+    "gold": "xnbe",
+    "pred": "xQPOD",
+    "pred_norm": "xQPOD",
+    "cer": 1.0
+   },
+   {
+    "type": "jonesdevelopment/sonar/standard",
+    "file": "008.png",
+    "gold": "fru",
+    "pred": "2PXx",
+    "pred_norm": "2PXx",
+    "cer": 1.3333333333333333
+   },
+   {
+    "type": "jSdCool/minecaptcha/text",
+    "file": "001.png",
+    "gold": "rAcPvyD9",
+    "pred": "8",
+    "pred_norm": "8",
+    "cer": 1.0
+   },
+   {
+    "type": "jSdCool/minecaptcha/text",
+    "file": "002.png",
+    "gold": "GyMpp7rM",
+    "pred": "82",
+    "pred_norm": "82",
+    "cer": 1.0
+   },
+   {
+    "type": "jSdCool/minecaptcha/text",
+    "file": "003.png",
+    "gold": "CiGNsKDl",
+    "pred": "Z",
+    "pred_norm": "Z",
+    "cer": 1.0
+   },
+   {
+    "type": "jSdCool/minecaptcha/text",
+    "file": "004.png",
+    "gold": "BuLwCaj1",
+    "pred": "IQX",
+    "pred_norm": "IQX",
+    "cer": 1.0
+   },
+   {
+    "type": "jSdCool/minecaptcha/text",
+    "file": "005.png",
+    "gold": "BEOYiqP4",
+    "pred": "Z",
+    "pred_norm": "Z",
+    "cer": 1.0
+   },
+   {
+    "type": "jSdCool/minecaptcha/text",
+    "file": "006.png",
+    "gold": "kWvjx3vo",
+    "pred": "K",
+    "pred_norm": "K",
+    "cer": 1.0
+   },
+   {
+    "type": "jSdCool/minecaptcha/text",
+    "file": "007.png",
+    "gold": "K0XYe9ho",
+    "pred": "",
+    "pred_norm": "",
+    "cer": 1.0
+   },
+   {
+    "type": "jSdCool/minecaptcha/text",
+    "file": "008.png",
+    "gold": "l2d4VVMu",
+    "pred": "x",
+    "pred_norm": "x",
+    "cer": 1.0
+   },
+   {
+    "type": "just-captcha/ProstoCaptcha/map",
+    "file": "001.png",
+    "gold": "TzYJAP",
+    "pred": "CxxOAS",
+    "pred_norm": "CxxOAS",
+    "cer": 0.8333333333333334
+   },
+   {
+    "type": "just-captcha/ProstoCaptcha/map",
+    "file": "002.png",
+    "gold": "UXaR3n",
+    "pred": "n3x",
+    "pred_norm": "n3x",
+    "cer": 0.8333333333333334
+   },
+   {
+    "type": "just-captcha/ProstoCaptcha/map",
+    "file": "003.png",
+    "gold": "X2M9Qd",
+    "pred": "3EeQbQa",
+    "pred_norm": "3EeQbQa",
+    "cer": 1.0
+   },
+   {
+    "type": "just-captcha/ProstoCaptcha/map",
+    "file": "004.png",
+    "gold": "qPgiWa",
+    "pred": "z5cSz3JvYa",
+    "pred_norm": "z5cSz3JvYa",
+    "cer": 1.5
+   },
+   {
+    "type": "just-captcha/ProstoCaptcha/map",
+    "file": "005.png",
+    "gold": "TprNVz",
+    "pred": "zxxxrzX",
+    "pred_norm": "zxxxrzX",
+    "cer": 1.0
+   },
+   {
+    "type": "just-captcha/ProstoCaptcha/map",
+    "file": "006.png",
+    "gold": "JvadUS",
+    "pred": "5zv5ZnOc",
+    "pred_norm": "5zv5ZnOc",
+    "cer": 1.1666666666666667
+   },
+   {
+    "type": "just-captcha/ProstoCaptcha/map",
+    "file": "007.png",
+    "gold": "D6G3pz",
+    "pred": "Ocox",
+    "pred_norm": "Ocox",
+    "cer": 1.0
+   },
+   {
+    "type": "just-captcha/ProstoCaptcha/map",
+    "file": "008.png",
+    "gold": "a98jB4",
+    "pred": "za3mz",
+    "pred_norm": "za3mz",
+    "cer": 1.0
+   },
+   {
+    "type": "laforetbrut/are-you-sure/code",
+    "file": "001.png",
+    "gold": "BH9K23",
+    "pred": "ZEggL",
+    "pred_norm": "ZEggL",
+    "cer": 1.0
+   },
+   {
+    "type": "laforetbrut/are-you-sure/code",
+    "file": "002.png",
+    "gold": "P4U5SF",
+    "pred": "ZEBgL",
+    "pred_norm": "ZEBgL",
+    "cer": 1.0
+   },
+   {
+    "type": "laforetbrut/are-you-sure/code",
+    "file": "003.png",
+    "gold": "69PEF3",
+    "pred": "EE2gT",
+    "pred_norm": "EE2gT",
+    "cer": 1.0
+   },
+   {
+    "type": "laforetbrut/are-you-sure/code",
+    "file": "004.png",
+    "gold": "HFXK8X",
+    "pred": "g2BL",
+    "pred_norm": "g2BL",
+    "cer": 1.0
+   },
+   {
+    "type": "laforetbrut/are-you-sure/code",
+    "file": "005.png",
+    "gold": "ZYLQ77",
+    "pred": "ZEg2L",
+    "pred_norm": "ZEg2L",
+    "cer": 0.8333333333333334
+   },
+   {
+    "type": "laforetbrut/are-you-sure/code",
+    "file": "006.png",
+    "gold": "22GZWG",
+    "pred": "Zg2gL",
+    "pred_norm": "Zg2gL",
+    "cer": 1.0
+   },
+   {
+    "type": "laforetbrut/are-you-sure/code",
+    "file": "007.png",
+    "gold": "H7CXXM",
+    "pred": "g2RL",
+    "pred_norm": "g2RL",
+    "cer": 1.0
+   },
+   {
+    "type": "laforetbrut/are-you-sure/code",
+    "file": "008.png",
+    "gold": "4UTUPW",
+    "pred": "f2L",
+    "pred_norm": "f2L",
+    "cer": 1.0
+   },
+   {
+    "type": "ringoame196-s-mcPlugin/ReproductionCAPTCHA/map",
+    "file": "001.png",
+    "gold": "855AC",
+    "pred": "bax",
+    "pred_norm": "bax",
+    "cer": 1.0
+   },
+   {
+    "type": "ringoame196-s-mcPlugin/ReproductionCAPTCHA/map",
+    "file": "002.png",
+    "gold": "7F900",
+    "pred": "42566",
+    "pred_norm": "42566",
+    "cer": 1.0
+   },
+   {
+    "type": "ringoame196-s-mcPlugin/ReproductionCAPTCHA/map",
+    "file": "003.png",
+    "gold": "9F8A4",
+    "pred": "nzJ",
+    "pred_norm": "nzJ",
+    "cer": 1.0
+   },
+   {
+    "type": "ringoame196-s-mcPlugin/ReproductionCAPTCHA/map",
+    "file": "004.png",
+    "gold": "883F5",
+    "pred": "zizb",
+    "pred_norm": "zizb",
+    "cer": 1.0
+   },
+   {
+    "type": "ringoame196-s-mcPlugin/ReproductionCAPTCHA/map",
+    "file": "005.png",
+    "gold": "B2CEF",
+    "pred": "wzi",
+    "pred_norm": "wzi",
+    "cer": 1.0
+   },
+   {
+    "type": "ringoame196-s-mcPlugin/ReproductionCAPTCHA/map",
+    "file": "006.png",
+    "gold": "7A703",
+    "pred": "x66i",
+    "pred_norm": "x66i",
+    "cer": 1.0
+   },
+   {
+    "type": "ringoame196-s-mcPlugin/ReproductionCAPTCHA/map",
+    "file": "007.png",
+    "gold": "6F54A",
+    "pred": "bisb",
+    "pred_norm": "bisb",
+    "cer": 1.0
+   },
+   {
+    "type": "ringoame196-s-mcPlugin/ReproductionCAPTCHA/map",
+    "file": "008.png",
+    "gold": "64ADD",
+    "pred": "z54wx",
+    "pred_norm": "z54wx",
+    "cer": 1.0
+   },
+   {
+    "type": "n1zamu/NCaptcha/anvil",
+    "file": "001.png",
+    "gold": "48427",
+    "pred": "y2",
+    "pred_norm": "y2",
+    "cer": 0.8
+   },
+   {
+    "type": "n1zamu/NCaptcha/anvil",
+    "file": "002.png",
+    "gold": "41198",
+    "pred": "y2",
+    "pred_norm": "y2",
+    "cer": 1.0
+   },
+   {
+    "type": "n1zamu/NCaptcha/anvil",
+    "file": "003.png",
+    "gold": "10968",
+    "pred": "y2",
+    "pred_norm": "y2",
+    "cer": 1.0
+   },
+   {
+    "type": "n1zamu/NCaptcha/anvil",
+    "file": "004.png",
+    "gold": "9982",
+    "pred": "y2",
+    "pred_norm": "y2",
+    "cer": 0.75
+   },
+   {
+    "type": "n1zamu/NCaptcha/anvil",
+    "file": "005.png",
+    "gold": "66413",
+    "pred": "y2",
+    "pred_norm": "y2",
+    "cer": 1.0
+   },
+   {
+    "type": "n1zamu/NCaptcha/anvil",
+    "file": "006.png",
+    "gold": "23979",
+    "pred": "y2",
+    "pred_norm": "y2",
+    "cer": 1.0
+   },
+   {
+    "type": "n1zamu/NCaptcha/anvil",
+    "file": "007.png",
+    "gold": "30366",
+    "pred": "y2",
+    "pred_norm": "y2",
+    "cer": 1.0
+   },
+   {
+    "type": "n1zamu/NCaptcha/anvil",
+    "file": "008.png",
+    "gold": "14745",
+    "pred": "y2",
+    "pred_norm": "y2",
+    "cer": 1.0
+   }
+  ],
+  "ok": true,
+  "exact": 0,
+  "n": 104,
+  "accuracy": 0.0,
+  "mean_cer": 1.0115,
+  "seconds": 9.7
+ },
+ "AndresDev/captCHAD [onnx int8]": {
+  "model": "AndresDev/captCHAD [onnx int8]",
+  "preds": [
+   {
+    "type": "Archy-X/Krypton/map",
+    "file": "001.png",
+    "gold": "32891",
+    "pred": "",
+    "pred_norm": "",
+    "cer": 1.0
+   },
+   {
+    "type": "Archy-X/Krypton/map",
+    "file": "002.png",
+    "gold": "CZKmG",
+    "pred": "amwm",
+    "pred_norm": "amwm",
+    "cer": 0.8
+   },
+   {
+    "type": "Archy-X/Krypton/map",
+    "file": "003.png",
+    "gold": "4oBd7",
+    "pred": "",
+    "pred_norm": "",
+    "cer": 1.0
+   },
+   {
+    "type": "Archy-X/Krypton/map",
+    "file": "004.png",
+    "gold": "MEh7h",
+    "pred": "nmzn",
+    "pred_norm": "nmzn",
+    "cer": 1.0
+   },
+   {
+    "type": "Archy-X/Krypton/map",
+    "file": "005.png",
+    "gold": "8v0pN",
+    "pred": "7",
+    "pred_norm": "7",
+    "cer": 1.0
+   },
+   {
+    "type": "Archy-X/Krypton/map",
+    "file": "006.png",
+    "gold": "53zaz",
+    "pred": "",
+    "pred_norm": "",
+    "cer": 1.0
+   },
+   {
+    "type": "Archy-X/Krypton/map",
+    "file": "007.png",
+    "gold": "2Ash2",
+    "pred": "77m",
+    "pred_norm": "77m",
+    "cer": 1.0
+   },
+   {
+    "type": "Archy-X/Krypton/map",
+    "file": "008.png",
+    "gold": "Am07O",
+    "pred": "",
+    "pred_norm": "",
+    "cer": 1.0
+   },
+   {
+    "type": "InstantlyMoist/Captcha/textcaptcha",
+    "file": "001.png",
+    "gold": "pwwol",
+    "pred": "zvxvMc",
+    "pred_norm": "zvxvMc",
+    "cer": 1.2
+   },
+   {
+    "type": "InstantlyMoist/Captcha/textcaptcha",
+    "file": "002.png",
+    "gold": "ocjys",
+    "pred": "ssszz",
+    "pred_norm": "ssszz",
+    "cer": 1.0
+   },
+   {
+    "type": "InstantlyMoist/Captcha/textcaptcha",
+    "file": "003.png",
+    "gold": "gjrfa",
+    "pred": "eYsz",
+    "pred_norm": "eYsz",
+    "cer": 1.0
+   },
+   {
+    "type": "InstantlyMoist/Captcha/textcaptcha",
+    "file": "004.png",
+    "gold": "noxen",
+    "pred": "nsrzn",
+    "pred_norm": "nsrzn",
+    "cer": 0.6
+   },
+   {
+    "type": "InstantlyMoist/Captcha/textcaptcha",
+    "file": "005.png",
+    "gold": "tffdx",
+    "pred": "Ssavx",
+    "pred_norm": "Ssavx",
+    "cer": 0.8
+   },
+   {
+    "type": "InstantlyMoist/Captcha/textcaptcha",
+    "file": "006.png",
+    "gold": "tmyqv",
+    "pred": "znizx",
+    "pred_norm": "znizx",
+    "cer": 1.0
+   },
+   {
+    "type": "InstantlyMoist/Captcha/textcaptcha",
+    "file": "007.png",
+    "gold": "zwjmz",
+    "pred": "xLxsxxx",
+    "pred_norm": "xLxsxxx",
+    "cer": 1.4
+   },
+   {
+    "type": "InstantlyMoist/Captcha/textcaptcha",
+    "file": "008.png",
+    "gold": "fyuqa",
+    "pred": "M2r4ZzF",
+    "pred_norm": "M2r4ZzF",
+    "cer": 1.4
+   },
+   {
+    "type": "JSH32/Minecaptcha/map",
+    "file": "001.png",
+    "gold": "7d0B",
+    "pred": "ZS",
+    "pred_norm": "ZS",
+    "cer": 1.0
+   },
+   {
+    "type": "JSH32/Minecaptcha/map",
+    "file": "002.png",
+    "gold": "BGwq",
+    "pred": "",
+    "pred_norm": "",
+    "cer": 1.0
+   },
+   {
+    "type": "JSH32/Minecaptcha/map",
+    "file": "003.png",
+    "gold": "oYFc",
+    "pred": "",
+    "pred_norm": "",
+    "cer": 1.0
+   },
+   {
+    "type": "JSH32/Minecaptcha/map",
+    "file": "004.png",
+    "gold": "EuFD",
+    "pred": "",
+    "pred_norm": "",
+    "cer": 1.0
+   },
+   {
+    "type": "JSH32/Minecaptcha/map",
+    "file": "005.png",
+    "gold": "LbFd",
+    "pred": "4",
+    "pred_norm": "4",
+    "cer": 1.0
+   },
+   {
+    "type": "JSH32/Minecaptcha/map",
+    "file": "006.png",
+    "gold": "ES09",
+    "pred": "ZXSS",
+    "pred_norm": "ZXSS",
+    "cer": 1.0
+   },
+   {
+    "type": "JSH32/Minecaptcha/map",
+    "file": "007.png",
+    "gold": "76uH",
+    "pred": "Z",
+    "pred_norm": "Z",
+    "cer": 1.0
+   },
+   {
+    "type": "JSH32/Minecaptcha/map",
+    "file": "008.png",
+    "gold": "q8xL",
+    "pred": "2",
+    "pred_norm": "2",
+    "cer": 1.0
+   },
+   {
+    "type": "haq/mapcha/map",
+    "file": "001.png",
+    "gold": "M0Vk",
+    "pred": "Z",
+    "pred_norm": "Z",
+    "cer": 1.0
+   },
+   {
+    "type": "haq/mapcha/map",
+    "file": "002.png",
+    "gold": "IhzG",
+    "pred": "",
+    "pred_norm": "",
+    "cer": 1.0
+   },
+   {
+    "type": "haq/mapcha/map",
+    "file": "003.png",
+    "gold": "1bDH",
+    "pred": "",
+    "pred_norm": "",
+    "cer": 1.0
+   },
+   {
+    "type": "haq/mapcha/map",
+    "file": "004.png",
+    "gold": "NfB3",
+    "pred": "M",
+    "pred_norm": "M",
+    "cer": 1.0
+   },
+   {
+    "type": "haq/mapcha/map",
+    "file": "005.png",
+    "gold": "iePG",
+    "pred": "",
+    "pred_norm": "",
+    "cer": 1.0
+   },
+   {
+    "type": "haq/mapcha/map",
+    "file": "006.png",
+    "gold": "3X3F",
+    "pred": "",
+    "pred_norm": "",
+    "cer": 1.0
+   },
+   {
+    "type": "haq/mapcha/map",
+    "file": "007.png",
+    "gold": "v1ao",
+    "pred": "22",
+    "pred_norm": "22",
+    "cer": 1.0
+   },
+   {
+    "type": "haq/mapcha/map",
+    "file": "008.png",
+    "gold": "875w",
+    "pred": "XZ",
+    "pred_norm": "XZ",
+    "cer": 1.0
+   },
+   {
+    "type": "LagBug/XProtect/code",
+    "file": "001.png",
+    "gold": "bQvHQK",
+    "pred": "reo7y",
+    "pred_norm": "reo7y",
+    "cer": 1.0
+   },
+   {
+    "type": "LagBug/XProtect/code",
+    "file": "002.png",
+    "gold": "3Vd9rD",
+    "pred": "XnR",
+    "pred_norm": "XnR",
+    "cer": 1.0
+   },
+   {
+    "type": "LagBug/XProtect/code",
+    "file": "003.png",
+    "gold": "7ynZO6",
+    "pred": "xKoa",
+    "pred_norm": "xKoa",
+    "cer": 1.0
+   },
+   {
+    "type": "LagBug/XProtect/code",
+    "file": "004.png",
+    "gold": "Jv02Ic",
+    "pred": "vsSrg",
+    "pred_norm": "vsSrg",
+    "cer": 0.8333333333333334
+   },
+   {
+    "type": "LagBug/XProtect/code",
+    "file": "005.png",
+    "gold": "t9Fqcc",
+    "pred": "xRxa7",
+    "pred_norm": "xRxa7",
+    "cer": 1.0
+   },
+   {
+    "type": "LagBug/XProtect/code",
+    "file": "006.png",
+    "gold": "iHujh1",
+    "pred": "nqShQ",
+    "pred_norm": "nqShQ",
+    "cer": 0.8333333333333334
+   },
+   {
+    "type": "LagBug/XProtect/code",
+    "file": "007.png",
+    "gold": "PMTNhr",
+    "pred": "rwJ",
+    "pred_norm": "rwJ",
+    "cer": 1.0
+   },
+   {
+    "type": "LagBug/XProtect/code",
+    "file": "008.png",
+    "gold": "xaPDZQ",
+    "pred": "xaFRa",
+    "pred_norm": "xaFRa",
+    "cer": 0.6666666666666666
+   },
+   {
+    "type": "LagBug/XProtect/map",
+    "file": "001.png",
+    "gold": "UQ7M7E",
+    "pred": "vwaFy",
+    "pred_norm": "vwaFy",
+    "cer": 1.0
+   },
+   {
+    "type": "LagBug/XProtect/map",
+    "file": "002.png",
+    "gold": "kY77Ir",
+    "pred": "x",
+    "pred_norm": "x",
+    "cer": 1.0
+   },
+   {
+    "type": "LagBug/XProtect/map",
+    "file": "003.png",
+    "gold": "LQWwqN",
+    "pred": "8wxaB",
+    "pred_norm": "8wxaB",
+    "cer": 1.0
+   },
+   {
+    "type": "LagBug/XProtect/map",
+    "file": "004.png",
+    "gold": "NU4RPm",
+    "pred": "uXmJ",
+    "pred_norm": "uXmJ",
+    "cer": 1.0
+   },
+   {
+    "type": "LagBug/XProtect/map",
+    "file": "005.png",
+    "gold": "w4dFBo",
+    "pred": "war",
+    "pred_norm": "war",
+    "cer": 0.8333333333333334
+   },
+   {
+    "type": "LagBug/XProtect/map",
+    "file": "006.png",
+    "gold": "xkBPln",
+    "pred": "kEh",
+    "pred_norm": "kEh",
+    "cer": 0.8333333333333334
+   },
+   {
+    "type": "LagBug/XProtect/map",
+    "file": "007.png",
+    "gold": "uM49qy",
+    "pred": "xKEgaX",
+    "pred_norm": "xKEgaX",
+    "cer": 1.0
+   },
+   {
+    "type": "LagBug/XProtect/map",
+    "file": "008.png",
+    "gold": "mhoU65",
+    "pred": "OxeJ",
+    "pred_norm": "OxeJ",
+    "cer": 1.0
+   },
+   {
+    "type": "irootdev/AnBot/captcha",
+    "file": "001.png",
+    "gold": "eth",
+    "pred": "Pz4z",
+    "pred_norm": "Pz4z",
+    "cer": 1.3333333333333333
+   },
+   {
+    "type": "irootdev/AnBot/captcha",
+    "file": "002.png",
+    "gold": "120",
+    "pred": "7ze",
+    "pred_norm": "7ze",
+    "cer": 1.0
+   },
+   {
+    "type": "irootdev/AnBot/captcha",
+    "file": "003.png",
+    "gold": "4ai",
+    "pred": "aer",
+    "pred_norm": "aer",
+    "cer": 1.0
+   },
+   {
+    "type": "irootdev/AnBot/captcha",
+    "file": "004.png",
+    "gold": "950",
+    "pred": "sss",
+    "pred_norm": "sss",
+    "cer": 1.0
+   },
+   {
+    "type": "irootdev/AnBot/captcha",
+    "file": "005.png",
+    "gold": "3v1",
+    "pred": "zrx7",
+    "pred_norm": "zrx7",
+    "cer": 1.3333333333333333
+   },
+   {
+    "type": "irootdev/AnBot/captcha",
+    "file": "006.png",
+    "gold": "861",
+    "pred": "ss1",
+    "pred_norm": "ss1",
+    "cer": 0.6666666666666666
+   },
+   {
+    "type": "irootdev/AnBot/captcha",
+    "file": "007.png",
+    "gold": "7ph",
+    "pred": "7Pz",
+    "pred_norm": "7Pz",
+    "cer": 0.6666666666666666
+   },
+   {
+    "type": "irootdev/AnBot/captcha",
+    "file": "008.png",
+    "gold": "904",
+    "pred": "sea",
+    "pred_norm": "sea",
+    "cer": 1.0
+   },
+   {
+    "type": "jonesdevelopment/sonar/standard",
+    "file": "001.png",
+    "gold": "xszn",
+    "pred": "xFzX7z",
+    "pred_norm": "xFzX7z",
+    "cer": 1.0
+   },
+   {
+    "type": "jonesdevelopment/sonar/standard",
+    "file": "002.png",
+    "gold": "cedo",
+    "pred": "sg2",
+    "pred_norm": "sg2",
+    "cer": 1.0
+   },
+   {
+    "type": "jonesdevelopment/sonar/standard",
+    "file": "003.png",
+    "gold": "cpso",
+    "pred": "zDriZ",
+    "pred_norm": "zDriZ",
+    "cer": 1.25
+   },
+   {
+    "type": "jonesdevelopment/sonar/standard",
+    "file": "004.png",
+    "gold": "ecxx",
+    "pred": "xzexZS",
+    "pred_norm": "xzexZS",
+    "cer": 1.25
+   },
+   {
+    "type": "jonesdevelopment/sonar/standard",
+    "file": "005.png",
+    "gold": "zxd",
+    "pred": "z5zFcZ",
+    "pred_norm": "z5zFcZ",
+    "cer": 1.6666666666666667
+   },
+   {
+    "type": "jonesdevelopment/sonar/standard",
+    "file": "006.png",
+    "gold": "bytk",
+    "pred": "PQpg",
+    "pred_norm": "PQpg",
+    "cer": 1.0
+   },
+   {
+    "type": "jonesdevelopment/sonar/standard",
+    "file": "007.png",
+    "gold": "xnbe",
+    "pred": "xQOD",
+    "pred_norm": "xQOD",
+    "cer": 0.75
+   },
+   {
+    "type": "jonesdevelopment/sonar/standard",
+    "file": "008.png",
+    "gold": "fru",
+    "pred": "PX5",
+    "pred_norm": "PX5",
+    "cer": 1.0
+   },
+   {
+    "type": "jSdCool/minecaptcha/text",
+    "file": "001.png",
+    "gold": "rAcPvyD9",
+    "pred": "R",
+    "pred_norm": "R",
+    "cer": 1.0
+   },
+   {
+    "type": "jSdCool/minecaptcha/text",
+    "file": "002.png",
+    "gold": "GyMpp7rM",
+    "pred": "",
+    "pred_norm": "",
+    "cer": 1.0
+   },
+   {
+    "type": "jSdCool/minecaptcha/text",
+    "file": "003.png",
+    "gold": "CiGNsKDl",
+    "pred": "FZ",
+    "pred_norm": "FZ",
+    "cer": 1.0
+   },
+   {
+    "type": "jSdCool/minecaptcha/text",
+    "file": "004.png",
+    "gold": "BuLwCaj1",
+    "pred": "X",
+    "pred_norm": "X",
+    "cer": 1.0
+   },
+   {
+    "type": "jSdCool/minecaptcha/text",
+    "file": "005.png",
+    "gold": "BEOYiqP4",
+    "pred": "Z",
+    "pred_norm": "Z",
+    "cer": 1.0
+   },
+   {
+    "type": "jSdCool/minecaptcha/text",
+    "file": "006.png",
+    "gold": "kWvjx3vo",
+    "pred": "K",
+    "pred_norm": "K",
+    "cer": 1.0
+   },
+   {
+    "type": "jSdCool/minecaptcha/text",
+    "file": "007.png",
+    "gold": "K0XYe9ho",
+    "pred": "F",
+    "pred_norm": "F",
+    "cer": 1.0
+   },
+   {
+    "type": "jSdCool/minecaptcha/text",
+    "file": "008.png",
+    "gold": "l2d4VVMu",
+    "pred": "",
+    "pred_norm": "",
+    "cer": 1.0
+   },
+   {
+    "type": "just-captcha/ProstoCaptcha/map",
+    "file": "001.png",
+    "gold": "TzYJAP",
+    "pred": "Cxx3A",
+    "pred_norm": "Cxx3A",
+    "cer": 0.8333333333333334
+   },
+   {
+    "type": "just-captcha/ProstoCaptcha/map",
+    "file": "002.png",
+    "gold": "UXaR3n",
+    "pred": "n3x",
+    "pred_norm": "n3x",
+    "cer": 0.8333333333333334
+   },
+   {
+    "type": "just-captcha/ProstoCaptcha/map",
+    "file": "003.png",
+    "gold": "X2M9Qd",
+    "pred": "XeQPaa",
+    "pred_norm": "XeQPaa",
+    "cer": 0.8333333333333334
+   },
+   {
+    "type": "just-captcha/ProstoCaptcha/map",
+    "file": "004.png",
+    "gold": "qPgiWa",
+    "pred": "5cSz3JYa",
+    "pred_norm": "5cSz3JYa",
+    "cer": 1.1666666666666667
+   },
+   {
+    "type": "just-captcha/ProstoCaptcha/map",
+    "file": "005.png",
+    "gold": "TprNVz",
+    "pred": "zxxxzxX",
+    "pred_norm": "zxxxzxX",
+    "cer": 1.1666666666666667
+   },
+   {
+    "type": "just-captcha/ProstoCaptcha/map",
+    "file": "006.png",
+    "gold": "JvadUS",
+    "pred": "5v3POc",
+    "pred_norm": "5v3POc",
+    "cer": 0.8333333333333334
+   },
+   {
+    "type": "just-captcha/ProstoCaptcha/map",
+    "file": "007.png",
+    "gold": "D6G3pz",
+    "pred": "Oc83x",
+    "pred_norm": "Oc83x",
+    "cer": 0.8333333333333334
+   },
+   {
+    "type": "just-captcha/ProstoCaptcha/map",
+    "file": "008.png",
+    "gold": "a98jB4",
+    "pred": "z5mz",
+    "pred_norm": "z5mz",
+    "cer": 1.0
+   },
+   {
+    "type": "laforetbrut/are-you-sure/code",
+    "file": "001.png",
+    "gold": "BH9K23",
+    "pred": "ZE2EL",
+    "pred_norm": "ZE2EL",
+    "cer": 1.0
+   },
+   {
+    "type": "laforetbrut/are-you-sure/code",
+    "file": "002.png",
+    "gold": "P4U5SF",
+    "pred": "ZEZgL",
+    "pred_norm": "ZEZgL",
+    "cer": 1.0
+   },
+   {
+    "type": "laforetbrut/are-you-sure/code",
+    "file": "003.png",
+    "gold": "69PEF3",
+    "pred": "ZE2gZL",
+    "pred_norm": "ZE2gZL",
+    "cer": 1.0
+   },
+   {
+    "type": "laforetbrut/are-you-sure/code",
+    "file": "004.png",
+    "gold": "HFXK8X",
+    "pred": "r2HL",
+    "pred_norm": "r2HL",
+    "cer": 1.0
+   },
+   {
+    "type": "laforetbrut/are-you-sure/code",
+    "file": "005.png",
+    "gold": "ZYLQ77",
+    "pred": "ZEZL",
+    "pred_norm": "ZEZL",
+    "cer": 0.8333333333333334
+   },
+   {
+    "type": "laforetbrut/are-you-sure/code",
+    "file": "006.png",
+    "gold": "22GZWG",
+    "pred": "Zg2gL",
+    "pred_norm": "Zg2gL",
+    "cer": 1.0
+   },
+   {
+    "type": "laforetbrut/are-you-sure/code",
+    "file": "007.png",
+    "gold": "H7CXXM",
+    "pred": "g2L",
+    "pred_norm": "g2L",
+    "cer": 1.0
+   },
+   {
+    "type": "laforetbrut/are-you-sure/code",
+    "file": "008.png",
+    "gold": "4UTUPW",
+    "pred": "z2L",
+    "pred_norm": "z2L",
+    "cer": 1.0
+   },
+   {
+    "type": "ringoame196-s-mcPlugin/ReproductionCAPTCHA/map",
+    "file": "001.png",
+    "gold": "855AC",
+    "pred": "bax",
+    "pred_norm": "bax",
+    "cer": 1.0
+   },
+   {
+    "type": "ringoame196-s-mcPlugin/ReproductionCAPTCHA/map",
+    "file": "002.png",
+    "gold": "7F900",
+    "pred": "4Lb6",
+    "pred_norm": "4Lb6",
+    "cer": 1.0
+   },
+   {
+    "type": "ringoame196-s-mcPlugin/ReproductionCAPTCHA/map",
+    "file": "003.png",
+    "gold": "9F8A4",
+    "pred": "nz4",
+    "pred_norm": "nz4",
+    "cer": 0.8
+   },
+   {
+    "type": "ringoame196-s-mcPlugin/ReproductionCAPTCHA/map",
+    "file": "004.png",
+    "gold": "883F5",
+    "pred": "zib",
+    "pred_norm": "zib",
+    "cer": 1.0
+   },
+   {
+    "type": "ringoame196-s-mcPlugin/ReproductionCAPTCHA/map",
+    "file": "005.png",
+    "gold": "B2CEF",
+    "pred": "mzi",
+    "pred_norm": "mzi",
+    "cer": 1.0
+   },
+   {
+    "type": "ringoame196-s-mcPlugin/ReproductionCAPTCHA/map",
+    "file": "006.png",
+    "gold": "7A703",
+    "pred": "x56i",
+    "pred_norm": "x56i",
+    "cer": 1.0
+   },
+   {
+    "type": "ringoame196-s-mcPlugin/ReproductionCAPTCHA/map",
+    "file": "007.png",
+    "gold": "6F54A",
+    "pred": "isJ",
+    "pred_norm": "isJ",
+    "cer": 1.0
+   },
+   {
+    "type": "ringoame196-s-mcPlugin/ReproductionCAPTCHA/map",
+    "file": "008.png",
+    "gold": "64ADD",
+    "pred": "z54wx",
+    "pred_norm": "z54wx",
+    "cer": 1.0
+   },
+   {
+    "type": "n1zamu/NCaptcha/anvil",
+    "file": "001.png",
+    "gold": "48427",
+    "pred": "2",
+    "pred_norm": "2",
+    "cer": 0.8
+   },
+   {
+    "type": "n1zamu/NCaptcha/anvil",
+    "file": "002.png",
+    "gold": "41198",
+    "pred": "2",
+    "pred_norm": "2",
+    "cer": 1.0
+   },
+   {
+    "type": "n1zamu/NCaptcha/anvil",
+    "file": "003.png",
+    "gold": "10968",
+    "pred": "2",
+    "pred_norm": "2",
+    "cer": 1.0
+   },
+   {
+    "type": "n1zamu/NCaptcha/anvil",
+    "file": "004.png",
+    "gold": "9982",
+    "pred": "2",
+    "pred_norm": "2",
+    "cer": 0.75
+   },
+   {
+    "type": "n1zamu/NCaptcha/anvil",
+    "file": "005.png",
+    "gold": "66413",
+    "pred": "2",
+    "pred_norm": "2",
+    "cer": 1.0
+   },
+   {
+    "type": "n1zamu/NCaptcha/anvil",
+    "file": "006.png",
+    "gold": "23979",
+    "pred": "2",
+    "pred_norm": "2",
+    "cer": 0.8
+   },
+   {
+    "type": "n1zamu/NCaptcha/anvil",
+    "file": "007.png",
+    "gold": "30366",
+    "pred": "2",
+    "pred_norm": "2",
+    "cer": 1.0
+   },
+   {
+    "type": "n1zamu/NCaptcha/anvil",
+    "file": "008.png",
+    "gold": "14745",
+    "pred": "2",
+    "pred_norm": "2",
+    "cer": 1.0
+   }
+  ],
+  "ok": true,
+  "exact": 0,
+  "n": 104,
+  "accuracy": 0.0,
+  "mean_cer": 0.9865,
+  "seconds": 3.9
+ },
+ "FlanChanXwO/phpwind-captcha-ocr [onnx]": {
+  "model": "FlanChanXwO/phpwind-captcha-ocr [onnx]",
+  "preds": [
+   {
+    "type": "Archy-X/Krypton/map",
+    "file": "001.png",
+    "gold": "32891",
+    "pred": "0100",
+    "pred_norm": "0100",
+    "cer": 1.0
+   },
+   {
+    "type": "Archy-X/Krypton/map",
+    "file": "002.png",
+    "gold": "CZKmG",
+    "pred": "5100",
+    "pred_norm": "5100",
+    "cer": 1.0
+   },
+   {
+    "type": "Archy-X/Krypton/map",
+    "file": "003.png",
+    "gold": "4oBd7",
+    "pred": "0500",
+    "pred_norm": "0500",
+    "cer": 1.0
+   },
+   {
+    "type": "Archy-X/Krypton/map",
+    "file": "004.png",
+    "gold": "MEh7h",
+    "pred": "0500",
+    "pred_norm": "0500",
+    "cer": 1.0
+   },
+   {
+    "type": "Archy-X/Krypton/map",
+    "file": "005.png",
+    "gold": "8v0pN",
+    "pred": "0510",
+    "pred_norm": "0510",
+    "cer": 1.0
+   },
+   {
+    "type": "Archy-X/Krypton/map",
+    "file": "006.png",
+    "gold": "53zaz",
+    "pred": "0100",
+    "pred_norm": "0100",
+    "cer": 1.0
+   },
+   {
+    "type": "Archy-X/Krypton/map",
+    "file": "007.png",
+    "gold": "2Ash2",
+    "pred": "0550",
+    "pred_norm": "0550",
+    "cer": 1.0
+   },
+   {
+    "type": "Archy-X/Krypton/map",
+    "file": "008.png",
+    "gold": "Am07O",
+    "pred": "0500",
+    "pred_norm": "0500",
+    "cer": 0.8
+   },
+   {
+    "type": "InstantlyMoist/Captcha/textcaptcha",
+    "file": "001.png",
+    "gold": "pwwol",
+    "pred": "6000",
+    "pred_norm": "6000",
+    "cer": 1.0
+   },
+   {
+    "type": "InstantlyMoist/Captcha/textcaptcha",
+    "file": "002.png",
+    "gold": "ocjys",
+    "pred": "1116",
+    "pred_norm": "1116",
+    "cer": 1.0
+   },
+   {
+    "type": "InstantlyMoist/Captcha/textcaptcha",
+    "file": "003.png",
+    "gold": "gjrfa",
+    "pred": "6149",
+    "pred_norm": "6149",
+    "cer": 1.0
+   },
+   {
+    "type": "InstantlyMoist/Captcha/textcaptcha",
+    "file": "004.png",
+    "gold": "noxen",
+    "pred": "1111",
+    "pred_norm": "1111",
+    "cer": 1.0
+   },
+   {
+    "type": "InstantlyMoist/Captcha/textcaptcha",
+    "file": "005.png",
+    "gold": "tffdx",
+    "pred": "0111",
+    "pred_norm": "0111",
+    "cer": 1.0
+   },
+   {
+    "type": "InstantlyMoist/Captcha/textcaptcha",
+    "file": "006.png",
+    "gold": "tmyqv",
+    "pred": "0056",
+    "pred_norm": "0056",
+    "cer": 1.0
+   },
+   {
+    "type": "InstantlyMoist/Captcha/textcaptcha",
+    "file": "007.png",
+    "gold": "zwjmz",
+    "pred": "1166",
+    "pred_norm": "1166",
+    "cer": 1.0
+   },
+   {
+    "type": "InstantlyMoist/Captcha/textcaptcha",
+    "file": "008.png",
+    "gold": "fyuqa",
+    "pred": "5570",
+    "pred_norm": "5570",
+    "cer": 1.0
+   },
+   {
+    "type": "JSH32/Minecaptcha/map",
+    "file": "001.png",
+    "gold": "7d0B",
+    "pred": "7711",
+    "pred_norm": "7711",
+    "cer": 0.75
+   },
+   {
+    "type": "JSH32/Minecaptcha/map",
+    "file": "002.png",
+    "gold": "BGwq",
+    "pred": "1121",
+    "pred_norm": "1121",
+    "cer": 1.0
+   },
+   {
+    "type": "JSH32/Minecaptcha/map",
+    "file": "003.png",
+    "gold": "oYFc",
+    "pred": "1126",
+    "pred_norm": "1126",
+    "cer": 1.0
+   },
+   {
+    "type": "JSH32/Minecaptcha/map",
+    "file": "004.png",
+    "gold": "EuFD",
+    "pred": "1111",
+    "pred_norm": "1111",
+    "cer": 1.0
+   },
+   {
+    "type": "JSH32/Minecaptcha/map",
+    "file": "005.png",
+    "gold": "LbFd",
+    "pred": "1111",
+    "pred_norm": "1111",
+    "cer": 1.0
+   },
+   {
+    "type": "JSH32/Minecaptcha/map",
+    "file": "006.png",
+    "gold": "ES09",
+    "pred": "1181",
+    "pred_norm": "1181",
+    "cer": 1.0
+   },
+   {
+    "type": "JSH32/Minecaptcha/map",
+    "file": "007.png",
+    "gold": "76uH",
+    "pred": "7711",
+    "pred_norm": "7711",
+    "cer": 0.75
+   },
+   {
+    "type": "JSH32/Minecaptcha/map",
+    "file": "008.png",
+    "gold": "q8xL",
+    "pred": "1111",
+    "pred_norm": "1111",
+    "cer": 1.0
+   },
+   {
+    "type": "haq/mapcha/map",
+    "file": "001.png",
+    "gold": "M0Vk",
+    "pred": "6829",
+    "pred_norm": "6829",
+    "cer": 1.0
+   },
+   {
+    "type": "haq/mapcha/map",
+    "file": "002.png",
+    "gold": "IhzG",
+    "pred": "6996",
+    "pred_norm": "6996",
+    "cer": 1.0
+   },
+   {
+    "type": "haq/mapcha/map",
+    "file": "003.png",
+    "gold": "1bDH",
+    "pred": "6669",
+    "pred_norm": "6669",
+    "cer": 1.0
+   },
+   {
+    "type": "haq/mapcha/map",
+    "file": "004.png",
+    "gold": "NfB3",
+    "pred": "6969",
+    "pred_norm": "6969",
+    "cer": 1.0
+   },
+   {
+    "type": "haq/mapcha/map",
+    "file": "005.png",
+    "gold": "iePG",
+    "pred": "6969",
+    "pred_norm": "6969",
+    "cer": 1.0
+   },
+   {
+    "type": "haq/mapcha/map",
+    "file": "006.png",
+    "gold": "3X3F",
+    "pred": "6866",
+    "pred_norm": "6866",
+    "cer": 1.0
+   },
+   {
+    "type": "haq/mapcha/map",
+    "file": "007.png",
+    "gold": "v1ao",
+    "pred": "6666",
+    "pred_norm": "6666",
+    "cer": 1.0
+   },
+   {
+    "type": "haq/mapcha/map",
+    "file": "008.png",
+    "gold": "875w",
+    "pred": "6962",
+    "pred_norm": "6962",
+    "cer": 1.0
+   },
+   {
+    "type": "LagBug/XProtect/code",
+    "file": "001.png",
+    "gold": "bQvHQK",
+    "pred": "1611",
+    "pred_norm": "1611",
+    "cer": 1.0
+   },
+   {
+    "type": "LagBug/XProtect/code",
+    "file": "002.png",
+    "gold": "3Vd9rD",
+    "pred": "6116",
+    "pred_norm": "6116",
+    "cer": 1.0
+   },
+   {
+    "type": "LagBug/XProtect/code",
+    "file": "003.png",
+    "gold": "7ynZO6",
+    "pred": "6610",
+    "pred_norm": "6610",
+    "cer": 1.0
+   },
+   {
+    "type": "LagBug/XProtect/code",
+    "file": "004.png",
+    "gold": "Jv02Ic",
+    "pred": "6611",
+    "pred_norm": "6611",
+    "cer": 1.0
+   },
+   {
+    "type": "LagBug/XProtect/code",
+    "file": "005.png",
+    "gold": "t9Fqcc",
+    "pred": "4156",
+    "pred_norm": "4156",
+    "cer": 1.0
+   },
+   {
+    "type": "LagBug/XProtect/code",
+    "file": "006.png",
+    "gold": "iHujh1",
+    "pred": "1151",
+    "pred_norm": "1151",
+    "cer": 0.8333333333333334
+   },
+   {
+    "type": "LagBug/XProtect/code",
+    "file": "007.png",
+    "gold": "PMTNhr",
+    "pred": "6116",
+    "pred_norm": "6116",
+    "cer": 1.0
+   },
+   {
+    "type": "LagBug/XProtect/code",
+    "file": "008.png",
+    "gold": "xaPDZQ",
+    "pred": "6711",
+    "pred_norm": "6711",
+    "cer": 1.0
+   },
+   {
+    "type": "LagBug/XProtect/map",
+    "file": "001.png",
+    "gold": "UQ7M7E",
+    "pred": "1610",
+    "pred_norm": "1610",
+    "cer": 1.0
+   },
+   {
+    "type": "LagBug/XProtect/map",
+    "file": "002.png",
+    "gold": "kY77Ir",
+    "pred": "1160",
+    "pred_norm": "1160",
+    "cer": 1.0
+   },
+   {
+    "type": "LagBug/XProtect/map",
+    "file": "003.png",
+    "gold": "LQWwqN",
+    "pred": "1160",
+    "pred_norm": "1160",
+    "cer": 1.0
+   },
+   {
+    "type": "LagBug/XProtect/map",
+    "file": "004.png",
+    "gold": "NU4RPm",
+    "pred": "1111",
+    "pred_norm": "1111",
+    "cer": 1.0
+   },
+   {
+    "type": "LagBug/XProtect/map",
+    "file": "005.png",
+    "gold": "w4dFBo",
+    "pred": "6161",
+    "pred_norm": "6161",
+    "cer": 1.0
+   },
+   {
+    "type": "LagBug/XProtect/map",
+    "file": "006.png",
+    "gold": "xkBPln",
+    "pred": "6111",
+    "pred_norm": "6111",
+    "cer": 1.0
+   },
+   {
+    "type": "LagBug/XProtect/map",
+    "file": "007.png",
+    "gold": "uM49qy",
+    "pred": "1166",
+    "pred_norm": "1166",
+    "cer": 1.0
+   },
+   {
+    "type": "LagBug/XProtect/map",
+    "file": "008.png",
+    "gold": "mhoU65",
+    "pred": "0110",
+    "pred_norm": "0110",
+    "cer": 1.0
+   },
+   {
+    "type": "irootdev/AnBot/captcha",
+    "file": "001.png",
+    "gold": "eth",
+    "pred": "7700",
+    "pred_norm": "7700",
+    "cer": 1.3333333333333333
+   },
+   {
+    "type": "irootdev/AnBot/captcha",
+    "file": "002.png",
+    "gold": "120",
+    "pred": "1110",
+    "pred_norm": "1110",
+    "cer": 0.6666666666666666
+   },
+   {
+    "type": "irootdev/AnBot/captcha",
+    "file": "003.png",
+    "gold": "4ai",
+    "pred": "1100",
+    "pred_norm": "1100",
+    "cer": 1.3333333333333333
+   },
+   {
+    "type": "irootdev/AnBot/captcha",
+    "file": "004.png",
+    "gold": "950",
+    "pred": "0000",
+    "pred_norm": "0000",
+    "cer": 1.0
+   },
+   {
+    "type": "irootdev/AnBot/captcha",
+    "file": "005.png",
+    "gold": "3v1",
+    "pred": "1100",
+    "pred_norm": "1100",
+    "cer": 1.3333333333333333
+   },
+   {
+    "type": "irootdev/AnBot/captcha",
+    "file": "006.png",
+    "gold": "861",
+    "pred": "1100",
+    "pred_norm": "1100",
+    "cer": 1.3333333333333333
+   },
+   {
+    "type": "irootdev/AnBot/captcha",
+    "file": "007.png",
+    "gold": "7ph",
+    "pred": "0000",
+    "pred_norm": "0000",
+    "cer": 1.3333333333333333
+   },
+   {
+    "type": "irootdev/AnBot/captcha",
+    "file": "008.png",
+    "gold": "904",
+    "pred": "1100",
+    "pred_norm": "1100",
+    "cer": 1.0
+   },
+   {
+    "type": "jonesdevelopment/sonar/standard",
+    "file": "001.png",
+    "gold": "xszn",
+    "pred": "6666",
+    "pred_norm": "6666",
+    "cer": 1.0
+   },
+   {
+    "type": "jonesdevelopment/sonar/standard",
+    "file": "002.png",
+    "gold": "cedo",
+    "pred": "6666",
+    "pred_norm": "6666",
+    "cer": 1.0
+   },
+   {
+    "type": "jonesdevelopment/sonar/standard",
+    "file": "003.png",
+    "gold": "cpso",
+    "pred": "6666",
+    "pred_norm": "6666",
+    "cer": 1.0
+   },
+   {
+    "type": "jonesdevelopment/sonar/standard",
+    "file": "004.png",
+    "gold": "ecxx",
+    "pred": "6666",
+    "pred_norm": "6666",
+    "cer": 1.0
+   },
+   {
+    "type": "jonesdevelopment/sonar/standard",
+    "file": "005.png",
+    "gold": "zxd",
+    "pred": "6662",
+    "pred_norm": "6662",
+    "cer": 1.3333333333333333
+   },
+   {
+    "type": "jonesdevelopment/sonar/standard",
+    "file": "006.png",
+    "gold": "bytk",
+    "pred": "6666",
+    "pred_norm": "6666",
+    "cer": 1.0
+   },
+   {
+    "type": "jonesdevelopment/sonar/standard",
+    "file": "007.png",
+    "gold": "xnbe",
+    "pred": "6669",
+    "pred_norm": "6669",
+    "cer": 1.0
+   },
+   {
+    "type": "jonesdevelopment/sonar/standard",
+    "file": "008.png",
+    "gold": "fru",
+    "pred": "6666",
+    "pred_norm": "6666",
+    "cer": 1.3333333333333333
+   },
+   {
+    "type": "jSdCool/minecaptcha/text",
+    "file": "001.png",
+    "gold": "rAcPvyD9",
+    "pred": "6566",
+    "pred_norm": "6566",
+    "cer": 1.0
+   },
+   {
+    "type": "jSdCool/minecaptcha/text",
+    "file": "002.png",
+    "gold": "GyMpp7rM",
+    "pred": "6566",
+    "pred_norm": "6566",
+    "cer": 1.0
+   },
+   {
+    "type": "jSdCool/minecaptcha/text",
+    "file": "003.png",
+    "gold": "CiGNsKDl",
+    "pred": "6566",
+    "pred_norm": "6566",
+    "cer": 1.0
+   },
+   {
+    "type": "jSdCool/minecaptcha/text",
+    "file": "004.png",
+    "gold": "BuLwCaj1",
+    "pred": "6566",
+    "pred_norm": "6566",
+    "cer": 1.0
+   },
+   {
+    "type": "jSdCool/minecaptcha/text",
+    "file": "005.png",
+    "gold": "BEOYiqP4",
+    "pred": "6566",
+    "pred_norm": "6566",
+    "cer": 1.0
+   },
+   {
+    "type": "jSdCool/minecaptcha/text",
+    "file": "006.png",
+    "gold": "kWvjx3vo",
+    "pred": "6566",
+    "pred_norm": "6566",
+    "cer": 1.0
+   },
+   {
+    "type": "jSdCool/minecaptcha/text",
+    "file": "007.png",
+    "gold": "K0XYe9ho",
+    "pred": "6566",
+    "pred_norm": "6566",
+    "cer": 1.0
+   },
+   {
+    "type": "jSdCool/minecaptcha/text",
+    "file": "008.png",
+    "gold": "l2d4VVMu",
+    "pred": "6566",
+    "pred_norm": "6566",
+    "cer": 1.0
+   },
+   {
+    "type": "just-captcha/ProstoCaptcha/map",
+    "file": "001.png",
+    "gold": "TzYJAP",
+    "pred": "6666",
+    "pred_norm": "6666",
+    "cer": 1.0
+   },
+   {
+    "type": "just-captcha/ProstoCaptcha/map",
+    "file": "002.png",
+    "gold": "UXaR3n",
+    "pred": "0000",
+    "pred_norm": "0000",
+    "cer": 1.0
+   },
+   {
+    "type": "just-captcha/ProstoCaptcha/map",
+    "file": "003.png",
+    "gold": "X2M9Qd",
+    "pred": "6666",
+    "pred_norm": "6666",
+    "cer": 1.0
+   },
+   {
+    "type": "just-captcha/ProstoCaptcha/map",
+    "file": "004.png",
+    "gold": "qPgiWa",
+    "pred": "5666",
+    "pred_norm": "5666",
+    "cer": 1.0
+   },
+   {
+    "type": "just-captcha/ProstoCaptcha/map",
+    "file": "005.png",
+    "gold": "TprNVz",
+    "pred": "5606",
+    "pred_norm": "5606",
+    "cer": 1.0
+   },
+   {
+    "type": "just-captcha/ProstoCaptcha/map",
+    "file": "006.png",
+    "gold": "JvadUS",
+    "pred": "6606",
+    "pred_norm": "6606",
+    "cer": 1.0
+   },
+   {
+    "type": "just-captcha/ProstoCaptcha/map",
+    "file": "007.png",
+    "gold": "D6G3pz",
+    "pred": "6666",
+    "pred_norm": "6666",
+    "cer": 0.8333333333333334
+   },
+   {
+    "type": "just-captcha/ProstoCaptcha/map",
+    "file": "008.png",
+    "gold": "a98jB4",
+    "pred": "5666",
+    "pred_norm": "5666",
+    "cer": 1.0
+   },
+   {
+    "type": "laforetbrut/are-you-sure/code",
+    "file": "001.png",
+    "gold": "BH9K23",
+    "pred": "6566",
+    "pred_norm": "6566",
+    "cer": 1.0
+   },
+   {
+    "type": "laforetbrut/are-you-sure/code",
+    "file": "002.png",
+    "gold": "P4U5SF",
+    "pred": "6666",
+    "pred_norm": "6666",
+    "cer": 1.0
+   },
+   {
+    "type": "laforetbrut/are-you-sure/code",
+    "file": "003.png",
+    "gold": "69PEF3",
+    "pred": "6566",
+    "pred_norm": "6566",
+    "cer": 0.8333333333333334
+   },
+   {
+    "type": "laforetbrut/are-you-sure/code",
+    "file": "004.png",
+    "gold": "HFXK8X",
+    "pred": "6566",
+    "pred_norm": "6566",
+    "cer": 1.0
+   },
+   {
+    "type": "laforetbrut/are-you-sure/code",
+    "file": "005.png",
+    "gold": "ZYLQ77",
+    "pred": "6566",
+    "pred_norm": "6566",
+    "cer": 1.0
+   },
+   {
+    "type": "laforetbrut/are-you-sure/code",
+    "file": "006.png",
+    "gold": "22GZWG",
+    "pred": "6566",
+    "pred_norm": "6566",
+    "cer": 1.0
+   },
+   {
+    "type": "laforetbrut/are-you-sure/code",
+    "file": "007.png",
+    "gold": "H7CXXM",
+    "pred": "6566",
+    "pred_norm": "6566",
+    "cer": 1.0
+   },
+   {
+    "type": "laforetbrut/are-you-sure/code",
+    "file": "008.png",
+    "gold": "4UTUPW",
+    "pred": "6566",
+    "pred_norm": "6566",
+    "cer": 1.0
+   },
+   {
+    "type": "ringoame196-s-mcPlugin/ReproductionCAPTCHA/map",
+    "file": "001.png",
+    "gold": "855AC",
+    "pred": "5000",
+    "pred_norm": "5000",
+    "cer": 0.8
+   },
+   {
+    "type": "ringoame196-s-mcPlugin/ReproductionCAPTCHA/map",
+    "file": "002.png",
+    "gold": "7F900",
+    "pred": "0500",
+    "pred_norm": "0500",
+    "cer": 0.6
+   },
+   {
+    "type": "ringoame196-s-mcPlugin/ReproductionCAPTCHA/map",
+    "file": "003.png",
+    "gold": "9F8A4",
+    "pred": "5100",
+    "pred_norm": "5100",
+    "cer": 1.0
+   },
+   {
+    "type": "ringoame196-s-mcPlugin/ReproductionCAPTCHA/map",
+    "file": "004.png",
+    "gold": "883F5",
+    "pred": "5500",
+    "pred_norm": "5500",
+    "cer": 1.0
+   },
+   {
+    "type": "ringoame196-s-mcPlugin/ReproductionCAPTCHA/map",
+    "file": "005.png",
+    "gold": "B2CEF",
+    "pred": "5500",
+    "pred_norm": "5500",
+    "cer": 1.0
+   },
+   {
+    "type": "ringoame196-s-mcPlugin/ReproductionCAPTCHA/map",
+    "file": "006.png",
+    "gold": "7A703",
+    "pred": "0500",
+    "pred_norm": "0500",
+    "cer": 0.8
+   },
+   {
+    "type": "ringoame196-s-mcPlugin/ReproductionCAPTCHA/map",
+    "file": "007.png",
+    "gold": "6F54A",
+    "pred": "5500",
+    "pred_norm": "5500",
+    "cer": 0.8
+   },
+   {
+    "type": "ringoame196-s-mcPlugin/ReproductionCAPTCHA/map",
+    "file": "008.png",
+    "gold": "64ADD",
+    "pred": "0000",
+    "pred_norm": "0000",
+    "cer": 1.0
+   },
+   {
+    "type": "n1zamu/NCaptcha/anvil",
+    "file": "001.png",
+    "gold": "48427",
+    "pred": "3000",
+    "pred_norm": "3000",
+    "cer": 1.0
+   },
+   {
+    "type": "n1zamu/NCaptcha/anvil",
+    "file": "002.png",
+    "gold": "41198",
+    "pred": "3000",
+    "pred_norm": "3000",
+    "cer": 1.0
+   },
+   {
+    "type": "n1zamu/NCaptcha/anvil",
+    "file": "003.png",
+    "gold": "10968",
+    "pred": "3000",
+    "pred_norm": "3000",
+    "cer": 0.8
+   },
+   {
+    "type": "n1zamu/NCaptcha/anvil",
+    "file": "004.png",
+    "gold": "9982",
+    "pred": "3000",
+    "pred_norm": "3000",
+    "cer": 1.0
+   },
+   {
+    "type": "n1zamu/NCaptcha/anvil",
+    "file": "005.png",
+    "gold": "66413",
+    "pred": "3000",
+    "pred_norm": "3000",
+    "cer": 1.0
+   },
+   {
+    "type": "n1zamu/NCaptcha/anvil",
+    "file": "006.png",
+    "gold": "23979",
+    "pred": "3000",
+    "pred_norm": "3000",
+    "cer": 0.8
+   },
+   {
+    "type": "n1zamu/NCaptcha/anvil",
+    "file": "007.png",
+    "gold": "30366",
+    "pred": "3000",
+    "pred_norm": "3000",
+    "cer": 0.6
+   },
+   {
+    "type": "n1zamu/NCaptcha/anvil",
+    "file": "008.png",
+    "gold": "14745",
+    "pred": "3000",
+    "pred_norm": "3000",
+    "cer": 1.0
+   }
+  ],
+  "ok": true,
+  "exact": 0,
+  "n": 104,
+  "accuracy": 0.0,
+  "mean_cer": 0.9904,
+  "seconds": 9.3
+ }
+}

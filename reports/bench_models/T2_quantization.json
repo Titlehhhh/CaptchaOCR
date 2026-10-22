@@ -1,0 +1,45 @@
+{
+ "fp32": "bench\\models\\crnn_fp32.onnx",
+ "variants": [
+  {
+   "variant": "fp32",
+   "file": "bench\\models\\crnn_fp32.onnx",
+   "bytes": 18499690
+  },
+  {
+   "variant": "dynamic",
+   "file": "bench\\models\\crnn_int8_dynamic.onnx",
+   "bytes": 4668471,
+   "seconds": 0.4
+  },
+  {
+   "variant": "preprocessed",
+   "file": "bench\\models\\crnn_fp32_preproc.onnx",
+   "bytes": 18501912
+  },
+  {
+   "variant": "static",
+   "file": "bench\\models\\crnn_int8_static.onnx",
+   "bytes": 17259234,
+   "reduce_range": false,
+   "calib_per_type": 20,
+   "seconds": 5.8
+  },
+  {
+   "variant": "static_reduce",
+   "file": "bench\\models\\crnn_int8_static_reduce.onnx",
+   "bytes": 17259234,
+   "reduce_range": true,
+   "calib_per_type": 20,
+   "seconds": 5.7
+  },
+  {
+   "variant": "static_full",
+   "file": "bench\\models\\crnn_int8_static_full.onnx",
+   "bytes": 17259234,
+   "reduce_range": false,
+   "calib_per_type": 100,
+   "seconds": 12.3
+  }
+ ]
+}

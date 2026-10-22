@@ -1,0 +1,100 @@
+{
+ "model": "train\\run\\main\\ckpt\\step_0005700.pt",
+ "backend": "pytorch cuda",
+ "overall": {
+  "n": 999,
+  "exact": 600,
+  "accuracy": 0.6006006006006006,
+  "cer": 0.38710377043710376,
+  "median_type_accuracy": 1.0,
+  "median_type_cer": 0.0
+ },
+ "trained_types": {
+  "types": 6,
+  "n": 600,
+  "exact": 600,
+  "accuracy": 1.0,
+  "median_type_accuracy": 1.0,
+  "median_type_cer": 0.0
+ },
+ "held_out_types": {
+  "types": 4,
+  "n": 399,
+  "exact": 0,
+  "accuracy": 0.0,
+  "median_type_accuracy": 0.0,
+  "median_type_cer": 0.9548333333333331
+ },
+ "per_type": {
+  "Archy-X/Krypton/map": {
+   "n": 100,
+   "exact": 100,
+   "accuracy": 1.0,
+   "cer": 0.0,
+   "confidence": 0.9974083587057785
+  },
+  "GalleryCaptcha/ru-web": {
+   "n": 100,
+   "exact": 100,
+   "accuracy": 1.0,
+   "cer": 0.0,
+   "confidence": 0.9966258968713971
+  },
+  "JSH32/Minecaptcha/map": {
+   "n": 100,
+   "exact": 100,
+   "accuracy": 1.0,
+   "cer": 0.0,
+   "confidence": 0.9969439574291001
+  },
+  "just-captcha/ProstoCaptcha/map": {
+   "n": 100,
+   "exact": 100,
+   "accuracy": 1.0,
+   "cer": 0.0,
+   "confidence": 0.9968709981939561
+  },
+  "n1zamu/NCaptcha/anvil": {
+   "n": 100,
+   "exact": 100,
+   "accuracy": 1.0,
+   "cer": 0.0,
+   "confidence": 0.9928141919823636
+  },
+  "ringoame196-s-mcPlugin/ReproductionCAPTCHA/map": {
+   "n": 100,
+   "exact": 100,
+   "accuracy": 1.0,
+   "cer": 0.0,
+   "confidence": 0.9870341021126968
+  },
+  "CaptchaVerifyZ/map": {
+   "n": 100,
+   "exact": 0,
+   "accuracy": 0.0,
+   "cer": 0.9279999999999995,
+   "confidence": 0.41058277875694293
+  },
+  "haq/mapcha/map": {
+   "n": 99,
+   "exact": 0,
+   "accuracy": 0.0,
+   "cer": 1.0555555555555556,
+   "confidence": 0.42711874608004696
+  },
+  "jSdCool/minecaptcha/text": {
+   "n": 100,
+   "exact": 0,
+   "accuracy": 0.0,
+   "cer": 0.9125,
+   "confidence": 0.6066205685738573
+  },
+  "laforetbrut/are-you-sure/code": {
+   "n": 100,
+   "exact": 0,
+   "accuracy": 0.0,
+   "cer": 0.9816666666666667,
+   "confidence": 0.39029986955634927
+  }
+ }
+}

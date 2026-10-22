@@ -1,0 +1,188 @@
+{
+ "model": "bench\\models\\crnn_int8_static_full.onnx",
+ "bytes": 17259234,
+ "backend": "onnxruntime CPU",
+ "protocol": "reports/TRAINING_MINIMAL_LATIN.md (band crop, glyph 32, greedy CTC)",
+ "overall": {
+  "n": 999,
+  "exact": 573,
+  "accuracy": 0.5735735735735735,
+  "cer": 0.40067567567567564,
+  "median_type_accuracy": 0.865,
+  "median_type_cer": 0.05199999999999999
+ },
+ "trained_types": {
+  "types": 6,
+  "n": 600,
+  "exact": 573,
+  "accuracy": 0.955,
+  "median_type_accuracy": 1.0,
+  "median_type_cer": 0.0
+ },
+ "held_out_types": {
+  "types": 4,
+  "n": 399,
+  "exact": 0,
+  "accuracy": 0.0,
+  "median_type_accuracy": 0.0,
+  "median_type_cer": 0.9574999999999997
+ },
+ "per_type": {
+  "Archy-X/Krypton/map": {
+   "n": 100,
+   "exact": 100,
+   "accuracy": 1.0,
+   "cer": 0.0,
+   "confidence": 0.9922363887210297
+  },
+  "GalleryCaptcha/ru-web": {
+   "n": 100,
+   "exact": 100,
+   "accuracy": 1.0,
+   "cer": 0.0,
+   "confidence": 0.9929640591048294
+  },
+  "JSH32/Minecaptcha/map": {
+   "n": 100,
+   "exact": 100,
+   "accuracy": 1.0,
+   "cer": 0.0,
+   "confidence": 0.9977489529369467
+  },
+  "just-captcha/ProstoCaptcha/map": {
+   "n": 100,
+   "exact": 100,
+   "accuracy": 1.0,
+   "cer": 0.0,
+   "confidence": 0.9968148666350158
+  },
+  "n1zamu/NCaptcha/anvil": {
+   "n": 100,
+   "exact": 100,
+   "accuracy": 1.0,
+   "cer": 0.0,
+   "confidence": 0.9944565680598535
+  },
+  "ringoame196-s-mcPlugin/ReproductionCAPTCHA/map": {
+   "n": 100,
+   "exact": 73,
+   "accuracy": 0.73,
+   "cer": 0.10399999999999998,
+   "confidence": 0.8433385841369031
+  },
+  "CaptchaVerifyZ/map": {
+   "n": 100,
+   "exact": 0,
+   "accuracy": 0.0,
+   "cer": 0.9299999999999994,
+   "confidence": 0.39660544594144886
+  },
+  "haq/mapcha/map": {
+   "n": 99,
+   "exact": 0,
+   "accuracy": 0.0,
+   "cer": 1.0808080808080809,
+   "confidence": 0.43182680935422507
+  },
+  "jSdCool/minecaptcha/text": {
+   "n": 100,
+   "exact": 0,
+   "accuracy": 0.0,
+   "cer": 0.91375,
+   "confidence": 0.6136765977837135
+  },
+  "laforetbrut/are-you-sure/code": {
+   "n": 100,
+   "exact": 0,
+   "accuracy": 0.0,
+   "cer": 0.985,
+   "confidence": 0.37274381623283587
+  }
+ },
+ "wrong_examples": [
+  {
+   "type": "ringoame196-s-mcPlugin/ReproductionCAPTCHA/map",
+   "gold": "FA6B8",
+   "pred": "FAB8",
+   "cer": 0.2,
+   "conf": 0.7443
+  },
+  {
+   "type": "ringoame196-s-mcPlugin/ReproductionCAPTCHA/map",
+   "gold": "DEB42",
+   "pred": "DEB4E",
+   "cer": 0.2,
+   "conf": 0.4974
+  },
+  {
+   "type": "ringoame196-s-mcPlugin/ReproductionCAPTCHA/map",
+   "gold": "56981",
+   "pred": "D6981",
+   "cer": 0.2,
+   "conf": 0.6629
+  },
+  {
+   "type": "ringoame196-s-mcPlugin/ReproductionCAPTCHA/map",
+   "gold": "AA530",
+   "pred": "1C7E",
+   "cer": 1.0,
+   "conf": 0.6993
+  },
+  {
+   "type": "ringoame196-s-mcPlugin/ReproductionCAPTCHA/map",
+   "gold": "A29E2",
+   "pred": "F29E2",
+   "cer": 0.2,
+   "conf": 0.8859
+  },
+  {
+   "type": "ringoame196-s-mcPlugin/ReproductionCAPTCHA/map",
+   "gold": "32765",
+   "pred": "375",
+   "cer": 0.4,
+   "conf": 0.651
+  },
+  {
+   "type": "ringoame196-s-mcPlugin/ReproductionCAPTCHA/map",
+   "gold": "8964B",
+   "pred": "D964B",
+   "cer": 0.2,
+   "conf": 0.7581
+  },
+  {
+   "type": "ringoame196-s-mcPlugin/ReproductionCAPTCHA/map",
+   "gold": "2B8D2",
+   "pred": "12D",
+   "cer": 0.8,
+   "conf": 0.6088
+  },
+  {
+   "type": "ringoame196-s-mcPlugin/ReproductionCAPTCHA/map",
+   "gold": "71CF4",
+   "pred": "1CF4",
+   "cer": 0.2,
+   "conf": 0.7993
+  },
+  {
+   "type": "ringoame196-s-mcPlugin/ReproductionCAPTCHA/map",
+   "gold": "CF83A",
+   "pred": "C83A",
+   "cer": 0.2,
+   "conf": 0.9044
+  },
+  {
+   "type": "ringoame196-s-mcPlugin/ReproductionCAPTCHA/map",
+   "gold": "501F3",
+   "pred": "101F3",
+   "cer": 0.2,
+   "conf": 0.7435
+  },
+  {
+   "type": "ringoame196-s-mcPlugin/ReproductionCAPTCHA/map",
+   "gold": "20C0C",
+   "pred": "10C0C",
+   "cer": 0.2,
+   "conf": 0.809
+  }
+ ]
+}

@@ -1,0 +1,55 @@
+# CaptchaOCR
+
+> Лаборатория моделей для решения Minecraft-капч. Java-генераторы пиксель-в-пиксель повторяют
+> 23 чужих плагина, из них собрано 46 типов × 100 картинок с разметкой; свой распознаватель
+> CRNN+CTC (4.6 млн параметров) обучается на этом датасете. Измеренный результат: 100 % на
+> типах, на которых модель доучена, и 0 % на невиданных — узкое место в данных, а не в архитектуре.
+> Ключевой измеренный факт: **решает кроппер, а не модель** (один и тот же коммерческий сервис даёт
+> 0 % на целых кадрах и 78 % на полосах `roi`).
+
+## Правила и состояние
+
+- [AGENTS.md](AGENTS.md): правила репозитория. Главный агент — оркестратор, работу отдаёт субагентам; один файл — один агент; команды и ловушки машины.
+- [CONTINUE.md](CONTINUE.md): **промпт для следующей сессии** — что за проект, на чём остановились, что делать дальше.
+- [HANDOVER.md](HANDOVER.md): состояние проекта, что уже сделано, что делать дальше.
+- [agents/INDEX.md](agents/INDEX.md): индекс репозитория — где что лежит, 46 типов, измеренные команды, расхождения между документами и реальностью.
+- [agents/AGENT_LOG.md](agents/AGENT_LOG.md): протокол субагента, таблица владения файлами, журнал сессий.
+- [agents/DSH_HARNESS.md](agents/DSH_HARNESS.md): что DeepSeek Harness читает из репозитория (AGENTS.md, лимит 64 КБ, корни скиллов) и что не читает.
+- [agents/REPO_CONVENTIONS_RESEARCH.md](agents/REPO_CONVENTIONS_RESEARCH.md): как принято устраивать репозиторий для ИИ-агентов (arXiv:2602.11988, llms.txt, agents.md) и наши вердикты.
+- [docs/ONBOARDING.md](docs/ONBOARDING.md): маршрут для человека или нового агента.
+- [docs/GLOSSARY.md](docs/GLOSSARY.md): термины — `text` vs `answer`, `roi`/полоса, группы A/B/C, faithful/clean-room/reconstructed.
+- [docs/adr/](docs/adr): принятые решения (почему так).
+
+## Данные
+
+- [dataset/out](dataset/out): 34 типа от 18 плагинов, 3400 картинок. Путь: `dataset/out/<owner>/<repo>/<type>/NNN.png` + `labels.jsonl`.
+- [dataset/out_ru](dataset/out_ru): 12 типов группы GalleryCaptcha, 1200 картинок + 1240 эталонных скриншотов в `real_shots/`.
+- [dataset/generator](dataset/generator): Java 21, генераторы 18 плагинов. [dataset/generator_ru](dataset/generator_ru): ещё 5. Правила — [dataset/generator/AGENTS.md](dataset/generator/AGENTS.md).
+- `labels.jsonl`: поля `file, plugin, captcha, answer, text, prompt, roi, width, height, source`. `text` — что нарисовано, `answer` — что вводит игрок, `roi` — полоса с ответом.
+
+## Код
+
+- [train/](train): CRNN+CTC и трейнер. [train/AGENTS.md](train/AGENTS.md): запуск экспериментов, плато CTC, правило полосы. [train/README.md](train/README.md): флаги.
+- [bench/](bench): харнессы бенчмарков. [bench/bench_models.py](bench/bench_models.py): единый протокол измерения всех моделей.
+- [tools/](tools): 35 чекеров и измерителей (метки, полосы, сайт).
+- [site/index.html](site/index.html): сайт-атлас — все 46 типов, 100 примеров на тип, визуализация кропа, проценты по моделям. Открывается двойным кликом.
+- [research/](research): исходники апстримов, декомпиляция, идентификация плагинов.
+
+## Результаты
+
+- [reports/CAPTCHA_SYSTEM_OVERVIEW.md](reports/CAPTCHA_SYSTEM_OVERVIEW.md): главный документ — как устроено распознавание, что готово, план.
+- [reports/TRAINING_MINIMAL_LATIN.md](reports/TRAINING_MINIMAL_LATIN.md): измеренная минимальная модель (0.000 на невиданных типах, доказано запоминание).
+- [reports/research2/](reports/research2): 10 отчётов по исследованию готовых моделей, проектов, коммерческих сервисов, методик обучения, runtime и семейства V1.
+- [docs/pipeline-design.md](docs/pipeline-design.md): конвейер кроппер → распознаватель → solver.
+
+## Команды (Windows, Java 21 в `I:\ForAndroid\Java\21`)
+
+- Сборка датасета: `.ps1` на этой машине не запускается — логика `build.ps1` выполняется inline, команды в `AGENTS.md` §4.
+- Проверка: `python tools\check_labels_and_roi.py dataset\out_ru`, `python tools\check_band_vs_answer.py dataset\out_ru`.
+- Обучение: `.venv-gpu\Scripts\python.exe train\train.py --charset latin --epochs 80 --val-types "CaptchaVerifyZ/map" ...` (GPU, 920 img/s).
+- Бенчмарк: `python bench\bench_models.py`, `python bench\bench_hf.py`, `python bench\bench_onnx.py`, `python bench\bench_others.py`.
+
+## Optional
+
+- [llmstxt.org](https://llmstxt.org/): спецификация этого файла.
+- [agents.md](https://agents.md/): формат `AGENTS.md`, который читают разные агенты.

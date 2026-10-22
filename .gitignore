@@ -1,0 +1,56 @@
+# Build output
+build/
+target/
+*.class
+
+# The CUDA training environment - 5 GB, and it is reinstalled with one command
+.venv-gpu/
+.venv/
+__pycache__/
+*.py[cod]
+
+# Training runs: checkpoints, logs, contact sheets
+train/run/
+train/run_ppocr/
+train/*/ckpt/
+*.pt
+*.pth
+*.onnx
+
+# The Hugging Face model cache: several GB of downloaded weights, re-downloadable
+.hf-cache/
+
+# The dataset images live on Hugging Face, not in git (ADR 0004). 4600 PNG = 43.6 MB;
+# the git history keeps every revision forever, so the payload does not belong here.
+# The labels, the generators and the per-type samples under dataset/samples/ stay tracked.
+dataset/out/**/*.png
+dataset/out_ru/**/*.png
+
+# Where tools/fetch_dataset.py puts the full dataset it pulls from Hugging Face
+dataset/full/
+
+# Scratch
+tmp/
+*.log
+.DS_Store
+Thumbs.db
+
+# Upstream binaries and decompiler output: large, re-downloadable, and the extracted
+# BotFilter reference shots are no longer published (they live on disk only, see ADR 0004)
+research/cfr.jar
+research/cvz*/
+research/jars/
+research/decompiled/
+research/__pycache__/
+research/tools/__pycache__/
+
+# A 3.3 MB sitemap of a forum, kept as a link instead
+research/spigotmcru_sitemap.xml
+
+# Stray temp dirs created by tools (not the tmp/ scratch folder)
+tmp*/
+
+# Leftovers from tooling: pip build trackers, torch inductor caches, raw frame dumps
+pip-*
+torchinductor_*
+*.raw

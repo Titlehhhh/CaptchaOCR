@@ -1,0 +1,339 @@
+{
+ "schema_version": "1.0",
+ "task": "CapthaModel T1 - fine-tune of PP-OCRv6_medium_rec on the captcha dataset with a type-held-out evaluation",
+ "authored": "2026-10-22, agent T1 (train/finetune_ppocr.py, train/ppocr_data.py)",
+ "status": "STOPPED BY THE AUTHOR before the main run finished; the numbers below are what the run actually measured, not a finished result",
+ "model": {
+  "repo": "PaddlePaddle/PP-OCRv6_medium_rec_safetensors",
+  "revision": "024cad6a831de75c2c3c26e711ba8c4a82ccd24b",
+  "class": "transformers.PPOCRV6SmallRecForTextRecognition",
+  "params": 19134326,
+  "head_out_channels": 18710,
+  "hidden_size": 192,
+  "backbone": "pp_lcnet_v4",
+  "head": "the pretrained head is kept, not replaced",
+  "dictionary": "18710 entries, index 0 = blank, index 18709 = space, no Cyrillic at all",
+  "license": "Apache-2.0"
+ },
+ "environment": {
+  "python": "3.14.5",
+  "torch": "2.14.1+cu126",
+  "transformers": "5.19.0",
+  "gpu": "NVIDIA GeForce GTX 1080 Ti (11.8 GB, sm_61)",
+  "driver": "581.57"
+ },
+ "split": {
+  "strategy": "type-held-out, whole plugins",
+  "held_out_types": [
+   "out/JSH32/Minecaptcha/map",
+   "out/jonesdevelopment/sonar/complex",
+   "out/jonesdevelopment/sonar/legacy",
+   "out/jonesdevelopment/sonar/standard",
+   "out/laforetbrut/are-you-sure/code",
+   "out_ru/BotFilter/map",
+   "out_ru/CaptchaVerifyZ/map"
+  ],
+  "held_out_plugins": [
+   "JSH32/Minecaptcha",
+   "jonesdevelopment/sonar",
+   "BotFilter",
+   "CaptchaVerifyZ",
+   "laforetbrut/are-you-sure"
+  ],
+  "train_types": [
+   "out/Archy-X/Krypton/map",
+   "out/FeelingAlive0/AdvancedCaptcha/math",
+   "out/LagBug/XProtect/equation",
+   "out/LagBug/XProtect/gui",
+   "out/LagBug/XProtect/reverse",
+   "out/Mrbysco/Captcha/math",
+   "out/Yukun99/Captchas/itemslot",
+   "out/haq/mapcha/map",
+   "out/jSdCool/minecaptcha/text",
+   "out/just-captcha/ProstoCaptcha/map",
+   "out/n1zamu/NCaptcha/anvil",
+   "out/ringoame196-s-mcPlugin/ReproductionCAPTCHA/map",
+   "out_ru/GalleryCaptcha/ru-web"
+  ],
+  "train_types_count": 13,
+  "train_items": 1299,
+  "held_out_items": 700,
+  "dropped": {
+   "no band (roi = null), excluded from training by the band rule": [
+    "out/InstantlyMoist/Captcha/textcaptcha",
+    "out/LagBug/XProtect/code",
+    "out/LagBug/XProtect/map",
+    "out/LagBug/XProtect/picture",
+    "out/irootdev/AnBot/captcha"
+   ],
+   "label outside the model dictionary (no Cyrillic in it)": [
+    "out_ru/GalleryCaptcha/ru-numberword",
+    "out_ru/GalleryCaptcha/ru-numberword-caption",
+    "out_ru/GalleryCaptcha/ru-symbols",
+    "out_ru/LimboFilter/map",
+    "out_ru/LimboFilter/symbols"
+   ],
+   "group C, not an OCR task": [
+    "out/Archy-X/Krypton/menu",
+    "out/China2B2T/Captcha/wool",
+    "out/FeelingAlive0/AdvancedCaptcha/button",
+    "out/Joey61021/captcha/colorgui",
+    "out/LagBug/XProtect/color",
+    "out/LagBug/XProtect/different",
+    "out/LagBug/XProtect/drop",
+    "out/LagBug/XProtect/jump",
+    "out/LagBug/XProtect/slot",
+    "out/LagBug/XProtect/sneak",
+    "out/Z4OLLIEZ4/reCaptcha/captchasx",
+    "out/jSdCool/minecaptcha/image",
+    "out_ru/CaptchaGUI/clickblock",
+    "out_ru/GalleryCaptcha/ru-object-swatch",
+    "out_ru/LimboFilter/framed2x2",
+    "out_ru/LimboFilter/framed3x3"
+   ]
+  }
+ },
+ "preprocessing": {
+  "crop": "roi band (the whole frame for the four held-out types without a band, exactly like the archived bench)",
+  "resize": "band -> 48 px tall, aspect preserved, width capped at 320, zero-padded on the right to 320",
+  "colour": "BGR (the PaddleOCR pipeline), (x/255 - 0.5) / 0.5",
+  "T (time steps)": "measured: T = W / 8 (input 48x320 -> 40 frames)"
+ },
+ "zero_step": {
+  "what": "the pretrained model on our held-out types before any training",
+  "per_type": {
+   "out/JSH32/Minecaptcha/map": {
+    "n": 100,
+    "exact_match": 0.93,
+    "cer": 0.02
+   },
+   "out/jonesdevelopment/sonar/complex": {
+    "n": 100,
+    "exact_match": 0.45,
+    "cer": 0.278
+   },
+   "out/jonesdevelopment/sonar/legacy": {
+    "n": 100,
+    "exact_match": 0.23,
+    "cer": 0.435
+   },
+   "out/jonesdevelopment/sonar/standard": {
+    "n": 100,
+    "exact_match": 0.6,
+    "cer": 0.158
+   },
+   "out/laforetbrut/are-you-sure/code": {
+    "n": 100,
+    "exact_match": 0.01,
+    "cer": 0.8
+   },
+   "out_ru/BotFilter/map": {
+    "n": 100,
+    "exact_match": 0.73,
+    "cer": 0.093
+   },
+   "out_ru/CaptchaVerifyZ/map": {
+    "n": 100,
+    "exact_match": 0.96,
+    "cer": 0.01
+   }
+  },
+  "aggregate": {
+   "types": 7,
+   "exact_match_median": 0.6,
+   "cer_median": 0.1575,
+   "exact_match_micro": 0.5586,
+   "cer_micro": 0.2561
+  },
+  "seconds": 32.0
+ },
+ "after_training": {
+  "what": "the best checkpoint by the held-out median exact match (epoch 1), stopped by the author",
+  "best_epoch": 1,
+  "per_type": {
+   "out/JSH32/Minecaptcha/map": {
+    "n": 100,
+    "exact_match": 0.96,
+    "cer": 0.013
+   },
+   "out/jonesdevelopment/sonar/complex": {
+    "n": 100,
+    "exact_match": 0.41,
+    "cer": 0.288
+   },
+   "out/jonesdevelopment/sonar/legacy": {
+    "n": 100,
+    "exact_match": 0.21,
+    "cer": 0.463
+   },
+   "out/jonesdevelopment/sonar/standard": {
+    "n": 100,
+    "exact_match": 0.23,
+    "cer": 0.427
+   },
+   "out/laforetbrut/are-you-sure/code": {
+    "n": 100,
+    "exact_match": 0.0,
+    "cer": 0.953
+   },
+   "out_ru/BotFilter/map": {
+    "n": 100,
+    "exact_match": 0.41,
+    "cer": 0.213
+   },
+   "out_ru/CaptchaVerifyZ/map": {
+    "n": 100,
+    "exact_match": 0.92,
+    "cer": 0.016
+   }
+  },
+  "aggregate": {
+   "types": 7,
+   "exact_match_median": 0.41,
+   "cer_median": 0.2883,
+   "exact_match_micro": 0.4486,
+   "cer_micro": 0.3392
+  },
+  "last_evaluation": {
+   "epoch": 3,
+   "exact_match_median": 0.24,
+   "cer_median": 0.34,
+   "exact_match_micro": 0.4229,
+   "cer_micro": 0.3164
+  },
+  "all_evaluations": [
+   {
+    "epoch": 1,
+    "exact_match_median": 0.41,
+    "cer_median": 0.2883,
+    "exact_match_micro": 0.4486,
+    "cer_micro": 0.3392
+   },
+   {
+    "epoch": 3,
+    "exact_match_median": 0.24,
+    "cer_median": 0.34,
+    "exact_match_micro": 0.4229,
+    "cer_micro": 0.3164
+   }
+  ]
+ },
+ "training_run": {
+  "command": ".venv-gpu\\Scripts\\python.exe train\\finetune_ppocr.py --out train\\run_ppocr\\final --epochs 30 --batch-size 32 --lr 1e-4 --head-lr 1e-4 --workers 6 --eval-every 2 --save-every 100 --max-minutes 11",
+  "epochs_completed": 6,
+  "steps_completed": 240,
+  "planned_steps": 1230,
+  "stopped": "by the author (the run was killed during epoch 5)",
+  "loss_timeline": [
+   {
+    "epoch": 0,
+    "loss": 1.0171,
+    "seconds": 35.9,
+    "img_per_s": 101.3
+   },
+   {
+    "epoch": 1,
+    "loss": 0.0762,
+    "seconds": 10.6,
+    "img_per_s": 111.5
+   },
+   {
+    "epoch": 2,
+    "loss": 0.0365,
+    "seconds": 10.9,
+    "img_per_s": 115.5
+   },
+   {
+    "epoch": 3,
+    "loss": 0.0194,
+    "seconds": 10.4,
+    "img_per_s": 117.9
+   },
+   {
+    "epoch": 4,
+    "loss": 0.014,
+    "seconds": 10.9,
+    "img_per_s": 119.2
+   },
+   {
+    "epoch": 5,
+    "loss": 0.0136,
+    "seconds": 12.9,
+    "img_per_s": 115.9
+   }
+  ],
+  "img_per_s_last": 115.9,
+  "checkpoint": "train/run_ppocr/final/ckpt/step_000200.pt (model + optimiser + scheduler + GradScaler + step), best.pt (epoch 1)",
+  "resume_command": ".venv-gpu\\Scripts\\python.exe train\\finetune_ppocr.py --out train\\run_ppocr\\final --epochs 30 --batch-size 32 --lr 1e-4 --head-lr 1e-4 --workers 6 --eval-every 2 --save-every 100 --max-minutes 55 --resume"
+ },
+ "comparison_with_archived_bench": {
+  "source": "reports/bench_models/ppocrv6-medium.json (pretrained PP-OCRv6_medium_rec in ONNX, 20 items per type, the previous render of the dataset)",
+  "per_type_held_out": {
+   "out/JSH32/Minecaptcha/map": {
+    "n": 20,
+    "acc": 0.9,
+    "cer": 0.025
+   },
+   "out/jonesdevelopment/sonar/complex": {
+    "n": 20,
+    "acc": 0.35,
+    "cer": 0.3042
+   },
+   "out/jonesdevelopment/sonar/legacy": {
+    "n": 20,
+    "acc": 0.1,
+    "cer": 0.5833
+   },
+   "out/jonesdevelopment/sonar/standard": {
+    "n": 20,
+    "acc": 0.55,
+    "cer": 0.1458
+   },
+   "out/laforetbrut/are-you-sure/code": {
+    "n": 20,
+    "acc": 0.0,
+    "cer": 0.775
+   },
+   "out_ru/BotFilter/map": {
+    "n": 20,
+    "acc": 0.65,
+    "cer": 0.1475
+   },
+   "out_ru/CaptchaVerifyZ/map": {
+    "n": 20,
+    "acc": 1.0,
+    "cer": 0.0
+   }
+  },
+  "aggregate_held_out": {
+   "exact_match_median": 0.55,
+   "cer_median": 0.1475
+  },
+  "aggregate_all_46_types": {
+   "exact_match_micro": 0.4043,
+   "cer_micro": 0.5662,
+   "exact_match_median_over_types": 0.175
+  },
+  "note": "the 0.40 of the brief is the micro accuracy over all 46 types; on the 29 types with a band it is 0.5517"
+ },
+ "held_out_verdict": {
+  "types_better": [
+   "out/JSH32/Minecaptcha/map"
+  ],
+  "types_worse": [
+   "out/jonesdevelopment/sonar/complex",
+   "out/jonesdevelopment/sonar/legacy",
+   "out/jonesdevelopment/sonar/standard",
+   "out/laforetbrut/are-you-sure/code",
+   "out_ru/BotFilter/map",
+   "out_ru/CaptchaVerifyZ/map"
+  ],
+  "types_unchanged": []
+ },
+ "notes": [
+  "The pretrained head (18 710 classes) is kept, not replaced: replacing it would destroy the zero-step baseline, which is the only honest reference point.",
+  "PP-OCRv6_medium_rec has no Cyrillic in its dictionary (measured: not one entry contains a codepoint in U+0400..U+04FF), so five Cyrillic types cannot be trained with this checkpoint at all.",
+  "The four held-out types without a band are evaluated on the whole frame, exactly like the archived bench, so the two numbers are comparable.",
+  "A flat CTC loss on the first epochs is not a bug; here the loss went down from 1.0171 to 0.0136 in six epochs, so the all-blank plateau was never reached."
+ ]
+}

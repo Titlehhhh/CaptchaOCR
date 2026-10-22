@@ -1,0 +1,1692 @@
+{
+ "model_key": "easyocr",
+ "model": "easyocr",
+ "backend": "backend_easyocr",
+ "license": "Apache-2.0",
+ "environment": {
+  "python": "3.14.5",
+  "torch": "2.14.1+cpu",
+  "transformers": "5.19.0",
+  "onnxruntime": "1.30.0",
+  "numpy": "2.4.6",
+  "PIL": "12.2.0",
+  "huggingface_hub": "1.33.0",
+  "cuda": false,
+  "device": "cpu"
+ },
+ "protocol": {
+  "item_sets": {
+   "legacy64": 64
+  },
+  "n_per_type": 20,
+  "input_modes": [
+   "band"
+  ],
+  "gold": "text (the drawn string) primary; answer reported as a second column",
+  "normalisation": "keep alnum (any script) and +-*/=; drop everything else",
+  "aggregate": "micro over items + median over the per-type values"
+ },
+ "item_sets": {
+  "legacy64": [
+   {
+    "type": "out/Archy-X/Krypton/map",
+    "path": "dataset\\out\\Archy-X\\Krypton\\map\\001.png",
+    "file": "001.png",
+    "answer": "6aFij",
+    "text": "6aFij",
+    "roi": [
+     27,
+     32,
+     21,
+     8
+    ],
+    "has_roi": true
+   },
+   {
+    "type": "out/Archy-X/Krypton/map",
+    "path": "dataset\\out\\Archy-X\\Krypton\\map\\002.png",
+    "file": "002.png",
+    "answer": "C7s9V",
+    "text": "C7s9V",
+    "roi": [
+     49,
+     16,
+     25,
+     8
+    ],
+    "has_roi": true
+   },
+   {
+    "type": "out/Archy-X/Krypton/map",
+    "path": "dataset\\out\\Archy-X\\Krypton\\map\\003.png",
+    "file": "003.png",
+    "answer": "Ak916",
+    "text": "Ak916",
+    "roi": [
+     8,
+     25,
+     24,
+     8
+    ],
+    "has_roi": true
+   },
+   {
+    "type": "out/Archy-X/Krypton/map",
+    "path": "dataset\\out\\Archy-X\\Krypton\\map\\004.png",
+    "file": "004.png",
+    "answer": "0RIQW",
+    "text": "0RIQW",
+    "roi": [
+     38,
+     46,
+     23,
+     8
+    ],
+    "has_roi": true
+   },
+   {
+    "type": "out/Archy-X/Krypton/map",
+    "path": "dataset\\out\\Archy-X\\Krypton\\map\\005.png",
+    "file": "005.png",
+    "answer": "e45wY",
+    "text": "e45wY",
+    "roi": [
+     40,
+     33,
+     25,
+     8
+    ],
+    "has_roi": true
+   },
+   {
+    "type": "out/Archy-X/Krypton/map",
+    "path": "dataset\\out\\Archy-X\\Krypton\\map\\006.png",
+    "file": "006.png",
+    "answer": "co85d",
+    "text": "co85d",
+    "roi": [
+     51,
+     35,
+     25,
+     8
+    ],
+    "has_roi": true
+   },
+   {
+    "type": "out/Archy-X/Krypton/map",
+    "path": "dataset\\out\\Archy-X\\Krypton\\map\\007.png",
+    "file": "007.png",
+    "answer": "kFxz5",
+    "text": "kFxz5",
+    "roi": [
+     52,
+     80,
+     24,
+     8
+    ],
+    "has_roi": true
+   },
+   {
+    "type": "out/Archy-X/Krypton/map",
+    "path": "dataset\\out\\Archy-X\\Krypton\\map\\008.png",
+    "file": "008.png",
+    "answer": "r0633",
+    "text": "r0633",
+    "roi": [
+     31,
+     70,
+     25,
+     8
+    ],
+    "has_roi": true
+   },
+   {
+    "type": "out/JSH32/Minecaptcha/map",
+    "path": "dataset\\out\\JSH32\\Minecaptcha\\map\\001.png",
+    "file": "001.png",
+    "answer": "PTAY",
+    "text": "PTAY",
+    "roi": [
+     25,
+     77,
+     79,
+     35
+    ],
+    "has_roi": true
+   },
+   {
+    "type": "out/JSH32/Minecaptcha/map",
+    "path": "dataset\\out\\JSH32\\Minecaptcha\\map\\002.png",
+    "file": "002.png",
+    "answer": "9Tll",
+    "text": "9Tll",
+    "roi": [
+     39,
+     77,
+     51,
+     35
+    ],
+    "has_roi": true
+   },
+   {
+    "type": "out/JSH32/Minecaptcha/map",
+    "path": "dataset\\out\\JSH32\\Minecaptcha\\map\\003.png",
+    "file": "003.png",
+    "answer": "SPlu",
+    "text": "SPlu",
+    "roi": [
+     32,
+     77,
+     66,
+     35
+    ],
+    "has_roi": true
+   },
+   {
+    "type": "out/JSH32/Minecaptcha/map",
+    "path": "dataset\\out\\JSH32\\Minecaptcha\\map\\004.png",
+    "file": "004.png",
+    "answer": "tw8A",
+    "text": "tw8A",
+    "roi": [
+     28,
+     77,
+     73,
+     35
+    ],
+    "has_roi": true
+   },
+   {
+    "type": "out/JSH32/Minecaptcha/map",
+    "path": "dataset\\out\\JSH32\\Minecaptcha\\map\\005.png",
+    "file": "005.png",
+    "answer": "c7v4",
+    "text": "c7v4",
+    "roi": [
+     31,
+     77,
+     68,
+     35
+    ],
+    "has_roi": true
+   },
+   {
+    "type": "out/JSH32/Minecaptcha/map",
+    "path": "dataset\\out\\JSH32\\Minecaptcha\\map\\006.png",
+    "file": "006.png",
+    "answer": "yEWG",
+    "text": "yEWG",
+    "roi": [
+     21,
+     77,
+     88,
+     35
+    ],
+    "has_roi": true
+   },
+   {
+    "type": "out/JSH32/Minecaptcha/map",
+    "path": "dataset\\out\\JSH32\\Minecaptcha\\map\\007.png",
+    "file": "007.png",
+    "answer": "nKjB",
+    "text": "nKjB",
+    "roi": [
+     30,
+     77,
+     70,
+     35
+    ],
+    "has_roi": true
+   },
+   {
+    "type": "out/JSH32/Minecaptcha/map",
+    "path": "dataset\\out\\JSH32\\Minecaptcha\\map\\008.png",
+    "file": "008.png",
+    "answer": "tnBk",
+    "text": "tnBk",
+    "roi": [
+     32,
+     77,
+     66,
+     35
+    ],
+    "has_roi": true
+   },
+   {
+    "type": "out/haq/mapcha/map",
+    "path": "dataset\\out\\haq\\mapcha\\map\\001.png",
+    "file": "001.png",
+    "answer": "s8TO",
+    "text": "s8TO",
+    "roi": [
+     14,
+     68,
+     99,
+     46
+    ],
+    "has_roi": true
+   },
+   {
+    "type": "out/haq/mapcha/map",
+    "path": "dataset\\out\\haq\\mapcha\\map\\002.png",
+    "file": "002.png",
+    "answer": "4AUe",
+    "text": "4AUe",
+    "roi": [
+     14,
+     68,
+     100,
+     46
+    ],
+    "has_roi": true
+   },
+   {
+    "type": "out/haq/mapcha/map",
+    "path": "dataset\\out\\haq\\mapcha\\map\\003.png",
+    "file": "003.png",
+    "answer": "slWI",
+    "text": "slWI",
+    "roi": [
+     23,
+     68,
+     82,
+     46
+    ],
+    "has_roi": true
+   },
+   {
+    "type": "out/haq/mapcha/map",
+    "path": "dataset\\out\\haq\\mapcha\\map\\004.png",
+    "file": "004.png",
+    "answer": "TrXD",
+    "text": "TrXD",
+    "roi": [
+     16,
+     68,
+     96,
+     46
+    ],
+    "has_roi": true
+   },
+   {
+    "type": "out/haq/mapcha/map",
+    "path": "dataset\\out\\haq\\mapcha\\map\\005.png",
+    "file": "005.png",
+    "answer": "kkQ6",
+    "text": "kkQ6",
+    "roi": [
+     15,
+     68,
+     97,
+     46
+    ],
+    "has_roi": true
+   },
+   {
+    "type": "out/haq/mapcha/map",
+    "path": "dataset\\out\\haq\\mapcha\\map\\006.png",
+    "file": "006.png",
+    "answer": "IVhl",
+    "text": "IVhl",
+    "roi": [
+     28,
+     68,
+     71,
+     46
+    ],
+    "has_roi": true
+   },
+   {
+    "type": "out/haq/mapcha/map",
+    "path": "dataset\\out\\haq\\mapcha\\map\\007.png",
+    "file": "007.png",
+    "answer": "nVXD",
+    "text": "nVXD",
+    "roi": [
+     11,
+     68,
+     106,
+     46
+    ],
+    "has_roi": true
+   },
+   {
+    "type": "out/haq/mapcha/map",
+    "path": "dataset\\out\\haq\\mapcha\\map\\008.png",
+    "file": "008.png",
+    "answer": "0LfY",
+    "text": "0LfY",
+    "roi": [
+     21,
+     68,
+     85,
+     46
+    ],
+    "has_roi": true
+   },
+   {
+    "type": "out/jSdCool/minecaptcha/text",
+    "path": "dataset\\out\\jSdCool\\minecaptcha\\text\\001.png",
+    "file": "001.png",
+    "answer": "4nznyZ4U",
+    "text": "4nznyZ4U",
+    "roi": [
+     223,
+     129,
+     104,
+     30
+    ],
+    "has_roi": true
+   },
+   {
+    "type": "out/jSdCool/minecaptcha/text",
+    "path": "dataset\\out\\jSdCool\\minecaptcha\\text\\002.png",
+    "file": "002.png",
+    "answer": "Fk6ZNfzZ",
+    "text": "Fk6ZNfzZ",
+    "roi": [
+     223,
+     129,
+     104,
+     30
+    ],
+    "has_roi": true
+   },
+   {
+    "type": "out/jSdCool/minecaptcha/text",
+    "path": "dataset\\out\\jSdCool\\minecaptcha\\text\\003.png",
+    "file": "003.png",
+    "answer": "n7Orhbxr",
+    "text": "n7Orhbxr",
+    "roi": [
+     223,
+     129,
+     104,
+     30
+    ],
+    "has_roi": true
+   },
+   {
+    "type": "out/jSdCool/minecaptcha/text",
+    "path": "dataset\\out\\jSdCool\\minecaptcha\\text\\004.png",
+    "file": "004.png",
+    "answer": "eg5kmeo4",
+    "text": "eg5kmeo4",
+    "roi": [
+     223,
+     129,
+     104,
+     30
+    ],
+    "has_roi": true
+   },
+   {
+    "type": "out/jSdCool/minecaptcha/text",
+    "path": "dataset\\out\\jSdCool\\minecaptcha\\text\\005.png",
+    "file": "005.png",
+    "answer": "c97S64ac",
+    "text": "c97S64ac",
+    "roi": [
+     223,
+     129,
+     104,
+     30
+    ],
+    "has_roi": true
+   },
+   {
+    "type": "out/jSdCool/minecaptcha/text",
+    "path": "dataset\\out\\jSdCool\\minecaptcha\\text\\006.png",
+    "file": "006.png",
+    "answer": "lrdcNjsk",
+    "text": "lrdcNjsk",
+    "roi": [
+     223,
+     129,
+     104,
+     30
+    ],
+    "has_roi": true
+   },
+   {
+    "type": "out/jSdCool/minecaptcha/text",
+    "path": "dataset\\out\\jSdCool\\minecaptcha\\text\\007.png",
+    "file": "007.png",
+    "answer": "7sEDKIgc",
+    "text": "7sEDKIgc",
+    "roi": [
+     223,
+     129,
+     104,
+     30
+    ],
+    "has_roi": true
+   },
+   {
+    "type": "out/jSdCool/minecaptcha/text",
+    "path": "dataset\\out\\jSdCool\\minecaptcha\\text\\008.png",
+    "file": "008.png",
+    "answer": "ekiEq6Oi",
+    "text": "ekiEq6Oi",
+    "roi": [
+     223,
+     129,
+     104,
+     30
+    ],
+    "has_roi": true
+   },
+   {
+    "type": "out/just-captcha/ProstoCaptcha/map",
+    "path": "dataset\\out\\just-captcha\\ProstoCaptcha\\map\\001.png",
+    "file": "001.png",
+    "answer": "tGbMyw",
+    "text": "tGbMyw",
+    "roi": [
+     0,
+     33,
+     128,
+     59
+    ],
+    "has_roi": true
+   },
+   {
+    "type": "out/just-captcha/ProstoCaptcha/map",
+    "path": "dataset\\out\\just-captcha\\ProstoCaptcha\\map\\002.png",
+    "file": "002.png",
+    "answer": "UPkV6q",
+    "text": "UPkV6q",
+    "roi": [
+     0,
+     33,
+     128,
+     59
+    ],
+    "has_roi": true
+   },
+   {
+    "type": "out/just-captcha/ProstoCaptcha/map",
+    "path": "dataset\\out\\just-captcha\\ProstoCaptcha\\map\\003.png",
+    "file": "003.png",
+    "answer": "pT7ADf",
+    "text": "pT7ADf",
+    "roi": [
+     0,
+     33,
+     128,
+     59
+    ],
+    "has_roi": true
+   },
+   {
+    "type": "out/just-captcha/ProstoCaptcha/map",
+    "path": "dataset\\out\\just-captcha\\ProstoCaptcha\\map\\004.png",
+    "file": "004.png",
+    "answer": "Mg2K49",
+    "text": "Mg2K49",
+    "roi": [
+     0,
+     33,
+     128,
+     59
+    ],
+    "has_roi": true
+   },
+   {
+    "type": "out/just-captcha/ProstoCaptcha/map",
+    "path": "dataset\\out\\just-captcha\\ProstoCaptcha\\map\\005.png",
+    "file": "005.png",
+    "answer": "JJ9QTA",
+    "text": "JJ9QTA",
+    "roi": [
+     0,
+     33,
+     128,
+     59
+    ],
+    "has_roi": true
+   },
+   {
+    "type": "out/just-captcha/ProstoCaptcha/map",
+    "path": "dataset\\out\\just-captcha\\ProstoCaptcha\\map\\006.png",
+    "file": "006.png",
+    "answer": "uHswjg",
+    "text": "uHswjg",
+    "roi": [
+     0,
+     33,
+     128,
+     59
+    ],
+    "has_roi": true
+   },
+   {
+    "type": "out/just-captcha/ProstoCaptcha/map",
+    "path": "dataset\\out\\just-captcha\\ProstoCaptcha\\map\\007.png",
+    "file": "007.png",
+    "answer": "aT9SkY",
+    "text": "aT9SkY",
+    "roi": [
+     0,
+     33,
+     128,
+     59
+    ],
+    "has_roi": true
+   },
+   {
+    "type": "out/just-captcha/ProstoCaptcha/map",
+    "path": "dataset\\out\\just-captcha\\ProstoCaptcha\\map\\008.png",
+    "file": "008.png",
+    "answer": "TYvnfX",
+    "text": "TYvnfX",
+    "roi": [
+     0,
+     33,
+     128,
+     59
+    ],
+    "has_roi": true
+   },
+   {
+    "type": "out/laforetbrut/are-you-sure/code",
+    "path": "dataset\\out\\laforetbrut\\are-you-sure\\code\\001.png",
+    "file": "001.png",
+    "answer": "AJQM6P",
+    "text": "AJQM6P",
+    "roi": [
+     186,
+     119,
+     101,
+     18
+    ],
+    "has_roi": true
+   },
+   {
+    "type": "out/laforetbrut/are-you-sure/code",
+    "path": "dataset\\out\\laforetbrut\\are-you-sure\\code\\002.png",
+    "file": "002.png",
+    "answer": "ZSHDP9",
+    "text": "ZSHDP9",
+    "roi": [
+     186,
+     119,
+     101,
+     18
+    ],
+    "has_roi": true
+   },
+   {
+    "type": "out/laforetbrut/are-you-sure/code",
+    "path": "dataset\\out\\laforetbrut\\are-you-sure\\code\\003.png",
+    "file": "003.png",
+    "answer": "69XR2K",
+    "text": "69XR2K",
+    "roi": [
+     186,
+     119,
+     101,
+     18
+    ],
+    "has_roi": true
+   },
+   {
+    "type": "out/laforetbrut/are-you-sure/code",
+    "path": "dataset\\out\\laforetbrut\\are-you-sure\\code\\004.png",
+    "file": "004.png",
+    "answer": "JFJVA3",
+    "text": "JFJVA3",
+    "roi": [
+     186,
+     119,
+     101,
+     18
+    ],
+    "has_roi": true
+   },
+   {
+    "type": "out/laforetbrut/are-you-sure/code",
+    "path": "dataset\\out\\laforetbrut\\are-you-sure\\code\\005.png",
+    "file": "005.png",
+    "answer": "5JQLDW",
+    "text": "5JQLDW",
+    "roi": [
+     186,
+     119,
+     101,
+     18
+    ],
+    "has_roi": true
+   },
+   {
+    "type": "out/laforetbrut/are-you-sure/code",
+    "path": "dataset\\out\\laforetbrut\\are-you-sure\\code\\006.png",
+    "file": "006.png",
+    "answer": "Y9QX3D",
+    "text": "Y9QX3D",
+    "roi": [
+     186,
+     119,
+     101,
+     18
+    ],
+    "has_roi": true
+   },
+   {
+    "type": "out/laforetbrut/are-you-sure/code",
+    "path": "dataset\\out\\laforetbrut\\are-you-sure\\code\\007.png",
+    "file": "007.png",
+    "answer": "FST4GC",
+    "text": "FST4GC",
+    "roi": [
+     186,
+     119,
+     101,
+     18
+    ],
+    "has_roi": true
+   },
+   {
+    "type": "out/laforetbrut/are-you-sure/code",
+    "path": "dataset\\out\\laforetbrut\\are-you-sure\\code\\008.png",
+    "file": "008.png",
+    "answer": "5C9HB2",
+    "text": "5C9HB2",
+    "roi": [
+     186,
+     119,
+     101,
+     18
+    ],
+    "has_roi": true
+   },
+   {
+    "type": "out/n1zamu/NCaptcha/anvil",
+    "path": "dataset\\out\\n1zamu\\NCaptcha\\anvil\\001.png",
+    "file": "001.png",
+    "answer": "28612",
+    "text": "28612",
+    "roi": [
+     195,
+     132,
+     35,
+     17
+    ],
+    "has_roi": true
+   },
+   {
+    "type": "out/n1zamu/NCaptcha/anvil",
+    "path": "dataset\\out\\n1zamu\\NCaptcha\\anvil\\002.png",
+    "file": "002.png",
+    "answer": "6319",
+    "text": "6319",
+    "roi": [
+     195,
+     132,
+     28,
+     17
+    ],
+    "has_roi": true
+   },
+   {
+    "type": "out/n1zamu/NCaptcha/anvil",
+    "path": "dataset\\out\\n1zamu\\NCaptcha\\anvil\\003.png",
+    "file": "003.png",
+    "answer": "9096",
+    "text": "9096",
+    "roi": [
+     195,
+     132,
+     28,
+     17
+    ],
+    "has_roi": true
+   },
+   {
+    "type": "out/n1zamu/NCaptcha/anvil",
+    "path": "dataset\\out\\n1zamu\\NCaptcha\\anvil\\004.png",
+    "file": "004.png",
+    "answer": "26321",
+    "text": "26321",
+    "roi": [
+     195,
+     132,
+     35,
+     17
+    ],
+    "has_roi": true
+   },
+   {
+    "type": "out/n1zamu/NCaptcha/anvil",
+    "path": "dataset\\out\\n1zamu\\NCaptcha\\anvil\\005.png",
+    "file": "005.png",
+    "answer": "57250",
+    "text": "57250",
+    "roi": [
+     195,
+     132,
+     35,
+     17
+    ],
+    "has_roi": true
+   },
+   {
+    "type": "out/n1zamu/NCaptcha/anvil",
+    "path": "dataset\\out\\n1zamu\\NCaptcha\\anvil\\006.png",
+    "file": "006.png",
+    "answer": "51110",
+    "text": "51110",
+    "roi": [
+     195,
+     132,
+     35,
+     17
+    ],
+    "has_roi": true
+   },
+   {
+    "type": "out/n1zamu/NCaptcha/anvil",
+    "path": "dataset\\out\\n1zamu\\NCaptcha\\anvil\\007.png",
+    "file": "007.png",
+    "answer": "23962",
+    "text": "23962",
+    "roi": [
+     195,
+     132,
+     35,
+     17
+    ],
+    "has_roi": true
+   },
+   {
+    "type": "out/n1zamu/NCaptcha/anvil",
+    "path": "dataset\\out\\n1zamu\\NCaptcha\\anvil\\008.png",
+    "file": "008.png",
+    "answer": "42303",
+    "text": "42303",
+    "roi": [
+     195,
+     132,
+     35,
+     17
+    ],
+    "has_roi": true
+   },
+   {
+    "type": "out/ringoame196-s-mcPlugin/ReproductionCAPTCHA/map",
+    "path": "dataset\\out\\ringoame196-s-mcPlugin\\ReproductionCAPTCHA\\map\\001.png",
+    "file": "001.png",
+    "answer": "F2311",
+    "text": "F2311",
+    "roi": [
+     8,
+     68,
+     54,
+     27
+    ],
+    "has_roi": true
+   },
+   {
+    "type": "out/ringoame196-s-mcPlugin/ReproductionCAPTCHA/map",
+    "path": "dataset\\out\\ringoame196-s-mcPlugin\\ReproductionCAPTCHA\\map\\002.png",
+    "file": "002.png",
+    "answer": "D9F60",
+    "text": "D9F60",
+    "roi": [
+     8,
+     68,
+     58,
+     28
+    ],
+    "has_roi": true
+   },
+   {
+    "type": "out/ringoame196-s-mcPlugin/ReproductionCAPTCHA/map",
+    "path": "dataset\\out\\ringoame196-s-mcPlugin\\ReproductionCAPTCHA\\map\\003.png",
+    "file": "003.png",
+    "answer": "12AA0",
+    "text": "12AA0",
+    "roi": [
+     8,
+     68,
+     51,
+     28
+    ],
+    "has_roi": true
+   },
+   {
+    "type": "out/ringoame196-s-mcPlugin/ReproductionCAPTCHA/map",
+    "path": "dataset\\out\\ringoame196-s-mcPlugin\\ReproductionCAPTCHA\\map\\004.png",
+    "file": "004.png",
+    "answer": "8235A",
+    "text": "8235A",
+    "roi": [
+     8,
+     68,
+     61,
+     28
+    ],
+    "has_roi": true
+   },
+   {
+    "type": "out/ringoame196-s-mcPlugin/ReproductionCAPTCHA/map",
+    "path": "dataset\\out\\ringoame196-s-mcPlugin\\ReproductionCAPTCHA\\map\\005.png",
+    "file": "005.png",
+    "answer": "F39ED",
+    "text": "F39ED",
+    "roi": [
+     8,
+     68,
+     61,
+     28
+    ],
+    "has_roi": true
+   },
+   {
+    "type": "out/ringoame196-s-mcPlugin/ReproductionCAPTCHA/map",
+    "path": "dataset\\out\\ringoame196-s-mcPlugin\\ReproductionCAPTCHA\\map\\006.png",
+    "file": "006.png",
+    "answer": "FA6B8",
+    "text": "FA6B8",
+    "roi": [
+     8,
+     68,
+     60,
+     28
+    ],
+    "has_roi": true
+   },
+   {
+    "type": "out/ringoame196-s-mcPlugin/ReproductionCAPTCHA/map",
+    "path": "dataset\\out\\ringoame196-s-mcPlugin\\ReproductionCAPTCHA\\map\\007.png",
+    "file": "007.png",
+    "answer": "3B2BD",
+    "text": "3B2BD",
+    "roi": [
+     8,
+     68,
+     62,
+     28
+    ],
+    "has_roi": true
+   },
+   {
+    "type": "out/ringoame196-s-mcPlugin/ReproductionCAPTCHA/map",
+    "path": "dataset\\out\\ringoame196-s-mcPlugin\\ReproductionCAPTCHA\\map\\008.png",
+    "file": "008.png",
+    "answer": "A75D5",
+    "text": "A75D5",
+    "roi": [
+     8,
+     68,
+     59,
+     28
+    ],
+    "has_roi": true
+   }
+  ]
+ },
+ "modes": {
+  "band": {
+   "legacy64": {
+    "ok": true,
+    "seconds": 12.4,
+    "latency_ms_median": 90.8,
+    "latency_ms_mean": 88.9,
+    "metrics": {
+     "roi_types": {
+      "types": 8,
+      "items": 64,
+      "acc_micro": 0.3281,
+      "cer_micro": 0.3826,
+      "acc_micro_answer": 0.3281,
+      "cer_micro_answer": 0.3826,
+      "acc_median_over_types": 0.1875,
+      "cer_median_over_types": 0.2281,
+      "acc_mean_over_types": 0.3281,
+      "cer_mean_over_types": 0.3826,
+      "types_with_acc_1": 0,
+      "types_with_acc_0": 4
+     },
+     "no_roi_types": null,
+     "all_types": {
+      "types": 8,
+      "items": 64,
+      "acc_micro": 0.3281,
+      "cer_micro": 0.3826,
+      "acc_micro_answer": 0.3281,
+      "cer_micro_answer": 0.3826,
+      "acc_median_over_types": 0.1875,
+      "cer_median_over_types": 0.2281,
+      "acc_mean_over_types": 0.3281,
+      "cer_mean_over_types": 0.3826,
+      "types_with_acc_1": 0,
+      "types_with_acc_0": 4
+     }
+    },
+    "per_type": {
+     "out/Archy-X/Krypton/map": {
+      "n": 8,
+      "has_roi": true,
+      "acc": 0.0,
+      "cer": 0.875,
+      "acc_answer": 0.0,
+      "cer_answer": 0.875
+     },
+     "out/JSH32/Minecaptcha/map": {
+      "n": 8,
+      "has_roi": true,
+      "acc": 0.75,
+      "cer": 0.0938,
+      "acc_answer": 0.75,
+      "cer_answer": 0.0938
+     },
+     "out/haq/mapcha/map": {
+      "n": 8,
+      "has_roi": true,
+      "acc": 0.625,
+      "cer": 0.1562,
+      "acc_answer": 0.625,
+      "cer_answer": 0.1562
+     },
+     "out/jSdCool/minecaptcha/text": {
+      "n": 8,
+      "has_roi": true,
+      "acc": 0.375,
+      "cer": 0.0938,
+      "acc_answer": 0.375,
+      "cer_answer": 0.0938
+     },
+     "out/just-captcha/ProstoCaptcha/map": {
+      "n": 8,
+      "has_roi": true,
+      "acc": 0.0,
+      "cer": 0.4792,
+      "acc_answer": 0.0,
+      "cer_answer": 0.4792
+     },
+     "out/laforetbrut/are-you-sure/code": {
+      "n": 8,
+      "has_roi": true,
+      "acc": 0.0,
+      "cer": 1.0,
+      "acc_answer": 0.0,
+      "cer_answer": 1.0
+     },
+     "out/n1zamu/NCaptcha/anvil": {
+      "n": 8,
+      "has_roi": true,
+      "acc": 0.875,
+      "cer": 0.0625,
+      "acc_answer": 0.875,
+      "cer_answer": 0.0625
+     },
+     "out/ringoame196-s-mcPlugin/ReproductionCAPTCHA/map": {
+      "n": 8,
+      "has_roi": true,
+      "acc": 0.0,
+      "cer": 0.3,
+      "acc_answer": 0.0,
+      "cer_answer": 0.3
+     }
+    },
+    "preds": [
+     {
+      "type": "out/Archy-X/Krypton/map",
+      "file": "001.png",
+      "has_roi": true,
+      "gold_text": "6aFij",
+      "gold_answer": "6aFij",
+      "pred": "",
+      "cer": 1.0,
+      "cer_answer": 1.0
+     },
+     {
+      "type": "out/Archy-X/Krypton/map",
+      "file": "002.png",
+      "has_roi": true,
+      "gold_text": "C7s9V",
+      "gold_answer": "C7s9V",
+      "pred": "C7sy",
+      "cer": 0.4,
+      "cer_answer": 0.4
+     },
+     {
+      "type": "out/Archy-X/Krypton/map",
+      "file": "003.png",
+      "has_roi": true,
+      "gold_text": "Ak916",
+      "gold_answer": "Ak916",
+      "pred": "",
+      "cer": 1.0,
+      "cer_answer": 1.0
+     },
+     {
+      "type": "out/Archy-X/Krypton/map",
+      "file": "004.png",
+      "has_roi": true,
+      "gold_text": "0RIQW",
+      "gold_answer": "0RIQW",
+      "pred": "ghlul",
+      "cer": 1.0,
+      "cer_answer": 1.0
+     },
+     {
+      "type": "out/Archy-X/Krypton/map",
+      "file": "005.png",
+      "has_roi": true,
+      "gold_text": "e45wY",
+      "gold_answer": "e45wY",
+      "pred": "4W",
+      "cer": 0.8,
+      "cer_answer": 0.8
+     },
+     {
+      "type": "out/Archy-X/Krypton/map",
+      "file": "006.png",
+      "has_roi": true,
+      "gold_text": "co85d",
+      "gold_answer": "co85d",
+      "pred": "c033",
+      "cer": 0.8,
+      "cer_answer": 0.8
+     },
+     {
+      "type": "out/Archy-X/Krypton/map",
+      "file": "007.png",
+      "has_roi": true,
+      "gold_text": "kFxz5",
+      "gold_answer": "kFxz5",
+      "pred": "",
+      "cer": 1.0,
+      "cer_answer": 1.0
+     },
+     {
+      "type": "out/Archy-X/Krypton/map",
+      "file": "008.png",
+      "has_roi": true,
+      "gold_text": "r0633",
+      "gold_answer": "r0633",
+      "pred": "",
+      "cer": 1.0,
+      "cer_answer": 1.0
+     },
+     {
+      "type": "out/JSH32/Minecaptcha/map",
+      "file": "001.png",
+      "has_roi": true,
+      "gold_text": "PTAY",
+      "gold_answer": "PTAY",
+      "pred": "PTAY",
+      "cer": 0.0,
+      "cer_answer": 0.0
+     },
+     {
+      "type": "out/JSH32/Minecaptcha/map",
+      "file": "002.png",
+      "has_roi": true,
+      "gold_text": "9Tll",
+      "gold_answer": "9Tll",
+      "pred": "9TII",
+      "cer": 0.5,
+      "cer_answer": 0.5
+     },
+     {
+      "type": "out/JSH32/Minecaptcha/map",
+      "file": "003.png",
+      "has_roi": true,
+      "gold_text": "SPlu",
+      "gold_answer": "SPlu",
+      "pred": "SPlu",
+      "cer": 0.0,
+      "cer_answer": 0.0
+     },
+     {
+      "type": "out/JSH32/Minecaptcha/map",
+      "file": "004.png",
+      "has_roi": true,
+      "gold_text": "tw8A",
+      "gold_answer": "tw8A",
+      "pred": "tw8A",
+      "cer": 0.0,
+      "cer_answer": 0.0
+     },
+     {
+      "type": "out/JSH32/Minecaptcha/map",
+      "file": "005.png",
+      "has_roi": true,
+      "gold_text": "c7v4",
+      "gold_answer": "c7v4",
+      "pred": "c7v4",
+      "cer": 0.0,
+      "cer_answer": 0.0
+     },
+     {
+      "type": "out/JSH32/Minecaptcha/map",
+      "file": "006.png",
+      "has_roi": true,
+      "gold_text": "yEWG",
+      "gold_answer": "yEWG",
+      "pred": "YEWG",
+      "cer": 0.25,
+      "cer_answer": 0.25
+     },
+     {
+      "type": "out/JSH32/Minecaptcha/map",
+      "file": "007.png",
+      "has_roi": true,
+      "gold_text": "nKjB",
+      "gold_answer": "nKjB",
+      "pred": "nKjB",
+      "cer": 0.0,
+      "cer_answer": 0.0
+     },
+     {
+      "type": "out/JSH32/Minecaptcha/map",
+      "file": "008.png",
+      "has_roi": true,
+      "gold_text": "tnBk",
+      "gold_answer": "tnBk",
+      "pred": "tnBk",
+      "cer": 0.0,
+      "cer_answer": 0.0
+     },
+     {
+      "type": "out/haq/mapcha/map",
+      "file": "001.png",
+      "has_roi": true,
+      "gold_text": "s8TO",
+      "gold_answer": "s8TO",
+      "pred": "s8TO",
+      "cer": 0.0,
+      "cer_answer": 0.0
+     },
+     {
+      "type": "out/haq/mapcha/map",
+      "file": "002.png",
+      "has_roi": true,
+      "gold_text": "4AUe",
+      "gold_answer": "4AUe",
+      "pred": "4AUe",
+      "cer": 0.0,
+      "cer_answer": 0.0
+     },
+     {
+      "type": "out/haq/mapcha/map",
+      "file": "003.png",
+      "has_roi": true,
+      "gold_text": "slWI",
+      "gold_answer": "slWI",
+      "pred": "SIWI",
+      "cer": 0.5,
+      "cer_answer": 0.5
+     },
+     {
+      "type": "out/haq/mapcha/map",
+      "file": "004.png",
+      "has_roi": true,
+      "gold_text": "TrXD",
+      "gold_answer": "TrXD",
+      "pred": "TrXD",
+      "cer": 0.0,
+      "cer_answer": 0.0
+     },
+     {
+      "type": "out/haq/mapcha/map",
+      "file": "005.png",
+      "has_roi": true,
+      "gold_text": "kkQ6",
+      "gold_answer": "kkQ6",
+      "pred": "kkQ6",
+      "cer": 0.0,
+      "cer_answer": 0.0
+     },
+     {
+      "type": "out/haq/mapcha/map",
+      "file": "006.png",
+      "has_roi": true,
+      "gold_text": "IVhl",
+      "gold_answer": "IVhl",
+      "pred": "IVHl",
+      "cer": 0.25,
+      "cer_answer": 0.25
+     },
+     {
+      "type": "out/haq/mapcha/map",
+      "file": "007.png",
+      "has_roi": true,
+      "gold_text": "nVXD",
+      "gold_answer": "nVXD",
+      "pred": "nVXD",
+      "cer": 0.0,
+      "cer_answer": 0.0
+     },
+     {
+      "type": "out/haq/mapcha/map",
+      "file": "008.png",
+      "has_roi": true,
+      "gold_text": "0LfY",
+      "gold_answer": "0LfY",
+      "pred": "OLfyY",
+      "cer": 0.5,
+      "cer_answer": 0.5
+     },
+     {
+      "type": "out/jSdCool/minecaptcha/text",
+      "file": "001.png",
+      "has_roi": true,
+      "gold_text": "4nznyZ4U",
+      "gold_answer": "4nznyZ4U",
+      "pred": "4nznyz4u",
+      "cer": 0.25,
+      "cer_answer": 0.25
+     },
+     {
+      "type": "out/jSdCool/minecaptcha/text",
+      "file": "002.png",
+      "has_roi": true,
+      "gold_text": "Fk6ZNfzZ",
+      "gold_answer": "Fk6ZNfzZ",
+      "pred": "Fk6ZNfzz",
+      "cer": 0.125,
+      "cer_answer": 0.125
+     },
+     {
+      "type": "out/jSdCool/minecaptcha/text",
+      "file": "003.png",
+      "has_roi": true,
+      "gold_text": "n7Orhbxr",
+      "gold_answer": "n7Orhbxr",
+      "pred": "n7Orhbxr",
+      "cer": 0.0,
+      "cer_answer": 0.0
+     },
+     {
+      "type": "out/jSdCool/minecaptcha/text",
+      "file": "004.png",
+      "has_roi": true,
+      "gold_text": "eg5kmeo4",
+      "gold_answer": "eg5kmeo4",
+      "pred": "egSkmeo4",
+      "cer": 0.125,
+      "cer_answer": 0.125
+     },
+     {
+      "type": "out/jSdCool/minecaptcha/text",
+      "file": "005.png",
+      "has_roi": true,
+      "gold_text": "c97S64ac",
+      "gold_answer": "c97S64ac",
+      "pred": "c97564ac",
+      "cer": 0.125,
+      "cer_answer": 0.125
+     },
+     {
+      "type": "out/jSdCool/minecaptcha/text",
+      "file": "006.png",
+      "has_roi": true,
+      "gold_text": "lrdcNjsk",
+      "gold_answer": "lrdcNjsk",
+      "pred": "lrdcNjsk",
+      "cer": 0.0,
+      "cer_answer": 0.0
+     },
+     {
+      "type": "out/jSdCool/minecaptcha/text",
+      "file": "007.png",
+      "has_roi": true,
+      "gold_text": "7sEDKIgc",
+      "gold_answer": "7sEDKIgc",
+      "pred": "7sEDKIgc",
+      "cer": 0.0,
+      "cer_answer": 0.0
+     },
+     {
+      "type": "out/jSdCool/minecaptcha/text",
+      "file": "008.png",
+      "has_roi": true,
+      "gold_text": "ekiEq6Oi",
+      "gold_answer": "ekiEq6Oi",
+      "pred": "ekiEq6oi",
+      "cer": 0.125,
+      "cer_answer": 0.125
+     },
+     {
+      "type": "out/just-captcha/ProstoCaptcha/map",
+      "file": "001.png",
+      "has_roi": true,
+      "gold_text": "tGbMyw",
+      "gold_answer": "tGbMyw",
+      "pred": "tGMyw",
+      "cer": 0.16666666666666666,
+      "cer_answer": 0.16666666666666666
+     },
+     {
+      "type": "out/just-captcha/ProstoCaptcha/map",
+      "file": "002.png",
+      "has_roi": true,
+      "gold_text": "UPkV6q",
+      "gold_answer": "UPkV6q",
+      "pred": "UpkVoq",
+      "cer": 0.3333333333333333,
+      "cer_answer": 0.3333333333333333
+     },
+     {
+      "type": "out/just-captcha/ProstoCaptcha/map",
+      "file": "003.png",
+      "has_roi": true,
+      "gold_text": "pT7ADf",
+      "gold_answer": "pT7ADf",
+      "pred": "pI ADf",
+      "cer": 0.3333333333333333,
+      "cer_answer": 0.3333333333333333
+     },
+     {
+      "type": "out/just-captcha/ProstoCaptcha/map",
+      "file": "004.png",
+      "has_roi": true,
+      "gold_text": "Mg2K49",
+      "gold_answer": "Mg2K49",
+      "pred": "MJ<K49",
+      "cer": 0.3333333333333333,
+      "cer_answer": 0.3333333333333333
+     },
+     {
+      "type": "out/just-captcha/ProstoCaptcha/map",
+      "file": "005.png",
+      "has_roi": true,
+      "gold_text": "JJ9QTA",
+      "gold_answer": "JJ9QTA",
+      "pred": "JJSQTA",
+      "cer": 0.16666666666666666,
+      "cer_answer": 0.16666666666666666
+     },
+     {
+      "type": "out/just-captcha/ProstoCaptcha/map",
+      "file": "006.png",
+      "has_roi": true,
+      "gold_text": "uHswjg",
+      "gold_answer": "uHswjg",
+      "pred": "19",
+      "cer": 1.0,
+      "cer_answer": 1.0
+     },
+     {
+      "type": "out/just-captcha/ProstoCaptcha/map",
+      "file": "007.png",
+      "has_roi": true,
+      "gold_text": "aT9SkY",
+      "gold_answer": "aT9SkY",
+      "pred": "aTosky",
+      "cer": 0.5,
+      "cer_answer": 0.5
+     },
+     {
+      "type": "out/just-captcha/ProstoCaptcha/map",
+      "file": "008.png",
+      "has_roi": true,
+      "gold_text": "TYvnfX",
+      "gold_answer": "TYvnfX",
+      "pred": "",
+      "cer": 1.0,
+      "cer_answer": 1.0
+     },
+     {
+      "type": "out/laforetbrut/are-you-sure/code",
+      "file": "001.png",
+      "has_roi": true,
+      "gold_text": "AJQM6P",
+      "gold_answer": "AJQM6P",
+      "pred": "",
+      "cer": 1.0,
+      "cer_answer": 1.0
+     },
+     {
+      "type": "out/laforetbrut/are-you-sure/code",
+      "file": "002.png",
+      "has_roi": true,
+      "gold_text": "ZSHDP9",
+      "gold_answer": "ZSHDP9",
+      "pred": "",
+      "cer": 1.0,
+      "cer_answer": 1.0
+     },
+     {
+      "type": "out/laforetbrut/are-you-sure/code",
+      "file": "003.png",
+      "has_roi": true,
+      "gold_text": "69XR2K",
+      "gold_answer": "69XR2K",
+      "pred": "",
+      "cer": 1.0,
+      "cer_answer": 1.0
+     },
+     {
+      "type": "out/laforetbrut/are-you-sure/code",
+      "file": "004.png",
+      "has_roi": true,
+      "gold_text": "JFJVA3",
+      "gold_answer": "JFJVA3",
+      "pred": "",
+      "cer": 1.0,
+      "cer_answer": 1.0
+     },
+     {
+      "type": "out/laforetbrut/are-you-sure/code",
+      "file": "005.png",
+      "has_roi": true,
+      "gold_text": "5JQLDW",
+      "gold_answer": "5JQLDW",
+      "pred": "",
+      "cer": 1.0,
+      "cer_answer": 1.0
+     },
+     {
+      "type": "out/laforetbrut/are-you-sure/code",
+      "file": "006.png",
+      "has_roi": true,
+      "gold_text": "Y9QX3D",
+      "gold_answer": "Y9QX3D",
+      "pred": "",
+      "cer": 1.0,
+      "cer_answer": 1.0
+     },
+     {
+      "type": "out/laforetbrut/are-you-sure/code",
+      "file": "007.png",
+      "has_roi": true,
+      "gold_text": "FST4GC",
+      "gold_answer": "FST4GC",
+      "pred": "",
+      "cer": 1.0,
+      "cer_answer": 1.0
+     },
+     {
+      "type": "out/laforetbrut/are-you-sure/code",
+      "file": "008.png",
+      "has_roi": true,
+      "gold_text": "5C9HB2",
+      "gold_answer": "5C9HB2",
+      "pred": "",
+      "cer": 1.0,
+      "cer_answer": 1.0
+     },
+     {
+      "type": "out/n1zamu/NCaptcha/anvil",
+      "file": "001.png",
+      "has_roi": true,
+      "gold_text": "28612",
+      "gold_answer": "28612",
+      "pred": "28612",
+      "cer": 0.0,
+      "cer_answer": 0.0
+     },
+     {
+      "type": "out/n1zamu/NCaptcha/anvil",
+      "file": "002.png",
+      "has_roi": true,
+      "gold_text": "6319",
+      "gold_answer": "6319",
+      "pred": "6319",
+      "cer": 0.0,
+      "cer_answer": 0.0
+     },
+     {
+      "type": "out/n1zamu/NCaptcha/anvil",
+      "file": "003.png",
+      "has_roi": true,
+      "gold_text": "9096",
+      "gold_answer": "9096",
+      "pred": "90ge",
+      "cer": 0.5,
+      "cer_answer": 0.5
+     },
+     {
+      "type": "out/n1zamu/NCaptcha/anvil",
+      "file": "004.png",
+      "has_roi": true,
+      "gold_text": "26321",
+      "gold_answer": "26321",
+      "pred": "26321",
+      "cer": 0.0,
+      "cer_answer": 0.0
+     },
+     {
+      "type": "out/n1zamu/NCaptcha/anvil",
+      "file": "005.png",
+      "has_roi": true,
+      "gold_text": "57250",
+      "gold_answer": "57250",
+      "pred": "57250",
+      "cer": 0.0,
+      "cer_answer": 0.0
+     },
+     {
+      "type": "out/n1zamu/NCaptcha/anvil",
+      "file": "006.png",
+      "has_roi": true,
+      "gold_text": "51110",
+      "gold_answer": "51110",
+      "pred": "51110",
+      "cer": 0.0,
+      "cer_answer": 0.0
+     },
+     {
+      "type": "out/n1zamu/NCaptcha/anvil",
+      "file": "007.png",
+      "has_roi": true,
+      "gold_text": "23962",
+      "gold_answer": "23962",
+      "pred": "23962",
+      "cer": 0.0,
+      "cer_answer": 0.0
+     },
+     {
+      "type": "out/n1zamu/NCaptcha/anvil",
+      "file": "008.png",
+      "has_roi": true,
+      "gold_text": "42303",
+      "gold_answer": "42303",
+      "pred": "42303",
+      "cer": 0.0,
+      "cer_answer": 0.0
+     },
+     {
+      "type": "out/ringoame196-s-mcPlugin/ReproductionCAPTCHA/map",
+      "file": "001.png",
+      "has_roi": true,
+      "gold_text": "F2311",
+      "gold_answer": "F2311",
+      "pred": "F2 31",
+      "cer": 0.2,
+      "cer_answer": 0.2
+     },
+     {
+      "type": "out/ringoame196-s-mcPlugin/ReproductionCAPTCHA/map",
+      "file": "002.png",
+      "has_roi": true,
+      "gold_text": "D9F60",
+      "gold_answer": "D9F60",
+      "pred": "D F 60",
+      "cer": 0.2,
+      "cer_answer": 0.2
+     },
+     {
+      "type": "out/ringoame196-s-mcPlugin/ReproductionCAPTCHA/map",
+      "file": "003.png",
+      "has_roi": true,
+      "gold_text": "12AA0",
+      "gold_answer": "12AA0",
+      "pred": "124",
+      "cer": 0.6,
+      "cer_answer": 0.6
+     },
+     {
+      "type": "out/ringoame196-s-mcPlugin/ReproductionCAPTCHA/map",
+      "file": "004.png",
+      "has_roi": true,
+      "gold_text": "8235A",
+      "gold_answer": "8235A",
+      "pred": "8 235",
+      "cer": 0.2,
+      "cer_answer": 0.2
+     },
+     {
+      "type": "out/ringoame196-s-mcPlugin/ReproductionCAPTCHA/map",
+      "file": "005.png",
+      "has_roi": true,
+      "gold_text": "F39ED",
+      "gold_answer": "F39ED",
+      "pred": "F?9ED",
+      "cer": 0.2,
+      "cer_answer": 0.2
+     },
+     {
+      "type": "out/ringoame196-s-mcPlugin/ReproductionCAPTCHA/map",
+      "file": "006.png",
+      "has_roi": true,
+      "gold_text": "FA6B8",
+      "gold_answer": "FA6B8",
+      "pred": "FA6s B 8",
+      "cer": 0.2,
+      "cer_answer": 0.2
+     },
+     {
+      "type": "out/ringoame196-s-mcPlugin/ReproductionCAPTCHA/map",
+      "file": "007.png",
+      "has_roi": true,
+      "gold_text": "3B2BD",
+      "gold_answer": "3B2BD",
+      "pred": "3B 2z0",
+      "cer": 0.4,
+      "cer_answer": 0.4
+     },
+     {
+      "type": "out/ringoame196-s-mcPlugin/ReproductionCAPTCHA/map",
+      "file": "008.png",
+      "has_roi": true,
+      "gold_text": "A75D5",
+      "gold_answer": "A75D5",
+      "pred": "7SD5",
+      "cer": 0.4,
+      "cer_answer": 0.4
+     }
+    ]
+   }
+  }
+ },
+ "ok": true,
+ "meta": {
+  "band/legacy64": {
+   "weights": {
+    "repo": "EasyOCR (JaidedAI/EasyOCR) + en detection/recognition weights",
+    "revision": "en model of easyocr 1.7.2 (bundled with the package)"
+   },
+   "preprocessing": "EasyOCR readtext on the numpy (BGR) band crop (detector + recogniser)",
+   "runtime": {
+    "package": "easyocr 1.7.2",
+    "device": "cpu"
+   }
+  }
+ }
+}

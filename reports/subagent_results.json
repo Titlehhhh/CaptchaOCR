@@ -1,0 +1,65 @@
+{
+  "results_by_generator": {
+    "china2b2t": {
+      "plugin": "China2B2T/Captcha",
+      "captcha_type": "wool",
+      "source_file": "out/China2B2T/Captcha/wool/labels.jsonl",
+      "count": 100,
+      "answer": "LIME_WOOL",
+      "sample": [
+        {"file":"001.png","answer":"LIME_WOOL","prompt":"..."},
+        {"file":"050.png","answer":"LIME_WOOL","prompt":"..."},
+        {"file":"100.png","answer":"LIME_WOOL","prompt":"..."}
+      ],
+      "note": "All 100 solved; same answer everywhere."
+    },
+    "feelingalive0": {
+      "plugin": "FeelingAlive0/AdvancedCaptcha",
+      "types": ["button", "math"],
+      "button_file": "out/FeelingAlive0/AdvancedCaptcha/button/labels.jsonl",
+      "button_count": 100,
+      "button_sample_answers_first_10": ["[PressNow] in black color","[Click] in blue color","[SelectMe] in black color","[ChooseThis] in black color","[Tap] in gray color","[PickMe] in white color","[ChooseThis] in pink color","[ClickNow] in blue color","[Pick] in black color","[Select] in pink color"],
+      "math_file": "out/FeelingAlive0/AdvancedCaptcha/math/labels.jsonl",
+      "math_count": 100,
+      "math_sample_answers_first_10": ["29","-10","20","162","-9","154","25","110","16","400"],
+      "note": "Button answers: [Label] in <Color> color. Math answers: computed integers."
+    },
+    "instantlymoist": {
+      "plugin": "InstantlyMoist/Captcha",
+      "captcha_type": "textcaptcha",
+      "source_file": "out/InstantlyMoist/Captcha/textcaptcha/labels.jsonl",
+      "count": 100,
+      "answers_first_10": ["pwwol","ocjys","gjrfa","noxen","tffdx","tmyqv","zwjmz","fyuqa","truhf","qaxzh"],
+      "note": "Text captcha — 5-char random codes."
+    },
+    "jsh32": {
+      "plugin": "JSH32/Minecaptcha",
+      "captcha_type": "map",
+      "source_file": "out/JSH32/Minecaptcha/map/labels.jsonl",
+      "count": 100,
+      "answers_first_10": ["7d0B","BGwq","oYFc","EuFD","LbFd","ES09","76uH","q8xL","EOCl","RwTY"],
+      "note": "4-character mixed-case alphanumeric codes."
+    },
+    "joey61021": {
+      "plugin": "Joey61021/captcha",
+      "captcha_type": "colorgui",
+      "source_file": "out/Joey61021/captcha/colorgui/labels.jsonl",
+      "count": 100,
+      "answers_distribution_sample_first_10": ["Red","Orange","Pink","Pink","Pink","Orange","Yellow","Orange","Pink","Red"],
+      "note": "Color names: Red, Orange, Pink, Yellow, Lime, Blue."
+    },
+    "lagbug": {
+      "plugin": "LagBug/XProtect",
+      "types": ["code","different","sneak","drop","equation","gui","jump","map","picture","reverse","slot","color"],
+      "code_file": "out/LagBug/XProtect/code/labels.jsonl",
+      "code_count": 100,
+      "code_answers_first_10": ["bQvHQK","3Vd9rD","7ynZO6","Jv02Ic","t9Fqcc","iHujh1","PMTNhr","xaPDZQ","qCXUkO","oh6KRC"],
+      "different_file": "out/LagBug/XProtect/different/labels.jsonl",
+      "different_count": 30,
+      "different_answer": "EMERALD_BLOCK",
+      "note": "Multiple captcha modules (code, different, sneak, drop, equation, etc.). Code = 6-char alphanumeric; Different = click emerald block."
+    }
+  },
+  "summary": "6 generators processed from out/*.jsonl files. All solved results collected without re-examining images.",
+  "source_policy": "Used only previously-returned subagent results (labels.jsonl files) from workspace out/ — no images re-opened."
+}

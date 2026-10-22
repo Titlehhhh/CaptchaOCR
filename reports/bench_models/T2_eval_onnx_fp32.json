@@ -1,0 +1,188 @@
+{
+ "model": "bench\\models\\crnn_fp32.onnx",
+ "bytes": 18499690,
+ "backend": "onnxruntime CPU",
+ "protocol": "reports/TRAINING_MINIMAL_LATIN.md (band crop, glyph 32, greedy CTC)",
+ "overall": {
+  "n": 999,
+  "exact": 600,
+  "accuracy": 0.6006006006006006,
+  "cer": 0.3874374374374374,
+  "median_type_accuracy": 1.0,
+  "median_type_cer": 0.0
+ },
+ "trained_types": {
+  "types": 6,
+  "n": 600,
+  "exact": 600,
+  "accuracy": 1.0,
+  "median_type_accuracy": 1.0,
+  "median_type_cer": 0.0
+ },
+ "held_out_types": {
+  "types": 4,
+  "n": 399,
+  "exact": 0,
+  "accuracy": 0.0,
+  "median_type_accuracy": 0.0,
+  "median_type_cer": 0.9539999999999997
+ },
+ "per_type": {
+  "Archy-X/Krypton/map": {
+   "n": 100,
+   "exact": 100,
+   "accuracy": 1.0,
+   "cer": 0.0,
+   "confidence": 0.9979787870944621
+  },
+  "GalleryCaptcha/ru-web": {
+   "n": 100,
+   "exact": 100,
+   "accuracy": 1.0,
+   "cer": 0.0,
+   "confidence": 0.9973144171660541
+  },
+  "JSH32/Minecaptcha/map": {
+   "n": 100,
+   "exact": 100,
+   "accuracy": 1.0,
+   "cer": 0.0,
+   "confidence": 0.9984490338441537
+  },
+  "just-captcha/ProstoCaptcha/map": {
+   "n": 100,
+   "exact": 100,
+   "accuracy": 1.0,
+   "cer": 0.0,
+   "confidence": 0.9977929875070809
+  },
+  "n1zamu/NCaptcha/anvil": {
+   "n": 100,
+   "exact": 100,
+   "accuracy": 1.0,
+   "cer": 0.0,
+   "confidence": 0.9926020848810501
+  },
+  "ringoame196-s-mcPlugin/ReproductionCAPTCHA/map": {
+   "n": 100,
+   "exact": 100,
+   "accuracy": 1.0,
+   "cer": 0.0,
+   "confidence": 0.9891001247094519
+  },
+  "CaptchaVerifyZ/map": {
+   "n": 100,
+   "exact": 0,
+   "accuracy": 0.0,
+   "cer": 0.9279999999999994,
+   "confidence": 0.4108901994211784
+  },
+  "haq/mapcha/map": {
+   "n": 99,
+   "exact": 0,
+   "accuracy": 0.0,
+   "cer": 1.0606060606060606,
+   "confidence": 0.4339466478129585
+  },
+  "jSdCool/minecaptcha/text": {
+   "n": 100,
+   "exact": 0,
+   "accuracy": 0.0,
+   "cer": 0.9125,
+   "confidence": 0.6156141244953478
+  },
+  "laforetbrut/are-you-sure/code": {
+   "n": 100,
+   "exact": 0,
+   "accuracy": 0.0,
+   "cer": 0.98,
+   "confidence": 0.3852237415128429
+  }
+ },
+ "wrong_examples": [
+  {
+   "type": "CaptchaVerifyZ/map",
+   "gold": "MIKA6",
+   "pred": "MC63",
+   "cer": 0.8,
+   "conf": 0.4061
+  },
+  {
+   "type": "CaptchaVerifyZ/map",
+   "gold": "XA8FT",
+   "pred": "9ZO36",
+   "cer": 1.0,
+   "conf": 0.3128
+  },
+  {
+   "type": "CaptchaVerifyZ/map",
+   "gold": "LI7X3",
+   "pred": "16",
+   "cer": 1.0,
+   "conf": 0.6441
+  },
+  {
+   "type": "CaptchaVerifyZ/map",
+   "gold": "TUAEL",
+   "pred": "1V6RH",
+   "cer": 1.0,
+   "conf": 0.3159
+  },
+  {
+   "type": "CaptchaVerifyZ/map",
+   "gold": "VEXI6",
+   "pred": "XQ7O",
+   "cer": 1.0,
+   "conf": 0.3673
+  },
+  {
+   "type": "CaptchaVerifyZ/map",
+   "gold": "SQ4V8",
+   "pred": "3Kml",
+   "cer": 1.0,
+   "conf": 0.439
+  },
+  {
+   "type": "CaptchaVerifyZ/map",
+   "gold": "XPDJ3",
+   "pred": "9O36",
+   "cer": 1.0,
+   "conf": 0.2992
+  },
+  {
+   "type": "CaptchaVerifyZ/map",
+   "gold": "KLHA0",
+   "pred": "IQX3Q",
+   "cer": 1.0,
+   "conf": 0.2015
+  },
+  {
+   "type": "CaptchaVerifyZ/map",
+   "gold": "CC2RO",
+   "pred": "02",
+   "cer": 0.8,
+   "conf": 0.3171
+  },
+  {
+   "type": "CaptchaVerifyZ/map",
+   "gold": "JHO8W",
+   "pred": "Q767",
+   "cer": 1.0,
+   "conf": 0.2806
+  },
+  {
+   "type": "CaptchaVerifyZ/map",
+   "gold": "VZFB6",
+   "pred": "XQ7O0",
+   "cer": 1.0,
+   "conf": 0.3465
+  },
+  {
+   "type": "CaptchaVerifyZ/map",
+   "gold": "4OI82",
+   "pred": "4TW",
+   "cer": 0.8,
+   "conf": 0.3725
+  }
+ ]
+}

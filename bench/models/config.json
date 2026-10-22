@@ -1,0 +1,49 @@
+{
+ "name": "captcha-crnn-ctc",
+ "charset": "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz",
+ "blank_index": 0,
+ "num_classes": 63,
+ "input": {
+  "layout": "NCHW",
+  "channels": 1,
+  "glyph_height": 32,
+  "width": "dynamic (T = W/4 time steps)",
+  "min_width": 64,
+  "max_width": 400
+ },
+ "preprocess": {
+  "crop": "roi = [x, y, w, h] from labels.jsonl; null = the whole frame",
+  "grayscale": "PIL 'L' (ITU-R 601-2)",
+  "glyph_height": "the median height of the busy rows of the band",
+  "resize": "PIL BILINEAR to (w, 32)",
+  "normalise": "(x/255 - 0.5) / 0.5",
+  "mean": 0.5,
+  "std": 0.5
+ },
+ "decode": "greedy CTC: argmax, collapse repeats, drop the blank",
+ "source_checkpoint": "train/run/main/ckpt/step_0005700.pt",
+ "onnx": {
+  "file": "crnn_fp32.onnx",
+  "opset": 17,
+  "bytes": 18499690,
+  "input_name": "image",
+  "output_name": "logits",
+  "dynamic_axes": {
+   "image": [
+    "batch",
+    "width"
+   ],
+   "logits": [
+    "batch",
+    "time"
+   ]
+  }
+ },
+ "checkpoint": {
+  "path": "train/run/main/ckpt/step_0005700.pt",
+  "step": 5700,
+  "epoch": 0,
+  "parameters": 4623615,
+  "charset": "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+ }
+}

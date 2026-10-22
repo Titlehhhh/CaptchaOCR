@@ -1,0 +1,100 @@
+{
+ "model": "train\\run\\main\\ckpt\\step_0005700.pt",
+ "backend": "pytorch cuda",
+ "overall": {
+  "n": 999,
+  "exact": 600,
+  "accuracy": 0.6006006006006006,
+  "cer": 0.3874374374374374,
+  "median_type_accuracy": 1.0,
+  "median_type_cer": 0.0
+ },
+ "trained_types": {
+  "types": 6,
+  "n": 600,
+  "exact": 600,
+  "accuracy": 1.0,
+  "median_type_accuracy": 1.0,
+  "median_type_cer": 0.0
+ },
+ "held_out_types": {
+  "types": 4,
+  "n": 399,
+  "exact": 0,
+  "accuracy": 0.0,
+  "median_type_accuracy": 0.0,
+  "median_type_cer": 0.9539999999999997
+ },
+ "per_type": {
+  "Archy-X/Krypton/map": {
+   "n": 100,
+   "exact": 100,
+   "accuracy": 1.0,
+   "cer": 0.0,
+   "confidence": 0.9979787800192591
+  },
+  "GalleryCaptcha/ru-web": {
+   "n": 100,
+   "exact": 100,
+   "accuracy": 1.0,
+   "cer": 0.0,
+   "confidence": 0.997314411589791
+  },
+  "JSH32/Minecaptcha/map": {
+   "n": 100,
+   "exact": 100,
+   "accuracy": 1.0,
+   "cer": 0.0,
+   "confidence": 0.9984490275792609
+  },
+  "just-captcha/ProstoCaptcha/map": {
+   "n": 100,
+   "exact": 100,
+   "accuracy": 1.0,
+   "cer": 0.0,
+   "confidence": 0.9977929866175252
+  },
+  "n1zamu/NCaptcha/anvil": {
+   "n": 100,
+   "exact": 100,
+   "accuracy": 1.0,
+   "cer": 0.0,
+   "confidence": 0.9926020439764125
+  },
+  "ringoame196-s-mcPlugin/ReproductionCAPTCHA/map": {
+   "n": 100,
+   "exact": 100,
+   "accuracy": 1.0,
+   "cer": 0.0,
+   "confidence": 0.9891000933043537
+  },
+  "CaptchaVerifyZ/map": {
+   "n": 100,
+   "exact": 0,
+   "accuracy": 0.0,
+   "cer": 0.9279999999999994,
+   "confidence": 0.4108900529027816
+  },
+  "haq/mapcha/map": {
+   "n": 99,
+   "exact": 0,
+   "accuracy": 0.0,
+   "cer": 1.0606060606060606,
+   "confidence": 0.4339466711647548
+  },
+  "jSdCool/minecaptcha/text": {
+   "n": 100,
+   "exact": 0,
+   "accuracy": 0.0,
+   "cer": 0.9125,
+   "confidence": 0.615614073520796
+  },
+  "laforetbrut/are-you-sure/code": {
+   "n": 100,
+   "exact": 0,
+   "accuracy": 0.0,
+   "cer": 0.98,
+   "confidence": 0.3852237361351408
+  }
+ }
+}

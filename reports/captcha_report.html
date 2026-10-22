@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Captcha Dataset — 10 генераторов x 5 капч</title>
+<style>
+  :root{--bg:#14161c;--card:#1b1f28;--border:#2a2f3a;--text:#e8e8ec;--muted:#8a90a0;--accent:#8cf;--green:#7fdf9a;--shadow:rgba(0,0,0,.45)}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:system-ui,-apple-system,Segoe UI,sans-serif;background:var(--bg);color:var(--text);line-height:1.55;padding:36px 24px}
+  .wrap{max-width:1200px;margin:0 auto}
+  header{text-align:center;margin-bottom:48px;padding-bottom:28px;border-bottom:1px solid var(--border)}
+  header h1{font-size:32px;margin:0 0 8px;letter-spacing:-.03em;background:linear-gradient(135deg,#e8e8ec 0%,#8cf 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+  header p{margin:0;color:var(--muted);font-size:15px}
+  .badge{display:inline-block;padding:3px 10px;border-radius:999px;background:var(--border);color:var(--accent);font-size:12px;margin-top:10px;font-weight:600;letter-spacing:.02em}
+  section{margin-bottom:64px}
+  .gen-title{font-size:22px;margin:0 0 24px;padding-bottom:10px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px}
+  .dot{width:8px;height:8px;border-radius:50%;background:linear-gradient(135deg,#8cf,#7fdf9a);box-shadow:0 0 8px rgba(140,204,252,.35);flex-shrink:0}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:18px}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;transition:transform .18s ease, box-shadow .18s ease, border-color .18s ease}
+  .card:hover{transform:translateY(-4px);box-shadow:0 14px 28px var(--shadow);border-color:#3a4152}
+  .card img{width:100%;aspect-ratio:4/3;object-fit:contain;display:block;background:#0d0f15;border-radius:8px;border:1px solid #23263a;padding:6px;margin-bottom:10px;image-rendering:pixelated}
+  .label{font-size:12px;color:var(--muted);margin-bottom:2px}
+  .value{font-size:14px;font-weight:600;font-family:ui-monospace,SFMono-Regular,Menlo,Courier New,monospace;color:var(--text)}
+  .solved{color:var(--green);font-weight:700}
+  footer{text-align:center;color:var(--muted);font-size:12px;margin-top:60px;padding-top:20px;border-top:1px solid var(--border)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Captcha Dataset</h1>
+    <p>10 генераторов &times; 5 капч — визуальный отчёт с решениями из контекста беседы</p>
+    <span class="badge">10 генераторов &times; 5 изображений</span>
+  </header>
+
+  <section>
+    <h2 class="gen-title"><span class="dot"></span>Archy-X Krypton map</h2>
+    <div class="grid">
+      <div class="card"><img src="./out/Archy-X/Krypton/map/001.png" alt="Krypton 001"><div class="label">Оригинал: 001</div><div class="value">Решено: <span class="solved">32891</span></div></div>
+      <div class="card"><img src="./out/Archy-X/Krypton/map/002.png" alt="Krypton 002"><div class="label">Оригинал: 002</div><div class="value">Решено: <span class="solved">CZKmG</span></div></div>
+      <div class="card"><img src="./out/Archy-X/Krypton/map/003.png" alt="Krypton 003"><div class="label">Оригинал: 003</div><div class="value">Решено: <span class="solved">4e6d7</span> <span style="color:#777;font-weight:400;font-size:11px">(визуально)</span></div></div>
+      <div class="card"><img src="./out/Archy-X/Krypton/map/004.png" alt="Krypton 004"><div class="label">Оригинал: 004</div><div class="value">Решено: <span class="solved">MEh7h</span></div></div>
+      <div class="card"><img src="./out/Archy-X/Krypton/map/005.png" alt="Krypton 005"><div class="label">Оригинал: 005</div><div class="value">Решено: <span class="solved">8v0pN</span></div></div>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="gen-title"><span class="dot"></span>China2B2T wool</h2>
+    <div class="grid">
+      <div class="card"><img src="./out/China2B2T/Captcha/wool/001.png" alt="China2B2T 001"><div class="label">Оригинал: 001</div><div class="value">Решено: <span class="solved">зелёный квадрат</span> <span style="color:#777;font-weight:400;font-size:11px">(визуально)</span></div></div>
+      <div class="card"><img src="./out/China2B2T/Captcha/wool/002.png" alt="China2B2T 002"><div class="label">Оригинал: 002</div><div class="value">Решено: <span class="solved">зелёный квадрат</span> <span style="color:#777;font-weight:400;font-size:11px">(визуально)</span></div></div>
+      <div class="card"><img src="./out/China2B2T/Captcha/wool/003.png" alt="China2B2T 003"><div class="label">Оригинал: 003</div><div class="value">Решено: <span class="solved">зелёный квадрат</span> <span style="color:#777;font-weight:400;font-size:11px">(визуально)</span></div></div>
+      <div class="card"><img src="./out/China2B2T/Captcha/wool/004.png" alt="China2B2T 004"><div class="label">Оригинал: 004</div><div class="value">Решено: <span class="solved">зелёный квадрат</span> <span style="color:#777;font-weight:400;font-size:11px">(визуально)</span></div></div>
+      <div class="card"><img src="./out/China2B2T/Captcha/wool/005.png" alt="China2B2T 005"><div class="label">Оригинал: 005</div><div class="value">Решено: <span class="solved">зелёный квадрат</span> <span style="color:#777;font-weight:400;font-size:11px">(визуально)</span></div></div>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="gen-title"><span class="dot"></span>FeelingAlive0 button</h2>
+    <div class="grid">
+      <div class="card"><img src="./out/FeelingAlive0/AdvancedCaptcha/button/001.png" alt="Button 001"><div class="label">Оригинал: 001</div><div class="value">Решено: <span class="solved">PressNow</span></div></div>
+      <div class="card"><img src="./out/FeelingAlive0/AdvancedCaptcha/button/002.png" alt="Button 002"><div class="label">Оригинал: 002</div><div class="value">Решено: <span class="solved">Click</span></div></div>
+      <div class="card"><img src="./out/FeelingAlive0/AdvancedCaptcha/button/003.png" alt="Button 003"><div class="label">Оригинал: 003</div><div class="value">Решено: <span class="solved">SelectMe</span></div></div>
+      <div class="card"><img src="./out/FeelingAlive0/AdvancedCaptcha/button/004.png" alt="Button 004"><div class="label">Оригинал: 004</div><div class="value">Решено: <span class="solved">ChooseThis</span></div></div>
+      <div class="card"><img src="./out/FeelingAlive0/AdvancedCaptcha/button/005.png" alt="Button 005"><div class="label">Оригинал: 005</div><div class="value">Решено: <span class="solved">Tap</span></div></div>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="gen-title"><span class="dot"></span>InstantlyMoist textcaptcha</h2>
+    <div class="grid">
+      <div class="card"><img src="./out/InstantlyMoist/Captcha/textcaptcha/001.png" alt="Text 001"><div class="label">Оригинал: 001</div><div class="value">Решено: <span class="solved">pwvda</span> <span style="color:#777;font-weight:400;font-size:11px">(визуально)</span></div></div>
+      <div class="card"><img src="./out/InstantlyMoist/Captcha/textcaptcha/002.png" alt="Text 002"><div class="label">Оригинал: 002</div><div class="value">Решено: <span class="solved">ocjg8</span> <span style="color:#777;font-weight:400;font-size:11px">(визуально)</span></div></div>
+      <div class="card"><img src="./out/InstantlyMoist/Captcha/textcaptcha/003.png" alt="Text 003"><div class="label">Оригинал: 003</div><div class="value">Решено: <span class="solved">grisa</span> <span style="color:#777;font-weight:400;font-size:11px">(визуально)</span></div></div>
+      <div class="card"><img src="./out/InstantlyMoist/Captcha/textcaptcha/004.png" alt="Text 004"><div class="label">Оригинал: 004</div><div class="value">Решено: <span class="solved">ne+on</span> <span style="color:#777;font-weight:400;font-size:11px">(визуально)</span></div></div>
+      <div class="card"><img src="./out/InstantlyMoist/Captcha/textcaptcha/005.png" alt="Text 005"><div class="label">Оригинал: 005</div><div class="value">Решено: <span class="solved">ffd*</span> <span style="color:#777;font-weight:400;font-size:11px">(визуально)</span></div></div>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="gen-title"><span class="dot"></span>JSH32 Minecaptcha map</h2>
+    <div class="grid">
+      <div class="card"><img src="./out/JSH32/Minecaptcha/map/001.png" alt="Mine 001"><div class="label">Оригинал: 001</div><div class="value">Решено: <span class="solved">7d0B</span></div></div>
+      <div class="card"><img src="./out/JSH32/Minecaptcha/map/002.png" alt="Mine 002"><div class="label">Оригинал: 002</div><div class="value">Решено: <span class="solved">BGwq</span></div></div>
+      <div class="card"><img src="./out/JSH32/Minecaptcha/map/003.png" alt="Mine 003"><div class="label">Оригинал: 003</div><div class="value">Решено: <span class="solved">oYFc</span></div></div>
+      <div class="card"><img src="./out/JSH32/Minecaptcha/map/004.png" alt="Mine 004"><div class="label">Оригинал: 004</div><div class="value">Решено: <span class="solved">EuFD</span></div></div>
+      <div class="card"><img src="./out/JSH32/Minecaptcha/map/005.png" alt="Mine 005"><div class="label">Оригинал: 005</div><div class="value">Решено: <span class="solved">LbFd</span></div></div>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="gen-title"><span class="dot"></span>Joey61021 colorgui</h2>
+    <div class="grid">
+      <div class="card"><img src="./out/Joey61021/captcha/colorgui/001.png" alt="Color 001"><div class="label">Оригинал: 001</div><div class="value">Решено: <span class="solved">Red</span> <span style="color:#777;font-weight:400;font-size:11px">(визуально)</span></div></div>
+      <div class="card"><img src="./out/Joey61021/captcha/colorgui/002.png" alt="Color 002"><div class="label">Оригинал: 002</div><div class="value">Решено: <span class="solved">Orange</span> <span style="color:#777;font-weight:400;font-size:11px">(визуально)</span></div></div>
+      <div class="card"><img src="./out/Joey61021/captcha/colorgui/003.png" alt="Color 003"><div class="label">Оригинал: 003</div><div class="value">Решено: <span class="solved">Purple</span> <span style="color:#777;font-weight:400;font-size:11px">(визуально)</span></div></div>
+      <div class="card"><img src="./out/Joey61021/captcha/colorgui/004.png" alt="Color 004"><div class="label">Оригинал: 004</div><div class="value">Решено: <span class="solved">Pink</span> <span style="color:#777;font-weight:400;font-size:11px">(визуально)</span></div></div>
+      <div class="card"><img src="./out/Joey61021/captcha/colorgui/005.png" alt="Color 005"><div class="label">Оригинал: 005</div><div class="value">Решено: <span class="solved">Green</span> <span style="color:#777;font-weight:400;font-size:11px">(визуально)</span></div></div>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="gen-title"><span class="dot"></span>LagBug XProtect code</h2>
+    <div class="grid">
+      <div class="card"><img src="./out/LagBug/XProtect/code/001.png" alt="Code 001"><div class="label">Оригинал: 001</div><div class="value">Решено: <span class="solved">bQvHQK</span></div></div>
+      <div class="card"><img src="./out/LagBug/XProtect/code/002.png" alt="Code 002"><div class="label">Оригинал: 002</div><div class="value">Решено: <span class="solved">3Vd9rD</span></div></div>
+      <div class="card"><img src="./out/LagBug/XProtect/code/003.png" alt="Code 003"><div class="label">Оригинал: 003</div><div class="value">Решено: <span class="solved">7ynZO6</span></div></div>
+      <div class="card"><img src="./out/LagBug/XProtect/code/004.png" alt="Code 004"><div class="label">Оригинал: 004</div><div class="value">Решено: <span class="solved">Jv02Ic</span></div></div>
+      <div class="card"><img src="./out/LagBug/XProtect/code/005.png" alt="Code 005"><div class="label">Оригинал: 005</div><div class="value">Решено: <span class="solved">t9Fqcc</span></div></div>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="gen-title"><span class="dot"></span>jonesdevelopment sonar complex</h2>
+    <div class="grid">
+      <div class="card"><img src="./out/jonesdevelopment/sonar/complex/001.png" alt="Sonar 001"><div class="label">Оригинал: 001</div><div class="value">Решено: <span class="solved">noy</span></div></div>
+      <div class="card"><img src="./out/jonesdevelopment/sonar/complex/002.png" alt="Sonar 002"><div class="label">Оригинал: 002</div><div class="value">Решено: <span class="solved">tobn</span></div></div>
+      <div class="card"><img src="./out/jonesdevelopment/sonar/complex/003.png" alt="Sonar 003"><div class="label">Оригинал: 003</div><div class="value">Решено: <span class="solved">mkrv</span></div></div>
+      <div class="card"><img src="./out/jonesdevelopment/sonar/complex/004.png" alt="Sonar 004"><div class="label">Оригинал: 004</div><div class="value">Решено: <span class="solved">cibp</span></div></div>
+      <div class="card"><img src="./out/jonesdevelopment/sonar/complex/005.png" alt="Sonar 005"><div class="label">Оригинал: 005</div><div class="value">Решено: <span class="solved">etof</span></div></div>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="gen-title"><span class="dot"></span>haq mapcha map</h2>
+    <div class="grid">
+      <div class="card"><img src="./out/haq/mapcha/map/001.png" alt="Mapcha 001"><div class="label">Оригинал: 001</div><div class="value">Решено: <span class="solved">M0Vk</span></div></div>
+      <div class="card"><img src="./out/haq/mapcha/map/002.png" alt="Mapcha 002"><div class="label">Оригинал: 002</div><div class="value">Решено: <span class="solved">IhzG</span></div></div>
+      <div class="card"><img src="./out/haq/mapcha/map/003.png" alt="Mapcha 003"><div class="label">Оригинал: 003</div><div class="value">Решено: <span class="solved">1bDH</span></div></div>
+      <div class="card"><img src="./out/haq/mapcha/map/004.png" alt="Mapcha 004"><div class="label">Оригинал: 004</div><div class="value">Решено: <span class="solved">NfB3</span></div></div>
+      <div class="card"><img src="./out/haq/mapcha/map/005.png" alt="Mapcha 005"><div class="label">Оригинал: 005</div><div class="value">Решено: <span class="solved">iePG</span></div></div>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="gen-title"><span class="dot"></span>irootdev captcha</h2>
+    <div class="grid">
+      <div class="card"><img src="./out/irootdev/AnBot/captcha/001.png" alt="Root 001"><div class="label">Оригинал: 001</div><div class="value">Решено: <span class="solved">eth</span></div></div>
+      <div class="card"><img src="./out/irootdev/AnBot/captcha/002.png" alt="Root 002"><div class="label">Оригинал: 002</div><div class="value">Решено: <span class="solved">120</span></div></div>
+      <div class="card"><img src="./out/irootdev/AnBot/captcha/003.png" alt="Root 003"><div class="label">Оригинал: 003</div><div class="value">Решено: <span class="solved">4ai</span></div></div>
+      <div class="card"><img src="./out/irootdev/AnBot/captcha/004.png" alt="Root 004"><div class="label">Оригинал: 004</div><div class="value">Решено: <span class="solved">950</span></div></div>
+      <div class="card"><img src="./out/irootdev/AnBot/captcha/005.png" alt="Root 005"><div class="label">Оригинал: 005</div><div class="value">Решено: <span class="solved">3v1</span></div></div>
+    </div>
+  </section>
+
+  <footer>Captcha Dataset — 10 генераторов &times; 5 капч &middot; Отчёт с решениями из контекста беседы</footer>
+</div>
+</body>
+</html>

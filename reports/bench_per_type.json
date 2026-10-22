@@ -1,0 +1,281 @@
+{
+ "ours": {
+  "haq/mapcha/map": {
+   "run": "train\\run\\foldA",
+   "acc": 0.0,
+   "cer": 1.25,
+   "n": 8,
+   "per_type_acc": 0.0,
+   "per_type_cer": 1.25
+  },
+  "jSdCool/minecaptcha/text": {
+   "run": "train\\run\\foldB",
+   "acc": 0.0,
+   "cer": 0.921875,
+   "n": 8,
+   "per_type_acc": 0.0,
+   "per_type_cer": 0.921875
+  },
+  "just-captcha/ProstoCaptcha/map": {
+   "run": "train\\run\\foldB",
+   "acc": 0.0,
+   "cer": 0.9583333333333334,
+   "n": 8,
+   "per_type_acc": 0.0,
+   "per_type_cer": 0.9583333333333334
+  },
+  "laforetbrut/are-you-sure/code": {
+   "run": "train\\run\\main",
+   "acc": 0.0,
+   "cer": 0.9791666666666667,
+   "n": 8,
+   "per_type_acc": 0.0,
+   "per_type_cer": 0.9791666666666667
+  },
+  "n1zamu/NCaptcha/anvil": {
+   "run": "train\\run\\foldA",
+   "acc": 0.0,
+   "cer": 1.0625,
+   "n": 8,
+   "per_type_acc": 0.0,
+   "per_type_cer": 1.0625
+  }
+ },
+ "per_type": [
+  {
+   "type": "haq/mapcha/map",
+   "ours": {
+    "run": "train\\run\\foldA",
+    "acc": 0.0,
+    "cer": 1.25,
+    "n": 8,
+    "per_type_acc": 0.0,
+    "per_type_cer": 1.25
+   },
+   "anuashok/ocr-captcha-v3": {
+    "n": 8,
+    "accuracy": 0.0,
+    "cer": 1.0625
+   },
+   "EasyOCR/en": {
+    "n": 8,
+    "accuracy": 0.0,
+    "cer": 5.9375
+   },
+   "Graf-J/captcha-crnn-finetuned": {
+    "n": 8,
+    "accuracy": 0.0,
+    "cer": 0.75
+   },
+   "Graf-J/captcha-conv-transformer-finetuned": {
+    "n": 8,
+    "accuracy": 0.0,
+    "cer": 0.65625
+   },
+   "AndresDev/captCHAD [onnx fp32]": {
+    "n": 8,
+    "accuracy": 0.0,
+    "cer": 0.96875
+   },
+   "AndresDev/captCHAD [onnx int8]": {
+    "n": 8,
+    "accuracy": 0.0,
+    "cer": 1.0
+   },
+   "FlanChanXwO/phpwind-captcha-ocr [onnx]": {
+    "n": 8,
+    "accuracy": 0.0,
+    "cer": 1.0
+   }
+  },
+  {
+   "type": "jSdCool/minecaptcha/text",
+   "ours": {
+    "run": "train\\run\\foldB",
+    "acc": 0.0,
+    "cer": 0.921875,
+    "n": 8,
+    "per_type_acc": 0.0,
+    "per_type_cer": 0.921875
+   },
+   "anuashok/ocr-captcha-v3": {
+    "n": 8,
+    "accuracy": 0.0,
+    "cer": 0.96875
+   },
+   "EasyOCR/en": {
+    "n": 8,
+    "accuracy": 0.0,
+    "cer": 0.96875
+   },
+   "Graf-J/captcha-crnn-finetuned": {
+    "n": 8,
+    "accuracy": 0.25,
+    "cer": 0.15625
+   },
+   "Graf-J/captcha-conv-transformer-finetuned": {
+    "n": 8,
+    "accuracy": 0.5,
+    "cer": 0.09375
+   },
+   "AndresDev/captCHAD [onnx fp32]": {
+    "n": 8,
+    "accuracy": 0.0,
+    "cer": 1.0
+   },
+   "AndresDev/captCHAD [onnx int8]": {
+    "n": 8,
+    "accuracy": 0.0,
+    "cer": 1.0
+   },
+   "FlanChanXwO/phpwind-captcha-ocr [onnx]": {
+    "n": 8,
+    "accuracy": 0.0,
+    "cer": 1.0
+   }
+  },
+  {
+   "type": "just-captcha/ProstoCaptcha/map",
+   "ours": {
+    "run": "train\\run\\foldB",
+    "acc": 0.0,
+    "cer": 0.9583333333333334,
+    "n": 8,
+    "per_type_acc": 0.0,
+    "per_type_cer": 0.9583333333333334
+   },
+   "anuashok/ocr-captcha-v3": {
+    "n": 8,
+    "accuracy": 0.0,
+    "cer": 0.9583333333333334
+   },
+   "EasyOCR/en": {
+    "n": 8,
+    "accuracy": 0.0,
+    "cer": 2.0833333333333335
+   },
+   "Graf-J/captcha-crnn-finetuned": {
+    "n": 8,
+    "accuracy": 0.0,
+    "cer": 0.8333333333333331
+   },
+   "Graf-J/captcha-conv-transformer-finetuned": {
+    "n": 8,
+    "accuracy": 0.0,
+    "cer": 0.8333333333333333
+   },
+   "AndresDev/captCHAD [onnx fp32]": {
+    "n": 8,
+    "accuracy": 0.0,
+    "cer": 1.0416666666666667
+   },
+   "AndresDev/captCHAD [onnx int8]": {
+    "n": 8,
+    "accuracy": 0.0,
+    "cer": 0.9375
+   },
+   "FlanChanXwO/phpwind-captcha-ocr [onnx]": {
+    "n": 8,
+    "accuracy": 0.0,
+    "cer": 0.9791666666666666
+   }
+  },
+  {
+   "type": "laforetbrut/are-you-sure/code",
+   "ours": {
+    "run": "train\\run\\main",
+    "acc": 0.0,
+    "cer": 0.9791666666666667,
+    "n": 8,
+    "per_type_acc": 0.0,
+    "per_type_cer": 0.9791666666666667
+   },
+   "anuashok/ocr-captcha-v3": {
+    "n": 8,
+    "accuracy": 0.0,
+    "cer": 1.0
+   },
+   "EasyOCR/en": {
+    "n": 8,
+    "accuracy": 0.0,
+    "cer": 3.0833333333333335
+   },
+   "Graf-J/captcha-crnn-finetuned": {
+    "n": 8,
+    "accuracy": 0.0,
+    "cer": 1.0
+   },
+   "Graf-J/captcha-conv-transformer-finetuned": {
+    "n": 8,
+    "accuracy": 0.0,
+    "cer": 1.0
+   },
+   "AndresDev/captCHAD [onnx fp32]": {
+    "n": 8,
+    "accuracy": 0.0,
+    "cer": 0.9791666666666666
+   },
+   "AndresDev/captCHAD [onnx int8]": {
+    "n": 8,
+    "accuracy": 0.0,
+    "cer": 0.9791666666666666
+   },
+   "FlanChanXwO/phpwind-captcha-ocr [onnx]": {
+    "n": 8,
+    "accuracy": 0.0,
+    "cer": 0.9791666666666667
+   }
+  },
+  {
+   "type": "n1zamu/NCaptcha/anvil",
+   "ours": {
+    "run": "train\\run\\foldA",
+    "acc": 0.0,
+    "cer": 1.0625,
+    "n": 8,
+    "per_type_acc": 0.0,
+    "per_type_cer": 1.0625
+   },
+   "anuashok/ocr-captcha-v3": {
+    "n": 8,
+    "accuracy": 0.0,
+    "cer": 0.975
+   },
+   "EasyOCR/en": {
+    "n": 8,
+    "accuracy": 0.0,
+    "cer": 2.3
+   },
+   "Graf-J/captcha-crnn-finetuned": {
+    "n": 8,
+    "accuracy": 0.25,
+    "cer": 0.45
+   },
+   "Graf-J/captcha-conv-transformer-finetuned": {
+    "n": 8,
+    "accuracy": 0.0,
+    "cer": 0.35625
+   },
+   "AndresDev/captCHAD [onnx fp32]": {
+    "n": 8,
+    "accuracy": 0.0,
+    "cer": 0.94375
+   },
+   "AndresDev/captCHAD [onnx int8]": {
+    "n": 8,
+    "accuracy": 0.0,
+    "cer": 0.91875
+   },
+   "FlanChanXwO/phpwind-captcha-ocr [onnx]": {
+    "n": 8,
+    "accuracy": 0.0,
+    "cer": 0.8999999999999999
+   }
+  }
+ ],
+ "ours_total": {
+  "n": 40,
+  "accuracy": 0.0,
+  "cer": 1.034375
+ }
+}

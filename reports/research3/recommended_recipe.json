@@ -1,0 +1,221 @@
+{
+  "schema_version": "1.0",
+  "task": "CaptchaOCR — дообучение распознавателя капт на 46 типах (31 OCR-тип) за 1-2 часа на GTX 1080 Ti",
+  "authored": "2026-10-22, агент R2 (reports/research3)",
+  "companion_report": "reports/research3/TRAINING_METHODS.md",
+  "prior_report_superseding": "reports/research2/E_training_methods.md",
+
+  "base_model": "PaddlePaddle/PP-OCRv6_medium_rec_safetensors",
+  "why": "Это единственная готовая модель с измеренной ненулевой обобщающей способностью на наших типах: PP-OCRv6_medium_rec даёт 0.40 exact match по полосам (HANDOVER.md §6.5), тогда как наш CRNN+CTC с нуля даёт 0.000 на невиданных типах (reports/TRAINING_MINIMAL_LATIN.md). Бэкбон pp_lcnet_v4 предобучен на 50 языках и 83.2% W-Avg на 15 категориях собственного бенчмарка PaddleOCR, а модель небольшая (19 176 118 параметров по метаданным safetensors) — влезает в 1080 Ti. В transformers 5.19.0 есть модуль pp_ocrv6_small_rec (класс PPOCRV6SmallRecForTextRecognition), а model_type в config.json этого репозитория именно pp_ocrv6_small_rec — то есть модель грузится нативно. ВАЖНО: pretrained-голова не переиспользуется — Linear(192 -> 18710) заменяется на Linear(192 -> наш charset), поэтому обучается только бэкбон, а голова инициализируется заново.",
+  "sources_for_why": [
+    {"claim": "PP-OCRv6_medium: 83.2% recognition accuracy, 86.2% detection Hmean, +5.1% к PP-OCRv5_server", "url": "https://arxiv.org/abs/2606.13108"},
+    {"claim": "model_type pp_ocrv6_small_rec, head_out_channels 18710, бэкбон pp_lcnet_v4", "url": "https://huggingface.co/PaddlePaddle/PP-OCRv6_medium_rec_safetensors/raw/main/config.json"},
+    {"claim": "safetensors: 19 176 118 параметров (F32), лицензия apache-2.0", "url": "https://huggingface.co/api/models/PaddlePaddle/PP-OCRv6_medium_rec_safetensors"},
+    {"claim": "процессор: size 48x320, ImageNet mean/std, pad_size 48x320, max_image_width 3200, character_list[0] = blank", "url": "https://huggingface.co/PaddlePaddle/PP-OCRv6_medium_rec_safetensors/raw/main/preprocessor_config.json"},
+    {"claim": "transformers 5.19.0 содержит модели pp_ocrv6_small_rec / pp_ocrv5_server_rec (проверено локально по .venv-gpu/Lib/site-packages/transformers/models)", "url": "https://huggingface.co/docs/transformers/index"},
+    {"claim": "Наше измерение: PP-OCRv6_medium_rec = 0.40 accuracy по полосам против 0.000 у нашего CRNN (локальный отчёт, не URL)", "url": "https://huggingface.co/api/models?search=PP-OCRv6&limit=20"}
+  ],
+
+  "preconditions": [
+    "ПОЧИНИТЬ или исключить два бага меток ДО обучения: (а) Archy-X/Krypton/map — полоса на 4 px уже текста, режет 5-й символ; (б) LagBug/XProtect/reverse — в поле text лежит перевёрнутая строка. СОСТОЯНИЕ НА МОМЕНТ СЕССИИ (2026-10-22, измерено git diff): обе правки УЖЕ лежат в рабочем дереве, но НЕ закоммичены и датасет НЕ перегенерирован — dataset/generator/dev/captha/gens/Krypton.java (+7 строк: w += Math.max(0, drawn - 1) в band()) и .../XProtect.java (+10 строк: переопределение text() -> return code). СЛЕДСТВИЕ: до пересборки датасета (Gen + tools/restore_real_shots.py) на диске лежат старые полосы и старые метки, поэтому до пересборки оба типа ИСКЛЮЧИТЬ из train, иначе лосс зашумён нефитимыми метками (HANDOVER.md §6.5).",
+    "Типы без полосы (roi = null) исключить из обучения (17 типов из 46) — флаг тренера --allow-no-roi только РАЗРЕШАЕТ их, флага --require-roi не существует (train/AGENTS.md §2).",
+    "Типы группы C (15 типов, не OCR) исключить: константные ответы (LagBug/XProtect/{drop,jump,sneak,different}, China2B2T/Captcha/wool), ответ-по-цвету, ответ-по-слоту, повёрнутые рамки (LimboFilter/framed2x2, framed3x3), ru-object-swatch, clickblock, FeelingAlive0/AdvancedCaptcha/button.",
+    "Запускать интерпретатором .venv-gpu/Scripts/python.exe (torch 2.14.1+cu126, sm_61 в arch_list) — системный python CPU-only."
+  ],
+
+  "implementation_notes": {
+    "model_load": "from transformers import PPOCRV6SmallRecForTextRecognition, PPOCRV6SmallRecModel, AutoImageProcessor; model = PPOCRV6SmallRecForTextRecognition.from_pretrained('PaddlePaddle/PP-OCRv6_medium_rec_safetensors'); processor = AutoImageProcessor.from_pretrained('PaddlePaddle/PP-OCRv6_medium_rec_safetensors')",
+    "head_replacement": "У cls head = nn.Linear(config.hidden_size, config.head_out_channels) (hidden_size=192, head_out_channels=18710). Заменить на nn.Linear(config.hidden_size, N_ours), где N_ours = 1 (blank) + размер нашего charset. Новая голова обучается с нуля, поэтому НЕ замораживать её и НЕ замораживать бэкбон.",
+    "loss": "В transformers-классе PPOCRV6SmallRecForTextRecognition НЕТ лосса и НЕТ аргумента labels (проверено чтением modeling_pp_ocrv6_small_rec.py) — CTC-потерю надо реализовать самим: лосс = torch.nn.functional.ctc_loss(log_probs, targets, input_lengths, target_lengths, blank=0, zero_infinity=True) на log_softmax выхода головы. Выход головы в классе уже содержит softmax — для ctc_loss нужен log_softmax, поэтому softmax в модели надо обойти (перехватить outputs.head_hidden_states либо заменить F.softmax на F.log_softmax в своём форке/патче).",
+    "constraint_T_ge_2L_plus_1": "Как и в нашей CRNN: для каждого сэмпла число кадров T должно быть >= 2L+1, где L — длина метки. Иначе ctc_loss даёт бесконечность (с zero_infinity=True — нули, что тоже ломает обучение). Ширину сэмппа надо расширять до выполнения условия.",
+    "decoding": "Greedy CTC: argmax по кадрам, collapse повторов, удалить blank (индекс 0), затем применить per-type маску charset и фильтр длины.",
+    "per_type_mask_table": "Строится автоматически из labels.jsonl: для каждого типа — множество допустимых символов (из поля text) и множество допустимых длин. Применяется НА ДЕКОДЕРЕ (не в лоссе): недопустимые символы маскируются в лог-вероятностях (-inf) до argmax, а после декодирования применяется фильтр длины с приоритетом ближайшей допустимой.",
+    "unified_charset": "Одна модель вместо двух (латиница/кириллица): раз голова обучается с нуля, объединённый charset ничего не стоит. Собирается как sorted(set(тексты всех train-типов)) + blank. Ожидаемый размер: 10 цифр + 26+26 латиницы + 33 кириллицы + пробел + арифметические знаки = примерно 110-130 классов (вычислить программно, не хардкодить)."
+  },
+
+  "input": {
+    "crop": "roi",
+    "crop_rule": "Кроп по полосе roi из labels.jsonl ([x,y,w,h]); для типов без roi сэмпл не используется. Кроппер — константа per-plugin, на инференсе плагин известен.",
+    "resize": {
+      "height": 48,
+      "height_meaning": "высота ГЛИФА в пикселях после масштабирования (как в процессоре PaddleOCR: size.height = 48). НЕ высота кадра.",
+      "width": "по аспекту: round(48 * w/h), clamp в [8, 3200] (max_image_width процессора)",
+      "pad": "правым паддингом до кратного 4; pad_size процессора = 48x320, приоритет — сохранить aspect, не растягивать",
+      "resample": "BILINEAR (PILImageResampling.BILINEAR — дефолт процессора)",
+      "note": "Точную семантику pad_size (pad-to vs pad-right) в этой сессии НЕ проверял — проверить визуально на одном батче перед длинным прогоном."
+    },
+    "channels": 3,
+    "normalization": "ImageNet: mean=(0.485,0.456,0.406), std=(0.229,0.224,0.225) (IMAGENET_STANDARD_MEAN/STD в процессоре), do_rescale в [0,1], do_convert_rgb=True",
+    "batch_pipeline": "roi-crop -> RGB -> resize (glyph height 48) -> scale [0,1] -> normalize -> pad; колонка метки = поле text (НЕ answer: в 8 типах из 46 text != answer)",
+    "differs_from_project_default": "Наша CRNN использует glyph height 32 и grayscale (1 канал) с нормализацией (x/255-0.5)/0.5. Здесь — претренированный бэкбон PaddleOCR, поэтому 48 px и 3 канала. Если бэкбон даёт плохой результат, первым A/B сделать height 32 без нормализации ImageNet (риск: бэкбон вне своего домена)."
+  },
+
+  "charset": {
+    "source": "Сгенерировать программно из labels.jsonl всех train-типов: charset = sorted(union(field text)); classes = [blank] + charset. Не хардкодить.",
+    "size_estimate": 115,
+    "size_estimate_note": "Оценка, не измерение: 10 цифр + 52 латинских + 33 кириллицы + пробел + знаки + - * / = . и т.п.",
+    "per_type_mask": true,
+    "per_type_mask_source": "labels.jsonl: для каждого типа — множество символов, встречающихся в его text, и множество длин. Применяется на декодере.",
+    "known_length_priors": {"CaptchaVerifyZ/map": [5], "GalleryCaptcha/ru-web": [5], "BotFilter/map": [4, 5]},
+    "length_prior_note": "Длины из HANDOVER.md §3.4; полный набор длин по типам выводится из labels.jsonl автоматически.",
+    "latin_cyrillic_split": "НЕ нужна: одна объединённая модель (голова обучается с нуля). Двухмодельный план HANDOVER §3.4 был нужен для 34-классной Model B; здесь он не обязателен."
+  },
+
+  "hyperparams": {
+    "max_steps": 12000,
+    "epochs": "не используется (бюджет считается в шагах; при ~97 шагов/эпоха на 24 типах это ~124 эпохи)",
+    "batch_size": 32,
+    "lr": 0.0001,
+    "lr_encoder": 0.0001,
+    "lr_decoder": 0.001,
+    "lr_note": "Разные LR: новая голова (192 -> ~115) обучается быстрее бэкбона. Ориентир из проекта: --head-lr = lr/10 (train/AGENTS.md §2) — здесь наоборот, голова НОВАЯ, ей нужен больший LR.",
+    "optimizer": "AdamW",
+    "schedule": "OneCycleLR",
+    "warmup": "5% от max_steps",
+    "precision": "fp16",
+    "precision_note": "AMP fp16 + torch.amp.GradScaler('cuda') — как уже сделано в train/train.py. bf16 на sm_61 НЕ нативный: torch.cuda.is_bf16_supported() возвращает True, но только через путь эмуляции (в .venv-gpu/Lib/site-packages/torch/cuda/__init__.py нативный bf16 требует major >= 8, у нас major = 6). Пробовать bf16 только как A/B и без GradScaler.",
+    "grad_clip": 1.0,
+    "weight_decay": 0.01,
+    "ema": {"enabled": true, "decay": 0.999, "note": "В проекте EMA не реализовано (grep по train/ не нашёл). Добавить: держать копию весов, оценивать по EMA-весам. Ожидание — стабилизация held-out метрики; эффект на наших данных НЕ измерен."},
+    "label_smoothing": 0.0,
+    "label_smoothing_note": "CTC здесь без сглаживания (как в текущем коде: CTCLoss(blank=0, zero_infinity=True)). Сглаживание для CTC не является стандартным приёмом; CASLS — это контекстно-зависимое сглаживание, отдельная работа, в этот рецепт не входит.",
+    "dropout": "не трогать (в модели его нет)",
+    "workers": 6,
+    "seed": 42,
+    "checkpoint_every_steps": 500,
+    "checkpoint_keep": 3,
+    "early_stopping": {"metric": "held_out_median_exact_match", "patience_evals": 4, "eval_every_steps": 500, "note": "Эпоху/чекпоинт выбирать по held-out ТИПАМ, а не по train loss — иначе мы выберем переобученный чекпоинт."}
+  },
+
+  "augmentation": [
+    {"name": "jpeg", "p": 0.3, "quality": "40-95", "notes": "Сжатие в проде есть всегда (скриншот/пережатие). Применять к финальному растру, после кропа. Второй проход q15-40 с p=0.10 — только если надо усилить."},
+    {"name": "webp", "p": 0.15, "quality": "45-90", "notes": "Альтернативный кодек в вебе; никогда ниже q12."},
+    {"name": "brightness_contrast", "p": 0.2, "notes": "Тема GUI / ночной режим / HDR-скриншот."},
+    {"name": "gaussian_blur", "p": 0.05, "notes": "Ресайз вниз + скриншот. В STR: Blur +0.9 п.п. для CRNN (STR-Fewer-Labels табл. 3) — держать малым."},
+    {"name": "scale_jitter", "p": 0.2, "notes": "Масштаб 0.9-1.1 от высоты глифа 48. Имитирует разный клиентский масштаб, а не искажение."},
+    {"name": "jpeg_noise", "p": 0.15, "notes": "Гауссов шум на декодированном растре — имитация скриншота с потерями."},
+    {"name": "affine_rotate_translate", "p": 0.0, "notes": "ВЫКЛЮЧЕНО по умолчанию: эффект на наших данных НЕ измерен (HANDOVER §7 M1: прогон с --augment-affine не выполнялся), а аугментация поверх уже искажённой синтетики в STR вредит (CRNN 75.8 -> 73.4). Включать только отдельным A/B с поворотом не больше ±3 градусов."},
+    {"name": "interference_curves", "p": 0.5, "notes": "ТОЛЬКО для 7 типов семейства LimboFilter (плагин рисует их всегда, в 1 пиксель). На остальных 39 типах — выключить: это артефакты, которых в проде нет."}
+  ],
+  "forbidden_augmentations": [
+    {"name": "horizontal_flip", "reason": "Меняет порядок символов; метрика — exact match, «ab» -> «ba» = ошибка."},
+    {"name": "random_rotate_90", "reason": "Вертикальная строка; в STR поворот поверх уже повёрнутого даёт 90 градусов."},
+    {"name": "random_resized_crop", "reason": "Может отрезать глифы; полоса roi уже точна."},
+    {"name": "text_augmentation", "reason": "Подмена символов = ложная метка, ломает exact match."},
+    {"name": "mixup_cutmix", "reason": "Смешивает два ответа в один — метка перестаёт соответствовать картинке."},
+    {"name": "strong_elastic", "reason": "Делает 8/B неоднозначными на глифе 3-4 px."}
+  ],
+
+  "split": {
+    "strategy": "type-held-out",
+    "grouping": "по ПЛАГИНУ, не по типу: если плагин даёт несколько типов (LimboFilter — 2, sonar — 3, GalleryCaptcha — 4), удерживаются ВСЕ его типы, иначе held-out не held-out.",
+    "folds_to_run_in_this_window": 2,
+    "folds_to_run_note": "В окне 1-2 часа реально 2 фолда, не 4: 4 фолда по 300 эпох не влезают с оценкой. Полный 4-фолд — отдельная сессия.",
+    "fold_A": {
+      "val_types": ["LimboFilter/map", "LimboFilter/symbols", "jonesdevelopment/sonar/standard", "jonesdevelopment/sonar/legacy", "jonesdevelopment/sonar/complex", "laforetbrut/are-you-sure/code", "n1zamu/NCaptcha/anvil"],
+      "val_plugins": ["LimboFilter", "jonesdevelopment/sonar", "laforetbrut/are-you-sure", "n1zamu/NCaptcha"],
+      "n_val_types": 7,
+      "rationale": "LimboFilter — единственный плагин с кириллицей среди удерживаемых: проверяем, что объединённый charset работает и модель не деградирует на кириллице при обучении без неё. sonar — три близких типа с цифрами: проверяем перенос внутри одного плагина. laforetbrut и NCaptcha — одиночные плагины с маленькими ответами, самый чистый тест на перенос."
+    },
+    "fold_B": {
+      "val_types": ["GalleryCaptcha/ru-numberword", "GalleryCaptcha/ru-numberword-caption", "GalleryCaptcha/ru-symbols", "GalleryCaptcha/ru-web", "Archy-X/Krypton/menu", "irootdev/AnBot/captcha", "haq/mapcha/map"],
+      "val_plugins": ["GalleryCaptcha", "Archy-X/Krypton", "irootdev/AnBot", "haq/mapcha"],
+      "n_val_types": 7,
+      "rationale": "GalleryCaptcha — 4 типа разной природы (русские слова-числа, символы, веб-капта) сразу в held-out: проверяем и кириллицу, и длины. Krypton/menu — длинная строка в GUI. AnBot и mapcha — одиночные плагины."
+    },
+    "train_types_all": [
+      "Archy-X/Krypton/map", "Archy-X/Krypton/menu", "FeelingAlive0/AdvancedCaptcha/math", "haq/mapcha/map",
+      "InstantlyMoist/Captcha/textcaptcha", "irootdev/AnBot/captcha", "jonesdevelopment/sonar/complex",
+      "jonesdevelopment/sonar/legacy", "jonesdevelopment/sonar/standard", "jSdCool/minecaptcha/text",
+      "JSH32/Minecaptcha/map", "just-captcha/ProstoCaptcha/map", "laforetbrut/are-you-sure/code",
+      "LagBug/XProtect/code", "LagBug/XProtect/equation", "LagBug/XProtect/gui", "LagBug/XProtect/map",
+      "LagBug/XProtect/picture", "LagBug/XProtect/reverse", "Mrbysco/Captcha/math", "n1zamu/NCaptcha/anvil",
+      "ringoame196-s-mcPlugin/ReproductionCAPTCHA/map", "Yukun99/Captchas/itemslot",
+      "GalleryCaptcha/ru-numberword", "GalleryCaptcha/ru-numberword-caption", "GalleryCaptcha/ru-symbols", "GalleryCaptcha/ru-web",
+      "BotFilter/map", "CaptchaVerifyZ/map", "LimboFilter/map", "LimboFilter/symbols"
+    ],
+    "train_types_count": 31,
+    "train_types_note": "31 OCR-тип из 46 = группы A (20) + B (11) по HANDOVER.md §2. Типы с известными багами меток (Archy-X/Krypton/map — полоса ýже текста; LagBug/XProtect/reverse — перевёрнутый text) ДОПОЛНИТЕЛЬНО исключить из train, пока не починены генераторы.",
+    "types_excluded_group_C": [
+      "LagBug/XProtect/drop", "LagBug/XProtect/jump", "LagBug/XProtect/sneak", "LagBug/XProtect/different",
+      "LagBug/XProtect/color", "LagBug/XProtect/slot", "China2B2T/Captcha/wool", "jSdCool/minecaptcha/image",
+      "LimboFilter/framed2x2", "LimboFilter/framed3x3", "GalleryCaptcha/ru-object-swatch",
+      "Joey61021/captcha/colorgui", "Z4OLLIEZ4/reCaptcha/captchasx", "CaptchaGUI/clickblock",
+      "FeelingAlive0/AdvancedCaptcha/button"
+    ],
+    "rationale": "Random split недопустим: 34.3% тестовых сэмплов имеют свой точный золотой ответ в обучающей половине, 9 типов протекают на 100% (HANDOVER §3.3). Единица обобщения — плагин. Группы C исключены: они не OCR (константный ответ, ответ по цвету, по слоту, повёрнутые рамки) и при type-uniform сэмплере перевзвешиваются."
+  },
+
+  "eval": {
+    "metrics": ["exact_match", "cer"],
+    "exact_match_definition": "доля сэмплов, где декодированная строка посимвольно равна золотой (метрика по полю text)",
+    "cer_definition": "(S + D + I) / N, где S/D/I — правки Левенштейна, N — длина эталона (text, НЕ answer)",
+    "per_type": true,
+    "aggregate": "median",
+    "aggregate_extra": ["mean", "worst_type"],
+    "report_also": [
+      "accuracy на ОБУЧАЕМЫХ типах (ожидается ~1.0) — контроль, что модель не вырвалась в 0.000 везде",
+      "held-out median exact match по 7 типам — это и есть метрика выбора чекпоинта",
+      "число шагов и минут, а не только эпохи",
+      "кривая лосса: all-blank плато CTC (лосс висит на ln(N)) — не баг, пока не прошло несколько тысяч шагов"
+    ],
+    "ci": {
+      "method": "bootstrap по ТИПАМ (resample типов, не сэмплов), 10000 перевыборок, репортировать [2.5%, 97.5%] для медианы",
+      "why": "на одном типе (n=100) exact match 0.40 имеет доверительный интервал примерно ±10 п.п.; различия меньше ~10 п.п. на одном типе — шум. Сравнивать медианы по >= 6 типам.",
+      "note": "Cluster-bootstrap по типам — стандартная практика; конкретную статью по bootstrap в STR я не проверял, это метод, а не цитата."
+    },
+    "honest_metrics": {
+      "solver_step": "В 8 типах из 46 text != answer (3 арифметических, 3 числовых словами, 2 в повёрнутых рамках). Модель оценивается по text; end-to-end точность для игрока считается отдельно после solver-шага (вычислить выражение, развернуть строку, слово->цифры). Не смешивать.",
+      "constant_answer_types": "5 типов с ровно одним уникальным ответом на 100 картинок — исключены из обучения и из метрики; их «точность 1.000» при random-угадывании 0.01 обманчива.",
+      "cropper_vs_model": "Измерено на наших капчах: по полосеroi точность в 16 раз выше, чем по целому кадру (PP-OCRv6_medium_rec: 0.5517 против 0.0345 на 29 типах с полосой). Значит метрики «по полосам» и «по кадру» — разные задачи и не должны попадать в одну таблицу. Чтобы отделить вклад кроппера от вклада модели, для каждой модели отчитать три числа: exact match по полосам, exact match по полосам с per-type маской, exact match по целому кадру. Разница (2-я минус 1-я) — вклад маски, (1-я минус 3-я) — вклад кроппера."
+    }
+  },
+
+  "budget": {
+    "expected_minutes": 100,
+    "expected_minutes_breakdown": "подготовка и проверка загрузки 10 + fold A (train 45 + eval 8) + fold B (train 45 + eval 8) = ~116; при нехватке времени — один фолд (A), 60 минут",
+    "expected_vram_gb": 8,
+    "expected_vram_note": "Оценка, не измерение: 19.2M параметров + AdamW-состояния (~0.3 ГБ fp32) + активации LCNet при 48x320 и batch 32.",
+    "expected_img_per_s": 300,
+    "expected_img_per_s_note": "Оценка по аналогии с измеренными 920 img/s для нашей 4.6M CRNN (HANDOVER §6.5); у PP-OCRv6 бэкбон в ~4 раза тяжелее, декодирование PNG остаётся узким местом. НЕ измерено на этом железе.",
+    "measured_machine": {"gpu": "NVIDIA GeForce GTX 1080 Ti", "vram": "11.8 GB", "compute_capability": [6, 1], "torch": "2.14.1+cu126", "transformers": "5.19.0", "python": "3.14.5", "arch_list_contains_sm_61": true}
+  },
+
+  "fallback": "Если основной путь не взлетел (модель не грузится, CTC-потеря не сходится, или held-out median exact match остался < 0.05 после 12000 шагов): (1) ПРОВЕРИТЬ, что проблема не в потере/маске — сначала нулевой-шаговый прогон: загрузить pretrained PP-OCRv6 и измерить exact match по полосам (должно быть около 0.40 по HANDOVER §6.5); если и это не 0.40 — проблема в кропе/масштабе, а не в обучении. (2) Откат на собственную CRNN+CTC (train/captcha_crnn.py, 4 623 615 параметров) и ПРЕТРЕНИНГ на публичном корпусе с максимумом стилей: squirelmail/dataset-BotDetect-CAPTCHA-Generator, архив dataset_1000_v2.tar.gz = 60 стилей x 1000 = 60 000 картинок за 308 МБ (Apache-2.0) — 40 минут претрейна, затем fine-tune на наших типах. Логика: наш CRNN с нуля даёт 0.000 из-за однообразия (46 стилей по 100), а 60 стилей BotDetect дают разнообразие, которого нет в нашем датасете. (3) Если и это не помогло — оставить PP-OCRv6 zero-shot и вложить оставшееся время в per-type маску charset/length (это бесплатная точность) и в починку двух багов меток.",
+
+  "not_verified": [
+    "Не проверял фактической загрузкой, что PaddlePaddle/PP-OCRv6_medium_rec_safetensors грузится в transformers 5.19.0 и что из неё получается exact match около 0.40 — это вывод из config.json, наличия модуля pp_ocrv6_small_rec и предыдущего измерения в проекте.",
+    "Не проверял семантику pad_size в процессоре (pad-to vs pad-right) — проверить визуально на одном батче.",
+    "Не проверял, что head_out_channels=18710 и символы из нашего charset пересекаются с character_list — не важно, голова переобучается с нуля.",
+    "Не измерил скорость PP-OCRv6 на этой машине (300 img/s — оценка).",
+    "Не запускал обучение; все числа «ожидаемой отдачи» — экстраполяция из литературы и наших прошлых измерений.",
+    "Не скачивал ни одного публичного корпуса; проверял только метаданные через HF API."
+  ],
+
+  "sources": [
+    {"claim": "PP-OCRv6_medium: 83.2% recognition accuracy; +5.1% к PP-OCRv5_server; параметры 1.5M-34.5M; 3.9x быстрее PP-OCRv5_mobile на Xeon", "url": "https://arxiv.org/abs/2606.13108"},
+    {"claim": "PP-OCRv5: 5M-параметров; качество определяется difficulty/accuracy/diversity данных, а не размером модели", "url": "https://arxiv.org/abs/2603.24373"},
+    {"claim": "PP-OCRv2: Enhanced CTCLoss в bag of tricks; +7% точности при той же стоимости инференса", "url": "https://arxiv.org/abs/2109.03144"},
+    {"claim": "SVTRv2 (ICCV 2025): CTC-модель обходит большинство EDTR по точности и скорости; semantic guidance module отбрасывается на инференсе", "url": "https://arxiv.org/abs/2411.15858"},
+    {"claim": "PARSeq: 91.9% на синтетике, 96.0% на реальных данных; внешняя LM может ошибочно исправлять верные предсказания", "url": "https://arxiv.org/abs/2207.06966"},
+    {"claim": "SATRN: +5.7 п.п. на irregular-бенчмарках (нужен для искривленного текста)", "url": "https://arxiv.org/abs/1910.04396"},
+    {"claim": "TrOCR: pretrain на синтетике + fine-tune на размеченных (end-to-end transformer, wordpiece-декодер)", "url": "https://arxiv.org/abs/2109.10282"},
+    {"claim": "SynthTIGER: 3568 шрифтов дают 85.9 против 85.1 при 2600 шрифтах и большем объёме; удаление post-processing -5.2, texture blending -3.9; подгонка распределения длин +2.1...+2.8", "url": "https://arxiv.org/html/2107.09313v1"},
+    {"claim": "STR-Fewer-Labels: аугментация на реальных данных CRNN 74.8 -> 80.0 (Crop+Rot); аугментация поверх синтетики 75.8 -> 73.4 (-2.4); pseudo-labeling +2.8; RotNet +1.3; Mean Teacher -0.2", "url": "https://arxiv.org/html/2103.04400v2"},
+    {"claim": "Union14M: 13 моделей на синтетике дают 66.53% на реальном бенчмарке против 87.03% на обычных — аналог нашего провала 0.000", "url": "https://arxiv.org/abs/2307.08723"},
+    {"claim": "StrDA: CRNN 84.4 -> 86.0 в среднем и 43.3 -> 47.8 на Union14M (self-training по доменным подмножествам)", "url": "https://arxiv.org/abs/2410.09913"},
+    {"claim": "STRAug: +1.30 п.п. для CRNN от ручных STR-аугментаций", "url": "https://arxiv.org/abs/2108.06949"},
+    {"claim": "PaddleOCR KD: +3% точности без затрат на инференс, до +5% с настройкой LR и структуры", "url": "https://www.paddleocr.ai/latest/en/version2.x/ppocr/model_compress/knowledge_distillation.html"},
+    {"claim": "torch.amp: AMP API; на Pascal нативный bf16 только при major >= 8, иначе только эмуляция", "url": "https://docs.pytorch.org/docs/2.14/amp.html"},
+    {"claim": "hammer888/captcha-data: 1 365 874 строки, parquet, колонки image+text, download_size 7.48 ГБ, лицензия НЕ объявлена (публиковать нельзя)", "url": "https://datasets-server.huggingface.co/info?dataset=hammer888/captcha-data"},
+    {"claim": "szili2011/captcha-ocr-dataset: ~1.8M, Apache-2.0, dataset.csv (filepath/text/length) + samples.zip, 15.46 ГБ", "url": "https://huggingface.co/datasets/szili2011/captcha-ocr-dataset/raw/main/README.md"},
+    {"claim": "squirelmail/dataset-BotDetect-CAPTCHA-Generator: 60 стилей (style0..59), Apache-2.0, dataset_1000_v2.tar.gz = 308 МБ, всего 41.8 ГБ — главный pretrain-корпус", "url": "https://huggingface.co/api/datasets/squirelmail/dataset-BotDetect-CAPTCHA-Generator"},
+    {"claim": "remiai3/synthetic-captchas-library: 44 письменности x 100 000, включая русский и украинский, CC-BY-4.0 — единственный найденный кириллический корпус", "url": "https://huggingface.co/datasets/remiai3/synthetic-captchas-library/raw/main/README.md"},
+    {"claim": "AvinashRicky/CaptchaOCR-500K: 500 000 строк (train 450k / val 25k / test 25k), parquet, MIT, 2.56 ГБ", "url": "https://datasets-server.huggingface.co/info?dataset=AvinashRicky/CaptchaOCR-500K"},
+    {"claim": "project-sloth/captcha-images: 10 000 реальных капч, features image+solution, WTFPL, 28.9 МБ", "url": "https://huggingface.co/api/datasets/project-sloth/captcha-images"},
+    {"claim": "NNEngine/Captcha-OCR: репозиторий ПУСТ (только README.md и .gitattributes, usedStorage 0) — данные отсутствуют, не использовать", "url": "https://huggingface.co/api/datasets/NNEngine/Captcha-OCR/tree/main"},
+    {"claim": "AttentionCaptcha/Captcha-images: GitHub API отдаёт 404 — репозиторий не найден, ссылка непригодна", "url": "https://api.github.com/repos/AttentionCaptcha/Captcha-images"},
+    {"claim": "Список капча-датасетов на HF, отсортированный по загрузкам", "url": "https://huggingface.co/api/datasets?search=captcha&limit=50&sort=downloads&direction=-1"},
+    {"claim": "datasets streaming: load_dataset(..., streaming=True) для parquet-корпусов", "url": "https://huggingface.co/docs/datasets/stream"}
+  ]
+}
