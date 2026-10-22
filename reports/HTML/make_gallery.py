@@ -55,6 +55,111 @@ FONT_STACK = {
     "mono": '"Cascadia Mono", Consolas, ui-monospace, "SFMono-Regular", Menlo, monospace',
 }
 
+#: The lightbox. Plain JavaScript, no dependencies, no CDN: the page stays self-contained.
+#: `__DATA__` is replaced with the measured samples of every type.
+LIGHTBOX_JS = """
+<script>
+(function () {
+  var TYPES = __DATA__;
+  var ti = 0, si = 0, lastFocus = null;
+  var lb = document.getElementById('lb');
+  var img = document.getElementById('lb-img');
+  var elType = document.getElementById('lb-type');
+  var elGold = document.getElementById('lb-gold');
+  var elPred = document.getElementById('lb-pred');
+  var elScore = document.getElementById('lb-score');
+  var elPos = document.getElementById('lb-pos');
+  var elHf = document.getElementById('lb-hf');
+  var elClose = document.getElementById('lb-close');
+
+  function render() {
+    var t = TYPES[ti], s = t.samples[si];
+    img.src = s.src;
+    img.alt = t.id + ' ' + s.file;
+    elType.textContent = t.id;
+    elGold.textContent = s.gold === null || s.gold === undefined ? '' : s.gold;
+    elPred.textContent = s.pred === '' ? '(пусто)' : s.pred;
+    elPred.className = s.ok ? 'ok' : 'bad';
+    elScore.textContent = (s.score === null || s.score === undefined) ? '-' : s.score.toFixed(3);
+    elPos.textContent = 'тип ' + (ti + 1) + '/' + TYPES.length +
+      ' · образец ' + (si + 1) + '/' + t.samples.length +
+      ' · exact ' + (t.exact * 100).toFixed(1) + '%' +
+      ' · CER ' + (t.cer === null || t.cer === undefined ? '-' : t.cer.toFixed(3));
+    elHf.href = t.hf;
+  }
+  function open(t, s) {
+    ti = t; si = s;
+    lastFocus = document.activeElement;
+    render();
+    lb.hidden = false;
+    document.body.style.overflow = 'hidden';
+    elClose.focus();
+  }
+  function close() {
+    lb.hidden = true;
+    document.body.style.overflow = '';
+    if (lastFocus && lastFocus.focus) { lastFocus.focus(); }
+  }
+  function stepSample(d) {
+    var n = TYPES[ti].samples.length;
+    si = (si + d + n) % n;
+  }
+  function stepType(d) {
+    ti = (ti + d + TYPES.length) % TYPES.length;
+    var n = TYPES[ti].samples.length;
+    if (si >= n) { si = n - 1; }
+  }
+  document.addEventListener('click', function (ev) {
+    var b = ev.target.closest ? ev.target.closest('.shot') : null;
+    if (b) { open(parseInt(b.getAttribute('data-t'), 10), parseInt(b.getAttribute('data-s'), 10)); }
+  });
+  lb.addEventListener('click', function (ev) { if (ev.target === lb) { close(); } });
+  elClose.addEventListener('click', close);
+  document.getElementById('lb-prev-sample').addEventListener('click', function () { stepSample(-1); render(); });
+  document.getElementById('lb-next-sample').addEventListener('click', function () { stepSample(1); render(); });
+  document.getElementById('lb-prev-type').addEventListener('click', function () { stepType(-1); render(); });
+  document.getElementById('lb-next-type').addEventListener('click', function () { stepType(1); render(); });
+  document.addEventListener('keydown', function (ev) {
+    if (lb.hidden) { return; }
+    var k = ev.key;
+    if (k === 'Escape') { ev.preventDefault(); close(); }
+    else if (k === 'ArrowLeft') { ev.preventDefault(); stepSample(-1); render(); }
+    else if (k === 'ArrowRight') { ev.preventDefault(); stepSample(1); render(); }
+    else if (k === 'ArrowUp' || k === 'PageUp') { ev.preventDefault(); stepType(-1); render(); }
+    else if (k === 'ArrowDown' || k === 'PageDown') { ev.preventDefault(); stepType(1); render(); }
+    else if (k === 'Home') { ev.preventDefault(); si = 0; render(); }
+    else if (k === 'End') { ev.preventDefault(); si = TYPES[ti].samples.length - 1; render(); }
+  });
+})();
+</script>
+"""
+
+LIGHTBOX_HTML = """
+<div class="lb" id="lb" hidden>
+  <div class="lb-panel" role="dialog" aria-modal="true" aria-label="Просмотр капчи">
+    <div class="lb-head">
+      <span class="mono lb-type" id="lb-type"></span>
+      <button type="button" class="lb-x" id="lb-close">Esc ✕ закрыть</button>
+    </div>
+    <div class="lb-imgwrap"><img id="lb-img" alt=""></div>
+    <div class="lb-meta">
+      <div><span class="k">написано (эталон)</span><b id="lb-gold"></b></div>
+      <div><span class="k">модель ответила</span><b id="lb-pred"></b></div>
+      <div><span class="k">уверенность</span><b id="lb-score"></b></div>
+      <div><span class="k">положение</span><span class="mono" id="lb-pos"></span>
+        <br><a class="more" id="lb-hf" target="_blank" rel="noopener">все 500 на Hugging Face →</a></div>
+    </div>
+    <div class="lb-nav">
+      <button type="button" id="lb-prev-sample">← образец</button>
+      <button type="button" id="lb-next-sample">образец →</button>
+      <button type="button" id="lb-prev-type">↑ тип</button>
+      <button type="button" id="lb-next-type">тип ↓</button>
+      <span class="mono lb-hint">←/→ образец · ↑/↓ или PgUp/PgDn тип · Esc закрыть</span>
+    </div>
+  </div>
+</div>
+"""
+
 
 def e(text) -> str:
     return html.escape(str(text if text is not None else ""))
@@ -219,25 +324,33 @@ def build():
 
     # -- the gallery blocks --------------------------------------------------- #
     blocks = []
-    for t in types_meta:
+    lightbox_types = []
+    for ti, t in enumerate(types_meta):
         tid = full_id(t)
         sb = sb_types.get(tid, {})
         acc = sb.get("exact_match")
         cer = sb.get("cer")
         hf = f"{HF_DATASET}/tree/main/data/{tid}"
         samples = []
-        for ex in sb.get("examples", []):
+        lb_samples = []
+        for si, ex in enumerate(sb.get("examples", [])):
             ok = ex.get("exact")
             verdict = "ok" if ok else "bad"
             pred = ex.get("pred") or "(пусто)"
+            src = f"img/t/{slug(tid)}/{ex['file']}"
+            lb_samples.append({"src": src, "file": ex["file"], "gold": ex.get("gold_text"),
+                               "pred": pred, "ok": bool(ok), "score": ex.get("score")})
             samples.append(
-                '<figure class="shot">'
-                f'<img loading="lazy" src="img/t/{e(slug(tid))}/{e(ex["file"])}" alt="{e(tid)} {e(ex["file"])}">'
-                f'<figcaption>'
+                f'<button type="button" class="shot" data-t="{ti}" data-s="{si}" '
+                f'aria-label="{e(tid)} {e(ex["file"])} — увеличить">'
+                f'<img loading="lazy" src="{e(src)}" alt="{e(tid)} {e(ex["file"])}">'
+                f'<span class="cap">'
                 f'<span class="mono file">{e(ex["file"])}</span>'
                 f'<span class="gt">написано: <b>{e(ex.get("gold_text"))}</b></span>'
                 f'<span class="pr {verdict}">модель: <b>{e(pred)}</b></span>'
-                '</figcaption></figure>')
+                '</span></button>')
+        lightbox_types.append({"id": tid, "hf": hf, "group": t["group"],
+                               "exact": acc, "cer": cer, "samples": lb_samples})
         solver = t.get("solver") or "—"
         blocks.append(
             '<article class="type-card">'
@@ -266,6 +379,11 @@ def build():
             f'<td class="lic">{e(m["license"])}</td>'
             f'<td class="note">{e(m["note"])}</td>'
             '</tr>')
+
+    # -- the lightbox ---------------------------------------------------------- #
+    lightbox_js = LIGHTBOX_JS.replace(
+        "__DATA__", json.dumps(lightbox_types, ensure_ascii=False))
+    lightbox_html = LIGHTBOX_HTML
 
     head = f"""<!DOCTYPE html>
 <html lang="ru">
@@ -340,15 +458,41 @@ tr:hover td{{background:var(--paper-raised)}}
 .tc-meta b{{color:var(--ink);font-weight:600}}
 .tc-solver{{color:var(--text-faint);font-size:.8125rem;margin:10px 0 0}}
 .shots{{display:grid;grid-template-columns:repeat(auto-fill,minmax(168px,1fr));gap:14px;margin-top:16px}}
-.shot{{margin:0;border:1px solid var(--rule);border-radius:var(--radius-sm);background:var(--paper);overflow:hidden}}
+.shot{{margin:0;padding:0;border:1px solid var(--rule);border-radius:var(--radius-sm);background:var(--paper);
+  overflow:hidden;text-align:left;font:inherit;color:inherit;cursor:pointer;
+  transition:border-color var(--quick) var(--ease),background-color var(--quick) var(--ease)}}
+.shot:hover{{border-color:var(--kinpaku-rich);background:var(--paper-raised)}}
+.shot:focus-visible{{outline:2px solid var(--patina-deep);outline-offset:3px}}
 .shot img{{display:block;width:100%;height:150px;object-fit:contain;background:var(--paper-deep);
   border-bottom:1px solid var(--rule)}}
-.shot figcaption{{padding:8px 10px 10px;font-size:.75rem;line-height:1.5;display:flex;flex-direction:column;gap:2px}}
+.shot .cap{{padding:8px 10px 10px;font-size:.75rem;line-height:1.5;display:flex;flex-direction:column;gap:2px}}
 .shot .file{{color:var(--text-mute-deep)}}
 .shot .gt{{color:var(--text-muted)}}
 .shot .gt b{{color:var(--ink);font-family:var(--mono);font-size:.75rem;word-break:break-all}}
 .shot .pr b{{font-family:var(--mono);font-size:.75rem;word-break:break-all}}
 .shot .pr.ok{{color:var(--patina-ink)}} .shot .pr.bad{{color:var(--vermilion)}}
+.lb{{position:fixed;inset:0;z-index:60;background:rgba(7,7,7,.84);display:flex;align-items:center;
+  justify-content:center;padding:clamp(12px,3vw,32px)}}
+.lb[hidden]{{display:none}}
+.lb-panel{{background:var(--paper-raised);border:1px solid rgba(255,255,255,.14);border-radius:var(--radius-sm);
+  width:min(1120px,94vw);max-height:94vh;display:flex;flex-direction:column;overflow:auto}}
+.lb-head{{display:flex;align-items:center;justify-content:space-between;gap:16px;
+  padding:12px 18px;border-bottom:1px solid var(--rule)}}
+.lb-type{{color:var(--ink);word-break:break-all}}
+.lb-imgwrap{{background:var(--paper-deep);padding:16px;display:flex;align-items:center;justify-content:center}}
+.lb-imgwrap img{{max-width:100%;max-height:60vh;min-width:320px;min-height:300px;object-fit:contain;display:block}}
+.lb-meta{{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:16px;
+  padding:16px 18px;border-top:1px solid var(--rule)}}
+.lb-meta .k{{display:block;font-family:var(--mono);font-size:.6875rem;letter-spacing:.12em;color:var(--text-mute-deep)}}
+.lb-meta b{{font-family:var(--mono);font-size:1rem;word-break:break-all;color:var(--ink)}}
+.lb-meta .ok{{color:var(--patina-ink)}} .lb-meta .bad{{color:var(--vermilion)}}
+.lb-nav{{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:0 18px 18px}}
+.lb-nav button,.lb-x{{font:inherit;font-size:.8125rem;min-height:32px;padding:0 12px;
+  border:1px solid var(--rule);border-radius:var(--radius-sm);background:var(--paper-raised);color:var(--ink);
+  cursor:pointer;transition:border-color var(--quick) var(--ease),background-color var(--quick) var(--ease)}}
+.lb-nav button:hover,.lb-x:hover{{border-color:var(--kinpaku-rich);background:var(--paper-deep)}}
+.lb-nav button:focus-visible,.lb-x:focus-visible{{outline:2px solid var(--patina-deep);outline-offset:3px}}
+.lb-hint{{margin-left:auto;color:var(--text-mute-deep)}}
 .badge-ok{{color:var(--patina-ink)}} .badge-bad{{color:var(--vermilion)}}
 code,.mono code{{font-family:var(--mono);font-size:.78rem;background:var(--paper-deep);padding:1px 5px;border-radius:var(--radius-sm)}}
 pre{{background:var(--instrument);color:var(--instrument-text);border-radius:var(--radius-sm);
@@ -410,7 +554,8 @@ footer{{border-top:1px solid var(--rule);margin-top:var(--section-pad);padding:2
     <h2>Галерея по типам</h2>
     <p class="hint">По шесть картинок на тип: что нарисовано, что ответила модель.
     Зелёным — точное совпадение, красным — ошибка. Ссылка «все 500 →» открывает папку типа
-    на Hugging Face.</p>
+    на Hugging Face. <b>Клик по картинке</b> открывает её крупно: ←/→ листают образцы этого типа,
+    ↑/↓ (или PgUp/PgDn) — соседние типы, Esc закрывает.</p>
   </div>
 {chr(10).join(blocks)}
 </section>
@@ -478,6 +623,8 @@ footer{{border-top:1px solid var(--rule);margin-top:var(--section-pad);padding:2
   замер сгенерирован {e(scoreboard["generated"])}</p>
 </footer>
 </div>
+{lightbox_html}
+{lightbox_js}
 </body>
 </html>
 """

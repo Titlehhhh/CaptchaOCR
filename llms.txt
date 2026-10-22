@@ -29,7 +29,7 @@
 - [dataset/out_ru](dataset/out_ru): 12 типов группы GalleryCaptcha, **6 000** картинок + **517** эталонных скриншотов в `real_shots/` (на диске только, **не публикуются**).
 - Итого: **46 типов × 500 = 23 000** размеченных PNG, 46 файлов `labels.jsonl` по 500 строк.
 - [dataset/generator](dataset/generator): Java 21, генераторы 18 плагинов. [dataset/generator_ru](dataset/generator_ru): ещё 5. Правила — [dataset/generator/AGENTS.md](dataset/generator/AGENTS.md).
-- [dataset/samples](dataset/samples): витрина, 230 PNG + `dataset/samples/index.html` — **снимок старого рендера** (21.10.2026), не совпадает с текущим датасетом.
+- [dataset/samples](dataset/samples): витрина, 230 PNG + `dataset/samples/index.html` — выдержка 5 картинок на тип из **текущего** рендера (500 на тип, 22.10.2026).
 - `labels.jsonl`: поля `file, plugin, captcha, answer, text, prompt, roi, width, height, source`. `text` — что нарисовано, `answer` — что вводит игрок, `roi` — полоса с ответом.
 - **Датасет — артефакт машины:** генераторы не засеяны, пересборка даёт другие сэмплы.
 
