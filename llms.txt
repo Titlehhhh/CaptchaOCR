@@ -1,11 +1,16 @@
 # CaptchaOCR
 
 > Лаборатория моделей для решения Minecraft-капч. Java-генераторы пиксель-в-пиксель повторяют
-> 23 чужих плагина, из них собрано 46 типов × 100 картинок с разметкой; свой распознаватель
-> CRNN+CTC (4.6 млн параметров) обучается на этом датасете. Измеренный результат: 100 % на
-> типах, на которых модель доучена, и 0 % на невиданных — узкое место в данных, а не в архитектуре.
-> Ключевой измеренный факт: **решает кроппер, а не модель** (на 29 типах с полосой
-> `PP-OCRv6_medium_rec` даёт 0.552 exact match по полосе и 0.035 по целому кадру — в 16 раз хуже).
+> 23 чужих плагина, из них собрано **46 типов × 500 = 23 000** картинок с разметкой; свой
+> распознаватель CRNN+CTC обучается на этом датасете. На Hugging Face опубликованы и датасет
+> (`Titlehhhh/captchaocr-dataset`), и **модель с весами** (`Titlehhhh/captchaocr-ppocrv6`).
+> Ключевые измеренные факты:
+> **решает кроппер, а не модель** (на 29 типах с полосой `PP-OCRv6_medium_rec` даёт 0.552 exact
+> match по полосе и 0.035 по целому кадру — в 16 раз хуже);
+> **дообучение само по себе вредит** (0.588 → 0.480 медианы), а **интерполяция весов с базой
+> (WiSE-FT α = 0.4) помогает** — 0.638 медиана / 0.612 micro (это и опубликовано);
+> наш CRNN+CTC: 1.000 на типах, на которых учили, и 0.372 / 0.381 на невиданных — узкое место
+> в данных, а не в архитектуре.
 
 ## Правила и состояние
 
@@ -16,43 +21,75 @@
 - [agents/AGENT_LOG.md](agents/AGENT_LOG.md): протокол субагента, таблица владения файлами, журнал сессий.
 - [agents/DSH_HARNESS.md](agents/DSH_HARNESS.md): что DeepSeek Harness читает из репозитория (AGENTS.md, лимит 64 КБ, корни скиллов) и что не читает.
 - [agents/REPO_CONVENTIONS_RESEARCH.md](agents/REPO_CONVENTIONS_RESEARCH.md): как принято устраивать репозиторий для ИИ-агентов (arXiv:2602.11988, llms.txt, agents.md) и наши вердикты.
-- [docs/ONBOARDING.md](docs/ONBOARDING.md): маршрут для человека или нового агента.
-- [docs/DATASET.md](docs/DATASET.md): где лежит датасет, как его скачать, что осталось в git.
-- [docs/PLUGINS.md](docs/PLUGINS.md): 23 плагина-источника, 46 типов, лицензии и режимы.
-- [docs/LICENSES.md](docs/LICENSES.md): что покрыто MIT, а что — лицензией апстрима.
-- [docs/UPSTREAM_DEFECTS.md](docs/UPSTREAM_DEFECTS.md): дефекты апстрима, которые воспроизводятся.
-- [docs/DATASET_FORMAT.md](docs/DATASET_FORMAT.md): контракт `labels.jsonl`, `text` vs `answer`, правило полосы.
-- [docs/GLOSSARY.md](docs/GLOSSARY.md): термины — `text` vs `answer`, `roi`/полоса, группы A/B/C, faithful/clean-room/reconstructed.
-- [docs/adr/](docs/adr): принятые решения (почему так).
+- [README.md](README.md): публичная страница проекта — что за датасет, что измерено, что опубликовано.
 
 ## Данные
 
-- [dataset/out](dataset/out): 34 типа от 18 плагинов, 3400 картинок. Путь: `dataset/out/<owner>/<repo>/<type>/NNN.png` + `labels.jsonl`.
-- [dataset/out_ru](dataset/out_ru): 12 типов группы GalleryCaptcha, 1200 картинок + 1240 эталонных скриншотов в `real_shots/`.
+- [dataset/out](dataset/out): 34 типа от 18 плагинов, **17 000** картинок. Путь: `dataset/out/<owner>/<repo>/<type>/NNN.png` + `labels.jsonl`.
+- [dataset/out_ru](dataset/out_ru): 12 типов группы GalleryCaptcha, **6 000** картинок + **517** эталонных скриншотов в `real_shots/` (на диске только, **не публикуются**).
+- Итого: **46 типов × 500 = 23 000** размеченных PNG, 46 файлов `labels.jsonl` по 500 строк.
 - [dataset/generator](dataset/generator): Java 21, генераторы 18 плагинов. [dataset/generator_ru](dataset/generator_ru): ещё 5. Правила — [dataset/generator/AGENTS.md](dataset/generator/AGENTS.md).
+- [dataset/samples](dataset/samples): витрина, 230 PNG + `dataset/samples/index.html` — **снимок старого рендера** (21.10.2026), не совпадает с текущим датасетом.
 - `labels.jsonl`: поля `file, plugin, captcha, answer, text, prompt, roi, width, height, source`. `text` — что нарисовано, `answer` — что вводит игрок, `roi` — полоса с ответом.
+- **Датасет — артефакт машины:** генераторы не засеяны, пересборка даёт другие сэмплы.
 
 ## Код
 
 - [train/](train): CRNN+CTC и трейнер. [train/AGENTS.md](train/AGENTS.md): запуск экспериментов, плато CTC, правило полосы. [train/README.md](train/README.md): флаги.
+- [train/finetune_ppocr.py](train/finetune_ppocr.py): дообучение PP-OCRv6 (`--resume`, `--zero-step`, `--init-from`).
+- [train/soup_eval.py](train/soup_eval.py): **шаг 2 рецепта** — интерполяция весов с базой (WiSE-FT), сетка α.
+- [train/export_ppocr_hf.py](train/export_ppocr_hf.py): **шаг 3** — экспорт дообученных весов в папку Hugging Face (`--soup-alpha`, по умолчанию 0.4). Отслеживаемая копия `train/run_ppocr/export_hf.py` (тот каталог вне git).
+- [train/export_hf.py](train/export_hf.py): экспорт нашего CRNN в самостоятельный репозиторий HF (+ ONNX + самопроверка).
 - [bench/](bench): харнессы бенчмарков. [bench/bench_models.py](bench/bench_models.py): единый протокол измерения всех моделей.
-- [tools/](tools): 35 чекеров и измерителей (метки, полосы, сайт).
-- [site/index.html](site/index.html): сайт-атлас — все 46 типов, 100 примеров на тип, визуализация кропа, проценты по моделям. Открывается двойным кликом.
+- [tools/](tools): чекеры меток и полос, анализ группы типов GalleryCaptcha, отчёты.
+- [tools/fetch_dataset.py](tools/fetch_dataset.py): скачать опубликованный датасет с хаба в `dataset/full/`.
+- [tools/upload_dataset.py](tools/upload_dataset.py): загрузчик датасета на HF (батчи по типам, сравнение по **sha256**, `--dry-run`, `--verify`).
+- [webapp/](webapp): локальная браузерная демка ([webapp/app.py](webapp/app.py), порт **8765**) — стандартная библиотека Python, офлайн, без внешних ссылок.
 - [research/](research): исходники апстримов, декомпиляция, идентификация плагинов.
+
+## Документация
+
+- [docs/ONBOARDING.md](docs/ONBOARDING.md): маршрут для человека или нового агента.
+- [docs/HOW_TO_TRAIN.md](docs/HOW_TO_TRAIN.md): **runbook** — обучение → остановка → продолжение → оценка → интерполяция → экспорт → публикация.
+- [docs/INPUT_PIPELINE.md](docs/INPUT_PIPELINE.md): как PNG доходит до модели (кроп по полосе, масштаб, нормализация, размер тензора).
+- [docs/OCR_MODELS_101.md](docs/OCR_MODELS_101.md): обзор ландшафта моделей — OCR, VLM, CTC, «жидкие» модели.
+- [docs/LOCAL_ENV.md](docs/LOCAL_ENV.md): локальный тулчейн машины — JDK 21 (`I:\ForAndroid\Java\21`), HF-токен, `.venv-gpu`, слои `.env`.
+- [docs/DATASET.md](docs/DATASET.md): где лежит датасет, как его скачать, что осталось в git.
+- [docs/PLUGINS.md](docs/PLUGINS.md): 23 плагина-источника, 46 типов, лицензии и режимы (25 faithful · 16 clean-room · 5 reconstructed по типам).
+- [docs/LICENSES.md](docs/LICENSES.md): что покрыто MIT, а что — лицензией апстрима.
+- [docs/UPSTREAM_DEFECTS.md](docs/UPSTREAM_DEFECTS.md): дефекты апстрима, которые воспроизводятся.
+- [docs/DATASET_FORMAT.md](docs/DATASET_FORMAT.md): контракт `labels.jsonl`, `text` vs `answer`, правило полосы.
+- [docs/GLOSSARY.md](docs/GLOSSARY.md): термины — `text` vs `answer`, `roi`/полоса, группы A/B/C, faithful/clean-room/reconstructed.
+- [docs/pipeline-design.md](docs/pipeline-design.md): конвейер кроппер → распознаватель → solver.
+- [docs/adr/](docs/adr): принятые решения (почему так).
 
 ## Результаты
 
-- [reports/CAPTCHA_SYSTEM_OVERVIEW.md](reports/CAPTCHA_SYSTEM_OVERVIEW.md): главный документ — как устроено распознавание, что готово, план.
-- [reports/TRAINING_MINIMAL_LATIN.md](reports/TRAINING_MINIMAL_LATIN.md): измеренная минимальная модель (0.000 на невиданных типах, доказано запоминание).
-- [reports/research2/](reports/research2): 10 отчётов по исследованию готовых моделей, проектов, коммерческих сервисов, методик обучения, runtime и семейства V1.
-- [docs/pipeline-design.md](docs/pipeline-design.md): конвейер кроппер → распознаватель → solver.
+- [reports/HTML/index.html](reports/HTML/index.html): **единственный browsable-отчёт** — 46 типов картинками, таблицы моделей, все замеры, runbook.
+- [reports/README.md](reports/README.md): индекс всех отчётов; что актуально, что устарело, что в архиве.
+- [reports/bench_models/](reports/bench_models): измеренные результаты по единому протоколу (12 чужих моделей × 2 режима входа).
+- [reports/TRAINING_PPOCR_V6_BIG.md](reports/TRAINING_PPOCR_V6_BIG.md): дообучение PP-OCRv6 + интерполяция (0.588 → 0.480 → **0.638**).
+- [reports/TRAINING_CRNN_BIG.md](reports/TRAINING_CRNN_BIG.md): наш CRNN+CTC — 1.000 на обученных типах, 0.372 / 0.381 на невиданных.
+- [reports/TRAINING_TROCR_BIG.md](reports/TRAINING_TROCR_BIG.md): TrOCR-small — не лучше и в 5 раз медленнее.
+- [reports/HF_DATASET_UPLOAD.md](reports/HF_DATASET_UPLOAD.md): публикация датасета (23 000 PNG, коммит `6248c5b9…`, sha256-сверка каждого файла).
+- [reports/HF_MODEL_UPLOAD.md](reports/HF_MODEL_UPLOAD.md): публикация весов модели (8 файлов, 77 085 348 Б, коммит `43a65582…`).
+- [reports/WEBAPP.md](reports/WEBAPP.md): браузерная демка.
+- [reports/archive/](reports/archive): 25 заменённых отчётов; карта переездов — в [reports/archive/README.md](reports/archive/README.md).
 
-## Команды (Windows, JDK 21 в PATH или переменная `JAVA_HOME`)
+## Опубликовано на Hugging Face
 
-- Сборка датасета: `.ps1` на этой машине не запускается — логика `build.ps1` выполняется inline, команды в `AGENTS.md` §4.
+- Датасет: <https://huggingface.co/datasets/Titlehhhh/captchaocr-dataset> — 23 000 PNG + 46 `labels.jsonl`.
+- Модель (с весами): <https://huggingface.co/Titlehhhh/captchaocr-ppocrv6> — PP-OCRv6_medium_rec + WiSE-FT α = 0.4.
+
+## Команды (Windows, JDK 21 через `JAVA_HOME`, `build.ps1` запустить нельзя)
+
+- Сборка датасета: `.ps1` на этой машине не запускается — логика `build.ps1` выполняется inline, команды в `AGENTS.md` §4 и `docs/HOW_TO_TRAIN.md` §8.
 - Проверка: `python tools\check_labels_and_roi.py dataset\out_ru`, `python tools\check_band_vs_answer.py dataset\out_ru`.
-- Обучение: `.venv-gpu\Scripts\python.exe train\train.py --charset latin --epochs 80 --val-types "CaptchaVerifyZ/map" ...` (GPU, 920 img/s).
-- Бенчмарк: `python bench\bench_models.py`, `python bench\bench_hf.py`, `python bench\bench_onnx.py`, `python bench\bench_others.py`.
+- Обучение (GPU): `.venv-gpu\Scripts\python.exe train\train.py --trees both --epochs 80 --val-types "haq/mapcha/map" "CaptchaVerifyZ/map"`.
+- Дообучение PP-OCRv6 (GPU): `.venv-gpu\Scripts\python.exe train\finetune_ppocr.py --out train\run_ppocr\big --epochs 20 --lr 1e-5 --head-lr 1e-5 --max-minutes 36` (продолжение — тот же `--out` + `--resume`).
+- Интерполяция: `.venv-gpu\Scripts\python.exe train\soup_eval.py`.
+- Бенчмарк: `python bench\bench_models.py`.
+- Демо: `.venv-gpu\Scripts\python.exe webapp\app.py` → <http://127.0.0.1:8765/>.
 
 ## Optional
 

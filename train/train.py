@@ -155,11 +155,13 @@ def split_types(types, val_types, quick):
 def select(types, ids):
     """The subset of `types` whose id is in `ids` - always as (id, directory) pairs.
 
-    The empty case used to return the list unchanged, which is a list of
-    (id, directory, root) triples, and `build_items` then failed with
-    "too many values to unpack" whenever a run had no `--val-types`.
+    `ids` is `None` for "no filter, take everything" and an explicit list for a
+    selection. An **empty list must select nothing**: the old code mapped it to
+    `keep = None`, i.e. "take everything", so a run whose `--val-types` matched no
+    discovered type silently evaluated the *training* set and wrote it to
+    `val_report.json` as if it were a held-out measurement.
     """
-    keep = set(ids) if ids else None
+    keep = None if ids is None else set(ids)
     return [(tid, d) for tid, d, _r in types if keep is None or tid in keep]
 
 
@@ -179,13 +181,35 @@ def main():
     cs = build_encoder(charset)
     encode, decode, num_classes = cs.encode, cs.decode, cs.num_classes
 
-    all_types = find_types(OUT_DIRS, wanted=args.types, exclude=EXCLUDE)
+    # The type list is discovered first, and the `--types` filter is applied here
+    # rather than inside `find_types`. The reason is the `--val-types` contract:
+    # `--types` is a *substring filter on the type id*, so a held-out type that is
+    # not also listed in `--types` is never discovered at all, and the run then
+    # trains on everything and validates on nothing - or, worse, validates on the
+    # training set. Comparing the two lists against the undiscovered set makes
+    # that mistake loud instead of silent.
+    all_found = find_types(OUT_DIRS, exclude=EXCLUDE)
     if args.trees != "both":
         want = "out_ru" if args.trees == "out_ru" else "out"
-        all_types = [(t, d, r) for t, d, r in all_types if r.endswith(want)]
+        all_found = [(t, d, r) for t, d, r in all_found if r.endswith(want)]
     if args.exclude_types:
-        all_types = [(t, d, r) for t, d, r in all_types
+        all_found = [(t, d, r) for t, d, r in all_found
                      if not any(e in t for e in args.exclude_types)]
+    if args.types:
+        all_types = [(t, d, r) for t, d, r in all_found
+                     if any(w in t for w in args.types)]
+    else:
+        all_types = all_found
+    found_ids = {t for t, _, _ in all_types}
+    missing_val = [t for t in (args.val_types or []) if t not in found_ids]
+    if missing_val:
+        print("ERROR: these --val-types strings match no discovered type id: "
+              + ", ".join(missing_val), file=sys.stderr)
+        print("       A held-out type must be an exact type id that survives "
+              "--types, --trees and the exclusion list, and it must be listed in "
+              "--types as well - otherwise it is never discovered and the split is "
+              "not a split at all.", file=sys.stderr)
+        return 2
 
     # Two kinds of type are left out of a run by default:
     #

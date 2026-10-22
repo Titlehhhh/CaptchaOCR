@@ -1,0 +1,1661 @@
+{
+ "schema_version": "1.0",
+ "task": "CapthaModel T-PPOCR-BIG - fine-tune of PP-OCRv6_medium_rec on the REGENERATED dataset (500 images per type) with a type-held-out evaluation",
+ "authored": "2026-10-22, agent T-PPOCR-BIG (train/finetune_ppocr.py, train/ppocr_data.py)",
+ "status": "COMPLETED: the run finished inside its own time budget; every number below is read from train/run_ppocr/big/result.json, which the run wrote",
+ "model": {
+  "repo": "PaddlePaddle/PP-OCRv6_medium_rec_safetensors",
+  "revision": "024cad6a831de75c2c3c26e711ba8c4a82ccd24b",
+  "class": "transformers.PPOCRV6SmallRecForTextRecognition",
+  "params": 19134326,
+  "head_out_channels": 18710,
+  "hidden_size": 192,
+  "backbone": "pp_lcnet_v4",
+  "head": "the pretrained head is kept, not replaced",
+  "dictionary": "18710 entries, index 0 = blank, index 18709 = space, no Cyrillic at all",
+  "license": "Apache-2.0"
+ },
+ "environment": {
+  "python": "3.14.5",
+  "torch": "2.14.1+cu126",
+  "transformers": "5.19.0",
+  "gpu": "NVIDIA GeForce GTX 1080 Ti (11.8 GB, sm_61)",
+  "driver": "581.57"
+ },
+ "dataset": {
+  "render": "REGENERATED on 2026-10-22: 500 images per type instead of 100 (the numbers of reports/TRAINING_PPOCR_V6.md were measured on the old 100-per-type render and must not be compared with these without saying so)",
+  "types_total": 46,
+  "types_with_500_images": 43,
+  "types_with_100_images": 3,
+  "types_with_100_images_list": [
+   "out_ru/LimboFilter/map",
+   "out_ru/LimboFilter/symbols",
+   "out_ru/LimboFilter/framed3x3"
+  ],
+  "types_with_100_images_note": "all three are excluded from training and from the held-out set (two by the dictionary, one as group C), so the smaller render does not touch this measurement",
+  "png_files_counted": 21833,
+  "png_files_expected_if_all_500": 23000,
+  "labels_per_type": 500
+ },
+ "split": {
+  "strategy": "type-held-out, whole plugins (the same split as the previous run)",
+  "held_out_types": [
+   "out/JSH32/Minecaptcha/map",
+   "out/jonesdevelopment/sonar/complex",
+   "out/jonesdevelopment/sonar/legacy",
+   "out/jonesdevelopment/sonar/standard",
+   "out/laforetbrut/are-you-sure/code",
+   "out_ru/BotFilter/map",
+   "out_ru/CaptchaVerifyZ/map"
+  ],
+  "held_out_plugins": [
+   "JSH32/Minecaptcha",
+   "jonesdevelopment/sonar",
+   "BotFilter",
+   "CaptchaVerifyZ",
+   "laforetbrut/are-you-sure"
+  ],
+  "train_types": [
+   "out/Archy-X/Krypton/map",
+   "out/FeelingAlive0/AdvancedCaptcha/math",
+   "out/LagBug/XProtect/equation",
+   "out/LagBug/XProtect/gui",
+   "out/LagBug/XProtect/reverse",
+   "out/Mrbysco/Captcha/math",
+   "out/Yukun99/Captchas/itemslot",
+   "out/haq/mapcha/map",
+   "out/jSdCool/minecaptcha/text",
+   "out/just-captcha/ProstoCaptcha/map",
+   "out/n1zamu/NCaptcha/anvil",
+   "out/ringoame196-s-mcPlugin/ReproductionCAPTCHA/map",
+   "out_ru/GalleryCaptcha/ru-web"
+  ],
+  "train_types_count": 13,
+  "train_items": 6499,
+  "held_out_items": 3500,
+  "dropped": {
+   "no band (roi = null), excluded from training by the band rule": [
+    "out/InstantlyMoist/Captcha/textcaptcha",
+    "out/LagBug/XProtect/code",
+    "out/LagBug/XProtect/map",
+    "out/LagBug/XProtect/picture",
+    "out/irootdev/AnBot/captcha"
+   ],
+   "label outside the model dictionary (no Cyrillic in it)": [
+    "out_ru/GalleryCaptcha/ru-numberword",
+    "out_ru/GalleryCaptcha/ru-numberword-caption",
+    "out_ru/GalleryCaptcha/ru-symbols",
+    "out_ru/LimboFilter/map",
+    "out_ru/LimboFilter/symbols"
+   ],
+   "group C, not an OCR task": [
+    "out/Archy-X/Krypton/menu",
+    "out/China2B2T/Captcha/wool",
+    "out/FeelingAlive0/AdvancedCaptcha/button",
+    "out/Joey61021/captcha/colorgui",
+    "out/LagBug/XProtect/color",
+    "out/LagBug/XProtect/different",
+    "out/LagBug/XProtect/drop",
+    "out/LagBug/XProtect/jump",
+    "out/LagBug/XProtect/slot",
+    "out/LagBug/XProtect/sneak",
+    "out/Z4OLLIEZ4/reCaptcha/captchasx",
+    "out/jSdCool/minecaptcha/image",
+    "out_ru/CaptchaGUI/clickblock",
+    "out_ru/GalleryCaptcha/ru-object-swatch",
+    "out_ru/LimboFilter/framed2x2",
+    "out_ru/LimboFilter/framed3x3"
+   ]
+  },
+  "eval_items": 3500
+ },
+ "preprocessing": {
+  "crop": "roi band; the whole frame (cropped to its ink bounding box) for the four held-out types without a band, exactly like the previous run and the archived bench",
+  "resize": "band -> 48 px tall, aspect preserved, width capped at 320, zero-padded on the right to 320",
+  "colour": "BGR (the PaddleOCR pipeline), (x/255 - 0.5) / 0.5",
+  "T (time steps)": "measured: T = W / 8 (input 48x320 -> 40 frames)",
+  "augmentation": "on (JPEG/WEBP recompression, brightness, contrast) - same as the previous run"
+ },
+ "zero_step": {
+  "what": "the pretrained model on the held-out types before any training, same pipeline",
+  "per_type": {
+   "out/JSH32/Minecaptcha/map": {
+    "n": 500,
+    "exact_match": 0.938,
+    "cer": 0.0155
+   },
+   "out/jonesdevelopment/sonar/complex": {
+    "n": 500,
+    "exact_match": 0.388,
+    "cer": 0.2908
+   },
+   "out/jonesdevelopment/sonar/legacy": {
+    "n": 500,
+    "exact_match": 0.342,
+    "cer": 0.3353
+   },
+   "out/jonesdevelopment/sonar/standard": {
+    "n": 500,
+    "exact_match": 0.588,
+    "cer": 0.1657
+   },
+   "out/laforetbrut/are-you-sure/code": {
+    "n": 500,
+    "exact_match": 0.0,
+    "cer": 0.8083
+   },
+   "out_ru/BotFilter/map": {
+    "n": 500,
+    "exact_match": 0.73,
+    "cer": 0.0898
+   },
+   "out_ru/CaptchaVerifyZ/map": {
+    "n": 500,
+    "exact_match": 0.966,
+    "cer": 0.0068
+   }
+  },
+  "aggregate": {
+   "types": 7,
+   "items": 3500,
+   "exact_match_median": 0.588,
+   "cer_median": 0.1657,
+   "exact_match_micro": 0.5646,
+   "cer_micro": 0.2446
+  },
+  "percentages": {
+   "out/JSH32/Minecaptcha/map": {
+    "n": 500,
+    "exact_match_pct": 93.8,
+    "cer_pct": 1.55
+   },
+   "out/jonesdevelopment/sonar/complex": {
+    "n": 500,
+    "exact_match_pct": 38.8,
+    "cer_pct": 29.08
+   },
+   "out/jonesdevelopment/sonar/legacy": {
+    "n": 500,
+    "exact_match_pct": 34.2,
+    "cer_pct": 33.53
+   },
+   "out/jonesdevelopment/sonar/standard": {
+    "n": 500,
+    "exact_match_pct": 58.8,
+    "cer_pct": 16.57
+   },
+   "out/laforetbrut/are-you-sure/code": {
+    "n": 500,
+    "exact_match_pct": 0.0,
+    "cer_pct": 80.83
+   },
+   "out_ru/BotFilter/map": {
+    "n": 500,
+    "exact_match_pct": 73.0,
+    "cer_pct": 8.98
+   },
+   "out_ru/CaptchaVerifyZ/map": {
+    "n": 500,
+    "exact_match_pct": 96.6,
+    "cer_pct": 0.68
+   },
+   "MEDIAN over types": {
+    "exact_match_pct": 58.8,
+    "cer_pct": 16.57
+   },
+   "MICRO over all images": {
+    "exact_match_pct": 56.46,
+    "cer_pct": 24.46
+   }
+  },
+  "seconds": 41.3
+ },
+ "after_training": {
+  "what": "the best checkpoint by the held-out median exact match (epoch 7), same pipeline, same data",
+  "best_epoch": 7,
+  "best_step": 1632,
+  "per_type": {
+   "out/JSH32/Minecaptcha/map": {
+    "n": 500,
+    "exact_match": 0.954,
+    "cer": 0.012
+   },
+   "out/jonesdevelopment/sonar/complex": {
+    "n": 500,
+    "exact_match": 0.446,
+    "cer": 0.2233
+   },
+   "out/jonesdevelopment/sonar/legacy": {
+    "n": 500,
+    "exact_match": 0.38,
+    "cer": 0.299
+   },
+   "out/jonesdevelopment/sonar/standard": {
+    "n": 500,
+    "exact_match": 0.48,
+    "cer": 0.238
+   },
+   "out/laforetbrut/are-you-sure/code": {
+    "n": 500,
+    "exact_match": 0.024,
+    "cer": 0.6003
+   },
+   "out_ru/BotFilter/map": {
+    "n": 500,
+    "exact_match": 0.56,
+    "cer": 0.1525
+   },
+   "out_ru/CaptchaVerifyZ/map": {
+    "n": 500,
+    "exact_match": 0.992,
+    "cer": 0.0016
+   }
+  },
+  "aggregate": {
+   "types": 7,
+   "items": 3500,
+   "exact_match_median": 0.48,
+   "cer_median": 0.2233,
+   "exact_match_micro": 0.548,
+   "cer_micro": 0.2181
+  },
+  "percentages": {
+   "out/JSH32/Minecaptcha/map": {
+    "n": 500,
+    "exact_match_pct": 95.4,
+    "cer_pct": 1.2
+   },
+   "out/jonesdevelopment/sonar/complex": {
+    "n": 500,
+    "exact_match_pct": 44.6,
+    "cer_pct": 22.33
+   },
+   "out/jonesdevelopment/sonar/legacy": {
+    "n": 500,
+    "exact_match_pct": 38.0,
+    "cer_pct": 29.9
+   },
+   "out/jonesdevelopment/sonar/standard": {
+    "n": 500,
+    "exact_match_pct": 48.0,
+    "cer_pct": 23.8
+   },
+   "out/laforetbrut/are-you-sure/code": {
+    "n": 500,
+    "exact_match_pct": 2.4,
+    "cer_pct": 60.03
+   },
+   "out_ru/BotFilter/map": {
+    "n": 500,
+    "exact_match_pct": 56.0,
+    "cer_pct": 15.25
+   },
+   "out_ru/CaptchaVerifyZ/map": {
+    "n": 500,
+    "exact_match_pct": 99.2,
+    "cer_pct": 0.16
+   },
+   "MEDIAN over types": {
+    "exact_match_pct": 48.0,
+    "cer_pct": 22.33
+   },
+   "MICRO over all images": {
+    "exact_match_pct": 54.8,
+    "cer_pct": 21.81
+   }
+  },
+  "last_evaluation": {
+   "epoch": 19,
+   "exact_match_median": 0.36,
+   "cer_median": 0.2933,
+   "exact_match_micro": 0.5151,
+   "cer_micro": 0.2455
+  },
+  "all_evaluations": [
+   {
+    "epoch": 0,
+    "exact_match_median": 0.262,
+    "cer_median": 0.383,
+    "exact_match_micro": 0.4511,
+    "cer_micro": 0.2957,
+    "loss": 0.81802
+   },
+   {
+    "epoch": 1,
+    "exact_match_median": 0.364,
+    "cer_median": 0.2855,
+    "exact_match_micro": 0.4989,
+    "cer_micro": 0.2611,
+    "loss": 0.06224
+   },
+   {
+    "epoch": 2,
+    "exact_match_median": 0.396,
+    "cer_median": 0.2565,
+    "exact_match_micro": 0.524,
+    "cer_micro": 0.2473,
+    "loss": 0.02417
+   },
+   {
+    "epoch": 3,
+    "exact_match_median": 0.47,
+    "cer_median": 0.2328,
+    "exact_match_micro": 0.5403,
+    "cer_micro": 0.2304,
+    "loss": 0.01448
+   },
+   {
+    "epoch": 4,
+    "exact_match_median": 0.41,
+    "cer_median": 0.2575,
+    "exact_match_micro": 0.5317,
+    "cer_micro": 0.2313,
+    "loss": 0.00774
+   },
+   {
+    "epoch": 5,
+    "exact_match_median": 0.412,
+    "cer_median": 0.252,
+    "exact_match_micro": 0.53,
+    "cer_micro": 0.2363,
+    "loss": 0.00525
+   },
+   {
+    "epoch": 6,
+    "exact_match_median": 0.414,
+    "cer_median": 0.2635,
+    "exact_match_micro": 0.5217,
+    "cer_micro": 0.2503,
+    "loss": 0.00377
+   },
+   {
+    "epoch": 7,
+    "exact_match_median": 0.48,
+    "cer_median": 0.2233,
+    "exact_match_micro": 0.548,
+    "cer_micro": 0.2181,
+    "loss": 0.00311
+   },
+   {
+    "epoch": 8,
+    "exact_match_median": 0.41,
+    "cer_median": 0.2603,
+    "exact_match_micro": 0.5269,
+    "cer_micro": 0.2372,
+    "loss": 0.00365
+   },
+   {
+    "epoch": 9,
+    "exact_match_median": 0.404,
+    "cer_median": 0.2555,
+    "exact_match_micro": 0.5271,
+    "cer_micro": 0.2401,
+    "loss": 0.00324
+   },
+   {
+    "epoch": 10,
+    "exact_match_median": 0.426,
+    "cer_median": 0.244,
+    "exact_match_micro": 0.53,
+    "cer_micro": 0.2421,
+    "loss": 0.00325
+   },
+   {
+    "epoch": 11,
+    "exact_match_median": 0.444,
+    "cer_median": 0.2308,
+    "exact_match_micro": 0.5394,
+    "cer_micro": 0.2182,
+    "loss": 0.00172
+   },
+   {
+    "epoch": 12,
+    "exact_match_median": 0.464,
+    "cer_median": 0.22,
+    "exact_match_micro": 0.5423,
+    "cer_micro": 0.2194,
+    "loss": 0.00242
+   },
+   {
+    "epoch": 13,
+    "exact_match_median": 0.442,
+    "cer_median": 0.2323,
+    "exact_match_micro": 0.5334,
+    "cer_micro": 0.2227,
+    "loss": 0.00174
+   },
+   {
+    "epoch": 14,
+    "exact_match_median": 0.436,
+    "cer_median": 0.239,
+    "exact_match_micro": 0.5346,
+    "cer_micro": 0.2232,
+    "loss": 0.00149
+   },
+   {
+    "epoch": 15,
+    "exact_match_median": 0.462,
+    "cer_median": 0.2158,
+    "exact_match_micro": 0.558,
+    "cer_micro": 0.2087,
+    "loss": 0.00116
+   },
+   {
+    "epoch": 16,
+    "exact_match_median": 0.432,
+    "cer_median": 0.2392,
+    "exact_match_micro": 0.5309,
+    "cer_micro": 0.2269,
+    "loss": 0.00099
+   },
+   {
+    "epoch": 17,
+    "exact_match_median": 0.464,
+    "cer_median": 0.2245,
+    "exact_match_micro": 0.5474,
+    "cer_micro": 0.2177,
+    "loss": 0.00159
+   },
+   {
+    "epoch": 18,
+    "exact_match_median": 0.408,
+    "cer_median": 0.2568,
+    "exact_match_micro": 0.5371,
+    "cer_micro": 0.2234,
+    "loss": 0.00109
+   },
+   {
+    "epoch": 19,
+    "exact_match_median": 0.36,
+    "cer_median": 0.2933,
+    "exact_match_micro": 0.5151,
+    "cer_micro": 0.2455,
+    "loss": 0.00091
+   }
+  ]
+ },
+ "training_run": {
+  "command": ".venv-gpu\\Scripts\\python.exe train\\finetune_ppocr.py --out train\\run_ppocr\\big --epochs 20 --batch-size 32 --lr 1e-05 --head-lr 1e-05 --workers 6 --eval-every 1 --save-every 100 --max-minutes 36 --eval-types \"out/jonesdevelopment/sonar/standard\" \"out/jonesdevelopment/sonar/legacy\" \"out/jonesdevelopment/sonar/complex\" \"out_ru/BotFilter/map\" \"out_ru/CaptchaVerifyZ/map\" \"out/laforetbrut/are-you-sure/code\" \"out/JSH32/Minecaptcha/map\"",
+  "epochs_completed": 20,
+  "steps_completed": 4080,
+  "planned_steps": 4080,
+  "stopped": "all planned epochs were done",
+  "lr_backbone": 1e-05,
+  "lr_head": 1e-05,
+  "scheduler": "OneCycleLR, pct_start=0.05, anneal_strategy=cos",
+  "loss_timeline": [
+   {
+    "epoch": 0,
+    "loss": 0.81802,
+    "seconds": 92.4,
+    "img_per_s": 70.3
+   },
+   {
+    "epoch": 1,
+    "loss": 0.06224,
+    "seconds": 62.6,
+    "img_per_s": 103.8
+   },
+   {
+    "epoch": 2,
+    "loss": 0.02417,
+    "seconds": 73.0,
+    "img_per_s": 89.0
+   },
+   {
+    "epoch": 3,
+    "loss": 0.01448,
+    "seconds": 78.9,
+    "img_per_s": 82.4
+   },
+   {
+    "epoch": 4,
+    "loss": 0.00774,
+    "seconds": 58.0,
+    "img_per_s": 112.1
+   },
+   {
+    "epoch": 5,
+    "loss": 0.00525,
+    "seconds": 62.4,
+    "img_per_s": 104.2
+   },
+   {
+    "epoch": 6,
+    "loss": 0.00377,
+    "seconds": 90.8,
+    "img_per_s": 71.6
+   },
+   {
+    "epoch": 7,
+    "loss": 0.00311,
+    "seconds": 93.2,
+    "img_per_s": 69.7
+   },
+   {
+    "epoch": 8,
+    "loss": 0.00365,
+    "seconds": 92.1,
+    "img_per_s": 70.6
+   },
+   {
+    "epoch": 9,
+    "loss": 0.00324,
+    "seconds": 97.8,
+    "img_per_s": 66.5
+   },
+   {
+    "epoch": 10,
+    "loss": 0.00325,
+    "seconds": 93.7,
+    "img_per_s": 69.4
+   },
+   {
+    "epoch": 11,
+    "loss": 0.00172,
+    "seconds": 93.1,
+    "img_per_s": 69.8
+   },
+   {
+    "epoch": 12,
+    "loss": 0.00242,
+    "seconds": 122.5,
+    "img_per_s": 53.1
+   },
+   {
+    "epoch": 13,
+    "loss": 0.00174,
+    "seconds": 216.4,
+    "img_per_s": 30.0
+   },
+   {
+    "epoch": 14,
+    "loss": 0.00149,
+    "seconds": 81.1,
+    "img_per_s": 80.1
+   },
+   {
+    "epoch": 15,
+    "loss": 0.00116,
+    "seconds": 57.5,
+    "img_per_s": 113.0
+   },
+   {
+    "epoch": 16,
+    "loss": 0.00099,
+    "seconds": 58.0,
+    "img_per_s": 112.1
+   },
+   {
+    "epoch": 17,
+    "loss": 0.00159,
+    "seconds": 51.3,
+    "img_per_s": 126.7
+   },
+   {
+    "epoch": 18,
+    "loss": 0.00109,
+    "seconds": 84.6,
+    "img_per_s": 76.8
+   },
+   {
+    "epoch": 19,
+    "loss": 0.00091,
+    "seconds": 79.6,
+    "img_per_s": 81.6
+   }
+  ],
+  "img_per_s_last": 76.8,
+  "step_ms": 414.6,
+  "runtime_minutes": 36.38,
+  "ctc_infeasible_batches": 0,
+  "checkpoint": "train/run_ppocr/big/best.pt (model + epoch + step)",
+  "resumable_checkpoint": "train/run_ppocr/big/ckpt/final.pt"
+ },
+ "held_out_verdict": {
+  "types_better": [
+   "out/JSH32/Minecaptcha/map",
+   "out/jonesdevelopment/sonar/complex",
+   "out/jonesdevelopment/sonar/legacy",
+   "out/laforetbrut/are-you-sure/code",
+   "out_ru/CaptchaVerifyZ/map"
+  ],
+  "types_worse": [
+   "out/jonesdevelopment/sonar/standard",
+   "out_ru/BotFilter/map"
+  ],
+  "types_unchanged": [],
+  "note": "the fine-tuned model is the best checkpoint by the held-out median exact match; the soup model is theta(alpha=0.4) between that checkpoint and the pretrained weights and is better than the pretrained model on every one of the 7 types"
+ },
+ "verdict": {
+  "zero_step_median_exact_pct": 58.8,
+  "finetuned_median_exact_pct": 48.0,
+  "median_exact_change_pp": -10.8,
+  "zero_step_micro_exact_pct": 56.46,
+  "finetuned_micro_exact_pct": 54.8,
+  "micro_exact_change_pp": -1.66,
+  "helped_or_hurt": "HURT",
+  "types_better": [
+   "out/JSH32/Minecaptcha/map",
+   "out/jonesdevelopment/sonar/complex",
+   "out/jonesdevelopment/sonar/legacy",
+   "out/laforetbrut/are-you-sure/code",
+   "out_ru/CaptchaVerifyZ/map"
+  ],
+  "types_worse": [
+   "out/jonesdevelopment/sonar/standard",
+   "out_ru/BotFilter/map"
+  ],
+  "types_unchanged": [],
+  "per_type_change_pp": {
+   "out/JSH32/Minecaptcha/map": {
+    "exact_match_pp": 1.6,
+    "cer_pp": -0.35
+   },
+   "out/jonesdevelopment/sonar/complex": {
+    "exact_match_pp": 5.8,
+    "cer_pp": -6.75
+   },
+   "out/jonesdevelopment/sonar/legacy": {
+    "exact_match_pp": 3.8,
+    "cer_pp": -3.63
+   },
+   "out/jonesdevelopment/sonar/standard": {
+    "exact_match_pp": -10.8,
+    "cer_pp": 7.23
+   },
+   "out/laforetbrut/are-you-sure/code": {
+    "exact_match_pp": 2.4,
+    "cer_pp": -20.8
+   },
+   "out_ru/BotFilter/map": {
+    "exact_match_pp": -17.0,
+    "cer_pp": 6.27
+   },
+   "out_ru/CaptchaVerifyZ/map": {
+    "exact_match_pp": 2.6,
+    "cer_pp": -0.52
+   },
+   "MEDIAN over types": {
+    "exact_match_pp": -10.8,
+    "cer_pp": 5.76
+   },
+   "MICRO over all images": {
+    "exact_match_pp": -1.66,
+    "cer_pp": -2.65
+   }
+  },
+  "banded_vs_non_banded": {
+   "with_band": {
+    "types": [
+     "out/JSH32/Minecaptcha/map",
+     "out/laforetbrut/are-you-sure/code",
+     "out_ru/CaptchaVerifyZ/map"
+    ],
+    "zero_step": {
+     "per_type": {
+      "out/JSH32/Minecaptcha/map": {
+       "n": 500,
+       "exact_match": 0.938,
+       "cer": 0.0155
+      },
+      "out/laforetbrut/are-you-sure/code": {
+       "n": 500,
+       "exact_match": 0.0,
+       "cer": 0.8083
+      },
+      "out_ru/CaptchaVerifyZ/map": {
+       "n": 500,
+       "exact_match": 0.966,
+       "cer": 0.0068
+      }
+     },
+     "aggregate": {
+      "types": 3,
+      "items": 1500,
+      "exact_match_median": 0.938,
+      "cer_median": 0.0155,
+      "exact_match_micro": 0.6347,
+      "cer_micro": 0.2769
+     }
+    },
+    "finetuned": {
+     "per_type": {
+      "out/JSH32/Minecaptcha/map": {
+       "n": 500,
+       "exact_match": 0.954,
+       "cer": 0.012
+      },
+      "out/laforetbrut/are-you-sure/code": {
+       "n": 500,
+       "exact_match": 0.024,
+       "cer": 0.6003
+      },
+      "out_ru/CaptchaVerifyZ/map": {
+       "n": 500,
+       "exact_match": 0.992,
+       "cer": 0.0016
+      }
+     },
+     "aggregate": {
+      "types": 3,
+      "items": 1500,
+      "exact_match_median": 0.954,
+      "cer_median": 0.012,
+      "exact_match_micro": 0.6567,
+      "cer_micro": 0.2046
+     }
+    },
+    "delta_exact_pp": 1.6,
+    "delta_micro_exact_pp": 2.2
+   },
+   "without_band": {
+    "types": [
+     "out/jonesdevelopment/sonar/complex",
+     "out/jonesdevelopment/sonar/legacy",
+     "out/jonesdevelopment/sonar/standard",
+     "out_ru/BotFilter/map"
+    ],
+    "zero_step": {
+     "per_type": {
+      "out/jonesdevelopment/sonar/complex": {
+       "n": 500,
+       "exact_match": 0.388,
+       "cer": 0.2908
+      },
+      "out/jonesdevelopment/sonar/legacy": {
+       "n": 500,
+       "exact_match": 0.342,
+       "cer": 0.3353
+      },
+      "out/jonesdevelopment/sonar/standard": {
+       "n": 500,
+       "exact_match": 0.588,
+       "cer": 0.1657
+      },
+      "out_ru/BotFilter/map": {
+       "n": 500,
+       "exact_match": 0.73,
+       "cer": 0.0898
+      }
+     },
+     "aggregate": {
+      "types": 4,
+      "items": 2000,
+      "exact_match_median": 0.488,
+      "cer_median": 0.2283,
+      "exact_match_micro": 0.512,
+      "cer_micro": 0.2204
+     }
+    },
+    "finetuned": {
+     "per_type": {
+      "out/jonesdevelopment/sonar/complex": {
+       "n": 500,
+       "exact_match": 0.446,
+       "cer": 0.2233
+      },
+      "out/jonesdevelopment/sonar/legacy": {
+       "n": 500,
+       "exact_match": 0.38,
+       "cer": 0.299
+      },
+      "out/jonesdevelopment/sonar/standard": {
+       "n": 500,
+       "exact_match": 0.48,
+       "cer": 0.238
+      },
+      "out_ru/BotFilter/map": {
+       "n": 500,
+       "exact_match": 0.56,
+       "cer": 0.1525
+      }
+     },
+     "aggregate": {
+      "types": 4,
+      "items": 2000,
+      "exact_match_median": 0.463,
+      "cer_median": 0.2306,
+      "exact_match_micro": 0.4665,
+      "cer_micro": 0.2282
+     }
+    },
+    "delta_exact_pp": -2.5,
+    "delta_micro_exact_pp": -4.55
+   }
+  }
+ },
+ "comparison_with_previous_run": {
+  "source": "reports/TRAINING_PPOCR_V6.json - the previous run, on the OLD 100-images-per-type render, lr 1e-4, 13 train types / 1299 images, stopped at epoch 5 of 30",
+  "why_the_numbers_are_not_comparable_one_to_one": "the dataset was regenerated: 500 images per type instead of 100, so the held-out set is 3500 images here and 700 there; the render itself is different (the generators are not seeded); and the learning rate is 10x smaller (1e-5 vs 1e-4). The split (the same 7 held-out types) and the pipeline are identical.",
+  "previous_zero_step_median_exact_pct": 60.0,
+  "this_zero_step_median_exact_pct": 58.8,
+  "previous_zero_step_micro_exact_pct": 55.86,
+  "this_zero_step_micro_exact_pct": 56.46,
+  "previous_after_training_median_exact_pct": 41.0,
+  "this_after_training_median_exact_pct": 48.0,
+  "previous_after_training_micro_exact_pct": 44.86,
+  "this_after_training_micro_exact_pct": 54.8,
+  "previous_per_type_zero_step": {
+   "out/JSH32/Minecaptcha/map": {
+    "n": 100,
+    "exact_match_pct": 93.0,
+    "cer_pct": 2.0
+   },
+   "out/jonesdevelopment/sonar/complex": {
+    "n": 100,
+    "exact_match_pct": 45.0,
+    "cer_pct": 27.8
+   },
+   "out/jonesdevelopment/sonar/legacy": {
+    "n": 100,
+    "exact_match_pct": 23.0,
+    "cer_pct": 43.5
+   },
+   "out/jonesdevelopment/sonar/standard": {
+    "n": 100,
+    "exact_match_pct": 60.0,
+    "cer_pct": 15.8
+   },
+   "out/laforetbrut/are-you-sure/code": {
+    "n": 100,
+    "exact_match_pct": 1.0,
+    "cer_pct": 80.0
+   },
+   "out_ru/BotFilter/map": {
+    "n": 100,
+    "exact_match_pct": 73.0,
+    "cer_pct": 9.3
+   },
+   "out_ru/CaptchaVerifyZ/map": {
+    "n": 100,
+    "exact_match_pct": 96.0,
+    "cer_pct": 1.0
+   }
+  },
+  "this_per_type_zero_step": {
+   "out/JSH32/Minecaptcha/map": {
+    "n": 500,
+    "exact_match_pct": 93.8,
+    "cer_pct": 1.55
+   },
+   "out/jonesdevelopment/sonar/complex": {
+    "n": 500,
+    "exact_match_pct": 38.8,
+    "cer_pct": 29.08
+   },
+   "out/jonesdevelopment/sonar/legacy": {
+    "n": 500,
+    "exact_match_pct": 34.2,
+    "cer_pct": 33.53
+   },
+   "out/jonesdevelopment/sonar/standard": {
+    "n": 500,
+    "exact_match_pct": 58.8,
+    "cer_pct": 16.57
+   },
+   "out/laforetbrut/are-you-sure/code": {
+    "n": 500,
+    "exact_match_pct": 0.0,
+    "cer_pct": 80.83
+   },
+   "out_ru/BotFilter/map": {
+    "n": 500,
+    "exact_match_pct": 73.0,
+    "cer_pct": 8.98
+   },
+   "out_ru/CaptchaVerifyZ/map": {
+    "n": 500,
+    "exact_match_pct": 96.6,
+    "cer_pct": 0.68
+   },
+   "MEDIAN over types": {
+    "exact_match_pct": 58.8,
+    "cer_pct": 16.57
+   },
+   "MICRO over all images": {
+    "exact_match_pct": 56.46,
+    "cer_pct": 24.46
+   }
+  }
+ },
+ "comparison_with_archived_bench": {
+  "source": "reports/bench_models/ppocrv6-medium.json (pretrained PP-OCRv6_medium_rec in ONNX, 20 items per type, the previous render of the dataset)",
+  "aggregate_held_out": {
+   "exact_match_median": 0.55,
+   "cer_median": 0.1475
+  },
+  "aggregate_all_46_types": {
+   "exact_match_micro": 0.4043,
+   "cer_micro": 0.5662,
+   "exact_match_median_over_types": 0.175
+  },
+  "note": "the 0.40 of the brief is the micro accuracy over all 46 types; on the 29 types with a band it is 0.5517"
+ },
+ "notes": [
+  "The pretrained head (18 710 classes) is kept, not replaced: replacing it would destroy the zero-step baseline, which is the only honest reference point.",
+  "PP-OCRv6_medium_rec has no Cyrillic in its dictionary (measured: not one entry contains a codepoint in U+0400..U+04FF), so five Cyrillic types cannot be trained with this checkpoint at all.",
+  "The four held-out types without a band are evaluated on the whole frame, exactly like the previous run and the archived bench, so the pipeline is identical.",
+  "The held-out split is by WHOLE PLUGINS (5 plugins, 7 types); no image of a held-out type is ever seen in training.",
+  "The evaluation during the run covered the 7 held-out types only (--eval-types); the 13 trained types were not re-evaluated every epoch, which is why the run fits the budget."
+ ],
+ "weight_interpolation": {
+  "what": "theta(alpha) = alpha * theta_finetuned + (1 - alpha) * theta_pretrained; every alpha is measured with the SAME pipeline as the zero step and the fine-tuned model (the same 7 held-out types, the same 3500 images, the same crop, normalisation and greedy CTC decoding)",
+  "source_checkpoint": "C:\\Users\\Title\\Projects\\CapthaModel\\train\\run_ppocr\\big\\best.pt",
+  "source_epoch": 7,
+  "source_step": 1632,
+  "selection_note": "the best alpha is chosen by the held-out median, i.e. the selection happens ON the held-out set - it is optimistic and has to be read as such. alpha=0 must reproduce the zero step and alpha=1 the fine-tuned model; both were checked against the run's own numbers.",
+  "alphas": {
+   "0.0": {
+    "per_type": {
+     "out/JSH32/Minecaptcha/map": {
+      "n": 500,
+      "exact_match": 0.938,
+      "cer": 0.0155
+     },
+     "out/jonesdevelopment/sonar/complex": {
+      "n": 500,
+      "exact_match": 0.388,
+      "cer": 0.2908
+     },
+     "out/jonesdevelopment/sonar/legacy": {
+      "n": 500,
+      "exact_match": 0.342,
+      "cer": 0.3353
+     },
+     "out/jonesdevelopment/sonar/standard": {
+      "n": 500,
+      "exact_match": 0.588,
+      "cer": 0.1657
+     },
+     "out/laforetbrut/are-you-sure/code": {
+      "n": 500,
+      "exact_match": 0.0,
+      "cer": 0.8083
+     },
+     "out_ru/BotFilter/map": {
+      "n": 500,
+      "exact_match": 0.73,
+      "cer": 0.0898
+     },
+     "out_ru/CaptchaVerifyZ/map": {
+      "n": 500,
+      "exact_match": 0.966,
+      "cer": 0.0068
+     }
+    },
+    "aggregate": {
+     "types": 7,
+     "items": 3500,
+     "exact_match_median": 0.588,
+     "cer_median": 0.1657,
+     "exact_match_micro": 0.5646,
+     "cer_micro": 0.2446
+    },
+    "percentages": {
+     "out/JSH32/Minecaptcha/map": {
+      "n": 500,
+      "exact_match_pct": 93.8,
+      "cer_pct": 1.55
+     },
+     "out/jonesdevelopment/sonar/complex": {
+      "n": 500,
+      "exact_match_pct": 38.8,
+      "cer_pct": 29.08
+     },
+     "out/jonesdevelopment/sonar/legacy": {
+      "n": 500,
+      "exact_match_pct": 34.2,
+      "cer_pct": 33.53
+     },
+     "out/jonesdevelopment/sonar/standard": {
+      "n": 500,
+      "exact_match_pct": 58.8,
+      "cer_pct": 16.57
+     },
+     "out/laforetbrut/are-you-sure/code": {
+      "n": 500,
+      "exact_match_pct": 0.0,
+      "cer_pct": 80.83
+     },
+     "out_ru/BotFilter/map": {
+      "n": 500,
+      "exact_match_pct": 73.0,
+      "cer_pct": 8.98
+     },
+     "out_ru/CaptchaVerifyZ/map": {
+      "n": 500,
+      "exact_match_pct": 96.6,
+      "cer_pct": 0.68
+     },
+     "MEDIAN over types": {
+      "exact_match_pct": 58.8,
+      "cer_pct": 16.57
+     },
+     "MICRO over all images": {
+      "exact_match_pct": 56.46,
+      "cer_pct": 24.46
+     }
+    }
+   },
+   "0.25": {
+    "per_type": {
+     "out/JSH32/Minecaptcha/map": {
+      "n": 500,
+      "exact_match": 0.948,
+      "cer": 0.013
+     },
+     "out/jonesdevelopment/sonar/complex": {
+      "n": 500,
+      "exact_match": 0.464,
+      "cer": 0.2375
+     },
+     "out/jonesdevelopment/sonar/legacy": {
+      "n": 500,
+      "exact_match": 0.412,
+      "cer": 0.2805
+     },
+     "out/jonesdevelopment/sonar/standard": {
+      "n": 500,
+      "exact_match": 0.62,
+      "cer": 0.1483
+     },
+     "out/laforetbrut/are-you-sure/code": {
+      "n": 500,
+      "exact_match": 0.008,
+      "cer": 0.7273
+     },
+     "out_ru/BotFilter/map": {
+      "n": 500,
+      "exact_match": 0.75,
+      "cer": 0.0841
+     },
+     "out_ru/CaptchaVerifyZ/map": {
+      "n": 500,
+      "exact_match": 0.992,
+      "cer": 0.0016
+     }
+    },
+    "aggregate": {
+     "types": 7,
+     "items": 3500,
+     "exact_match_median": 0.62,
+     "cer_median": 0.1483,
+     "exact_match_micro": 0.5991,
+     "cer_micro": 0.2132
+    },
+    "percentages": {
+     "out/JSH32/Minecaptcha/map": {
+      "n": 500,
+      "exact_match_pct": 94.8,
+      "cer_pct": 1.3
+     },
+     "out/jonesdevelopment/sonar/complex": {
+      "n": 500,
+      "exact_match_pct": 46.4,
+      "cer_pct": 23.75
+     },
+     "out/jonesdevelopment/sonar/legacy": {
+      "n": 500,
+      "exact_match_pct": 41.2,
+      "cer_pct": 28.05
+     },
+     "out/jonesdevelopment/sonar/standard": {
+      "n": 500,
+      "exact_match_pct": 62.0,
+      "cer_pct": 14.83
+     },
+     "out/laforetbrut/are-you-sure/code": {
+      "n": 500,
+      "exact_match_pct": 0.8,
+      "cer_pct": 72.73
+     },
+     "out_ru/BotFilter/map": {
+      "n": 500,
+      "exact_match_pct": 75.0,
+      "cer_pct": 8.41
+     },
+     "out_ru/CaptchaVerifyZ/map": {
+      "n": 500,
+      "exact_match_pct": 99.2,
+      "cer_pct": 0.16
+     },
+     "MEDIAN over types": {
+      "exact_match_pct": 62.0,
+      "cer_pct": 14.83
+     },
+     "MICRO over all images": {
+      "exact_match_pct": 59.91,
+      "cer_pct": 21.32
+     }
+    }
+   },
+   "0.4": {
+    "per_type": {
+     "out/JSH32/Minecaptcha/map": {
+      "n": 500,
+      "exact_match": 0.95,
+      "cer": 0.0125
+     },
+     "out/jonesdevelopment/sonar/complex": {
+      "n": 500,
+      "exact_match": 0.484,
+      "cer": 0.2192
+     },
+     "out/jonesdevelopment/sonar/legacy": {
+      "n": 500,
+      "exact_match": 0.458,
+      "cer": 0.2552
+     },
+     "out/jonesdevelopment/sonar/standard": {
+      "n": 500,
+      "exact_match": 0.638,
+      "cer": 0.1503
+     },
+     "out/laforetbrut/are-you-sure/code": {
+      "n": 500,
+      "exact_match": 0.018,
+      "cer": 0.6807
+     },
+     "out_ru/BotFilter/map": {
+      "n": 500,
+      "exact_match": 0.74,
+      "cer": 0.0844
+     },
+     "out_ru/CaptchaVerifyZ/map": {
+      "n": 500,
+      "exact_match": 0.998,
+      "cer": 0.0004
+     }
+    },
+    "aggregate": {
+     "types": 7,
+     "items": 3500,
+     "exact_match_median": 0.638,
+     "cer_median": 0.1503,
+     "exact_match_micro": 0.6123,
+     "cer_micro": 0.2004
+    },
+    "percentages": {
+     "out/JSH32/Minecaptcha/map": {
+      "n": 500,
+      "exact_match_pct": 95.0,
+      "cer_pct": 1.25
+     },
+     "out/jonesdevelopment/sonar/complex": {
+      "n": 500,
+      "exact_match_pct": 48.4,
+      "cer_pct": 21.92
+     },
+     "out/jonesdevelopment/sonar/legacy": {
+      "n": 500,
+      "exact_match_pct": 45.8,
+      "cer_pct": 25.52
+     },
+     "out/jonesdevelopment/sonar/standard": {
+      "n": 500,
+      "exact_match_pct": 63.8,
+      "cer_pct": 15.03
+     },
+     "out/laforetbrut/are-you-sure/code": {
+      "n": 500,
+      "exact_match_pct": 1.8,
+      "cer_pct": 68.07
+     },
+     "out_ru/BotFilter/map": {
+      "n": 500,
+      "exact_match_pct": 74.0,
+      "cer_pct": 8.44
+     },
+     "out_ru/CaptchaVerifyZ/map": {
+      "n": 500,
+      "exact_match_pct": 99.8,
+      "cer_pct": 0.04
+     },
+     "MEDIAN over types": {
+      "exact_match_pct": 63.8,
+      "cer_pct": 15.03
+     },
+     "MICRO over all images": {
+      "exact_match_pct": 61.23,
+      "cer_pct": 20.04
+     }
+    }
+   },
+   "0.5": {
+    "per_type": {
+     "out/JSH32/Minecaptcha/map": {
+      "n": 500,
+      "exact_match": 0.946,
+      "cer": 0.0135
+     },
+     "out/jonesdevelopment/sonar/complex": {
+      "n": 500,
+      "exact_match": 0.482,
+      "cer": 0.2175
+     },
+     "out/jonesdevelopment/sonar/legacy": {
+      "n": 500,
+      "exact_match": 0.484,
+      "cer": 0.242
+     },
+     "out/jonesdevelopment/sonar/standard": {
+      "n": 500,
+      "exact_match": 0.614,
+      "cer": 0.163
+     },
+     "out/laforetbrut/are-you-sure/code": {
+      "n": 500,
+      "exact_match": 0.026,
+      "cer": 0.655
+     },
+     "out_ru/BotFilter/map": {
+      "n": 500,
+      "exact_match": 0.734,
+      "cer": 0.0839
+     },
+     "out_ru/CaptchaVerifyZ/map": {
+      "n": 500,
+      "exact_match": 1.0,
+      "cer": 0.0
+     }
+    },
+    "aggregate": {
+     "types": 7,
+     "items": 3500,
+     "exact_match_median": 0.614,
+     "cer_median": 0.163,
+     "exact_match_micro": 0.6123,
+     "cer_micro": 0.1964
+    },
+    "percentages": {
+     "out/JSH32/Minecaptcha/map": {
+      "n": 500,
+      "exact_match_pct": 94.6,
+      "cer_pct": 1.35
+     },
+     "out/jonesdevelopment/sonar/complex": {
+      "n": 500,
+      "exact_match_pct": 48.2,
+      "cer_pct": 21.75
+     },
+     "out/jonesdevelopment/sonar/legacy": {
+      "n": 500,
+      "exact_match_pct": 48.4,
+      "cer_pct": 24.2
+     },
+     "out/jonesdevelopment/sonar/standard": {
+      "n": 500,
+      "exact_match_pct": 61.4,
+      "cer_pct": 16.3
+     },
+     "out/laforetbrut/are-you-sure/code": {
+      "n": 500,
+      "exact_match_pct": 2.6,
+      "cer_pct": 65.5
+     },
+     "out_ru/BotFilter/map": {
+      "n": 500,
+      "exact_match_pct": 73.4,
+      "cer_pct": 8.39
+     },
+     "out_ru/CaptchaVerifyZ/map": {
+      "n": 500,
+      "exact_match_pct": 100.0,
+      "cer_pct": 0.0
+     },
+     "MEDIAN over types": {
+      "exact_match_pct": 61.4,
+      "cer_pct": 16.3
+     },
+     "MICRO over all images": {
+      "exact_match_pct": 61.23,
+      "cer_pct": 19.64
+     }
+    }
+   },
+   "0.6": {
+    "per_type": {
+     "out/JSH32/Minecaptcha/map": {
+      "n": 500,
+      "exact_match": 0.942,
+      "cer": 0.0145
+     },
+     "out/jonesdevelopment/sonar/complex": {
+      "n": 500,
+      "exact_match": 0.488,
+      "cer": 0.2118
+     },
+     "out/jonesdevelopment/sonar/legacy": {
+      "n": 500,
+      "exact_match": 0.496,
+      "cer": 0.2393
+     },
+     "out/jonesdevelopment/sonar/standard": {
+      "n": 500,
+      "exact_match": 0.592,
+      "cer": 0.1773
+     },
+     "out/laforetbrut/are-you-sure/code": {
+      "n": 500,
+      "exact_match": 0.024,
+      "cer": 0.6357
+     },
+     "out_ru/BotFilter/map": {
+      "n": 500,
+      "exact_match": 0.728,
+      "cer": 0.0871
+     },
+     "out_ru/CaptchaVerifyZ/map": {
+      "n": 500,
+      "exact_match": 1.0,
+      "cer": 0.0
+     }
+    },
+    "aggregate": {
+     "types": 7,
+     "items": 3500,
+     "exact_match_median": 0.592,
+     "cer_median": 0.1773,
+     "exact_match_micro": 0.61,
+     "cer_micro": 0.1951
+    },
+    "percentages": {
+     "out/JSH32/Minecaptcha/map": {
+      "n": 500,
+      "exact_match_pct": 94.2,
+      "cer_pct": 1.45
+     },
+     "out/jonesdevelopment/sonar/complex": {
+      "n": 500,
+      "exact_match_pct": 48.8,
+      "cer_pct": 21.18
+     },
+     "out/jonesdevelopment/sonar/legacy": {
+      "n": 500,
+      "exact_match_pct": 49.6,
+      "cer_pct": 23.93
+     },
+     "out/jonesdevelopment/sonar/standard": {
+      "n": 500,
+      "exact_match_pct": 59.2,
+      "cer_pct": 17.73
+     },
+     "out/laforetbrut/are-you-sure/code": {
+      "n": 500,
+      "exact_match_pct": 2.4,
+      "cer_pct": 63.57
+     },
+     "out_ru/BotFilter/map": {
+      "n": 500,
+      "exact_match_pct": 72.8,
+      "cer_pct": 8.71
+     },
+     "out_ru/CaptchaVerifyZ/map": {
+      "n": 500,
+      "exact_match_pct": 100.0,
+      "cer_pct": 0.0
+     },
+     "MEDIAN over types": {
+      "exact_match_pct": 59.2,
+      "cer_pct": 17.73
+     },
+     "MICRO over all images": {
+      "exact_match_pct": 61.0,
+      "cer_pct": 19.51
+     }
+    }
+   },
+   "0.75": {
+    "per_type": {
+     "out/JSH32/Minecaptcha/map": {
+      "n": 500,
+      "exact_match": 0.94,
+      "cer": 0.015
+     },
+     "out/jonesdevelopment/sonar/complex": {
+      "n": 500,
+      "exact_match": 0.49,
+      "cer": 0.209
+     },
+     "out/jonesdevelopment/sonar/legacy": {
+      "n": 500,
+      "exact_match": 0.47,
+      "cer": 0.2507
+     },
+     "out/jonesdevelopment/sonar/standard": {
+      "n": 500,
+      "exact_match": 0.542,
+      "cer": 0.204
+     },
+     "out/laforetbrut/are-you-sure/code": {
+      "n": 500,
+      "exact_match": 0.03,
+      "cer": 0.6177
+     },
+     "out_ru/BotFilter/map": {
+      "n": 500,
+      "exact_match": 0.692,
+      "cer": 0.1003
+     },
+     "out_ru/CaptchaVerifyZ/map": {
+      "n": 500,
+      "exact_match": 1.0,
+      "cer": 0.0
+     }
+    },
+    "aggregate": {
+     "types": 7,
+     "items": 3500,
+     "exact_match_median": 0.542,
+     "cer_median": 0.204,
+     "exact_match_micro": 0.5949,
+     "cer_micro": 0.1995
+    },
+    "percentages": {
+     "out/JSH32/Minecaptcha/map": {
+      "n": 500,
+      "exact_match_pct": 94.0,
+      "cer_pct": 1.5
+     },
+     "out/jonesdevelopment/sonar/complex": {
+      "n": 500,
+      "exact_match_pct": 49.0,
+      "cer_pct": 20.9
+     },
+     "out/jonesdevelopment/sonar/legacy": {
+      "n": 500,
+      "exact_match_pct": 47.0,
+      "cer_pct": 25.07
+     },
+     "out/jonesdevelopment/sonar/standard": {
+      "n": 500,
+      "exact_match_pct": 54.2,
+      "cer_pct": 20.4
+     },
+     "out/laforetbrut/are-you-sure/code": {
+      "n": 500,
+      "exact_match_pct": 3.0,
+      "cer_pct": 61.77
+     },
+     "out_ru/BotFilter/map": {
+      "n": 500,
+      "exact_match_pct": 69.2,
+      "cer_pct": 10.03
+     },
+     "out_ru/CaptchaVerifyZ/map": {
+      "n": 500,
+      "exact_match_pct": 100.0,
+      "cer_pct": 0.0
+     },
+     "MEDIAN over types": {
+      "exact_match_pct": 54.2,
+      "cer_pct": 20.4
+     },
+     "MICRO over all images": {
+      "exact_match_pct": 59.49,
+      "cer_pct": 19.95
+     }
+    }
+   },
+   "1.0": {
+    "per_type": {
+     "out/JSH32/Minecaptcha/map": {
+      "n": 500,
+      "exact_match": 0.954,
+      "cer": 0.012
+     },
+     "out/jonesdevelopment/sonar/complex": {
+      "n": 500,
+      "exact_match": 0.446,
+      "cer": 0.2233
+     },
+     "out/jonesdevelopment/sonar/legacy": {
+      "n": 500,
+      "exact_match": 0.38,
+      "cer": 0.299
+     },
+     "out/jonesdevelopment/sonar/standard": {
+      "n": 500,
+      "exact_match": 0.48,
+      "cer": 0.238
+     },
+     "out/laforetbrut/are-you-sure/code": {
+      "n": 500,
+      "exact_match": 0.024,
+      "cer": 0.6003
+     },
+     "out_ru/BotFilter/map": {
+      "n": 500,
+      "exact_match": 0.56,
+      "cer": 0.1525
+     },
+     "out_ru/CaptchaVerifyZ/map": {
+      "n": 500,
+      "exact_match": 0.992,
+      "cer": 0.0016
+     }
+    },
+    "aggregate": {
+     "types": 7,
+     "items": 3500,
+     "exact_match_median": 0.48,
+     "cer_median": 0.2233,
+     "exact_match_micro": 0.548,
+     "cer_micro": 0.2181
+    },
+    "percentages": {
+     "out/JSH32/Minecaptcha/map": {
+      "n": 500,
+      "exact_match_pct": 95.4,
+      "cer_pct": 1.2
+     },
+     "out/jonesdevelopment/sonar/complex": {
+      "n": 500,
+      "exact_match_pct": 44.6,
+      "cer_pct": 22.33
+     },
+     "out/jonesdevelopment/sonar/legacy": {
+      "n": 500,
+      "exact_match_pct": 38.0,
+      "cer_pct": 29.9
+     },
+     "out/jonesdevelopment/sonar/standard": {
+      "n": 500,
+      "exact_match_pct": 48.0,
+      "cer_pct": 23.8
+     },
+     "out/laforetbrut/are-you-sure/code": {
+      "n": 500,
+      "exact_match_pct": 2.4,
+      "cer_pct": 60.03
+     },
+     "out_ru/BotFilter/map": {
+      "n": 500,
+      "exact_match_pct": 56.0,
+      "cer_pct": 15.25
+     },
+     "out_ru/CaptchaVerifyZ/map": {
+      "n": 500,
+      "exact_match_pct": 99.2,
+      "cer_pct": 0.16
+     },
+     "MEDIAN over types": {
+      "exact_match_pct": 48.0,
+      "cer_pct": 22.33
+     },
+     "MICRO over all images": {
+      "exact_match_pct": 54.8,
+      "cer_pct": 21.81
+     }
+    }
+   }
+  },
+  "best_alpha": "0.4",
+  "best_alpha_aggregate": {
+   "types": 7,
+   "items": 3500,
+   "exact_match_median": 0.638,
+   "cer_median": 0.1503,
+   "exact_match_micro": 0.6123,
+   "cer_micro": 0.2004
+  },
+  "best_alpha_percentages": {
+   "out/JSH32/Minecaptcha/map": {
+    "n": 500,
+    "exact_match_pct": 95.0,
+    "cer_pct": 1.25
+   },
+   "out/jonesdevelopment/sonar/complex": {
+    "n": 500,
+    "exact_match_pct": 48.4,
+    "cer_pct": 21.92
+   },
+   "out/jonesdevelopment/sonar/legacy": {
+    "n": 500,
+    "exact_match_pct": 45.8,
+    "cer_pct": 25.52
+   },
+   "out/jonesdevelopment/sonar/standard": {
+    "n": 500,
+    "exact_match_pct": 63.8,
+    "cer_pct": 15.03
+   },
+   "out/laforetbrut/are-you-sure/code": {
+    "n": 500,
+    "exact_match_pct": 1.8,
+    "cer_pct": 68.07
+   },
+   "out_ru/BotFilter/map": {
+    "n": 500,
+    "exact_match_pct": 74.0,
+    "cer_pct": 8.44
+   },
+   "out_ru/CaptchaVerifyZ/map": {
+    "n": 500,
+    "exact_match_pct": 99.8,
+    "cer_pct": 0.04
+   },
+   "MEDIAN over types": {
+    "exact_match_pct": 63.8,
+    "cer_pct": 15.03
+   },
+   "MICRO over all images": {
+    "exact_match_pct": 61.23,
+    "cer_pct": 20.04
+   }
+  },
+  "best_checkpoint_file": "train/run_ppocr/big/soup_best.pt",
+  "beats_zero_step": true,
+  "consistency_checks": {
+   "alpha_0_median_exact": 0.588,
+   "run_zero_step_median_exact": 0.588,
+   "alpha_0_micro_exact": 0.5646,
+   "run_zero_step_micro_exact": 0.5646,
+   "alpha_1_median_exact": 0.48,
+   "run_finetuned_median_exact": 0.48,
+   "alpha_1_micro_exact": 0.548,
+   "run_finetuned_micro_exact": 0.548
+  }
+ }
+}

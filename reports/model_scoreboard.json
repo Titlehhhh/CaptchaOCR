@@ -1,0 +1,4784 @@
+{
+ "generated": "2026-10-22 16:06:19",
+ "model": {
+  "path": "train/run_ppocr/big/export_soup",
+  "hf_repo": "Titlehhhh/captchaocr-ppocrv6",
+  "soup_alpha": 0.4,
+  "epoch": 7,
+  "step": 1632,
+  "recipe": "theta = alpha * theta_finetuned + (1 - alpha) * theta_pretrained",
+  "classes": 18710
+ },
+ "protocol": {
+  "pipeline": "train/ppocr_data.py + train/finetune_ppocr.py (imported, not re-implemented)",
+  "crop": "roi band where it exists, ink bounding box otherwise",
+  "geometry": "48 x 320, Paddle normalisation (x/255-0.5)/0.5, RGB->BGR",
+  "decode": "AutoProcessor.post_process_text_recognition(out.last_hidden_state)",
+  "metric": "exact match and CER on the normalised `text` (norm() from finetune_ppocr)",
+  "aggregate": "micro over the images and median over the types (aggregate())",
+  "device": "cuda",
+  "seconds": 172.1,
+  "decode_mismatches_vs_pipeline": 0
+ },
+ "published_reference": {
+  "median_exact": 0.638,
+  "micro_exact": 0.6123,
+  "median_cer": 0.1503,
+  "micro_cer": 0.2004,
+  "types": 7,
+  "images": 3500,
+  "note": "the numbers the model was published with - 7 held-out types, 3500 images"
+ },
+ "all_46": {
+  "types": 46,
+  "items": 23000,
+  "exact_match_median": 0.651,
+  "cer_median": 0.1173,
+  "exact_match_micro": 0.502,
+  "cer_micro": 0.5322
+ },
+ "held_out_7_reproduced": {
+  "types": 7,
+  "items": 3500,
+  "exact_match_median": 0.638,
+  "cer_median": 0.1503,
+  "exact_match_micro": 0.6123,
+  "cer_micro": 0.2004
+ },
+ "types": {
+  "out/Archy-X/Krypton/map": {
+   "n": 500,
+   "exact_match": 0.908,
+   "exact_match_raw": 0.908,
+   "cer": 0.02,
+   "cer_median": 0.0,
+   "pred_len_median": 5.0,
+   "pred_len_mean": 5.0,
+   "gold_len_median": 5.0,
+   "examples": [
+    {
+     "file": "001.png",
+     "path": "dataset/out/Archy-X/Krypton/map/001.png",
+     "gold_text": "93j79",
+     "gold_answer": "93j79",
+     "pred": "93J79",
+     "pred_norm": "93J79",
+     "exact": false,
+     "score": 0.9062,
+     "has_band": true,
+     "roi": [
+      32,
+      18,
+      29,
+      8
+     ]
+    },
+    {
+     "file": "101.png",
+     "path": "dataset/out/Archy-X/Krypton/map/101.png",
+     "gold_text": "qXohx",
+     "gold_answer": "qXohx",
+     "pred": "qXohx",
+     "pred_norm": "qXohx",
+     "exact": true,
+     "score": 0.9995,
+     "has_band": true,
+     "roi": [
+      32,
+      31,
+      29,
+      8
+     ]
+    },
+    {
+     "file": "201.png",
+     "path": "dataset/out/Archy-X/Krypton/map/201.png",
+     "gold_text": "5C5g9",
+     "gold_answer": "5C5g9",
+     "pred": "5C5g9",
+     "pred_norm": "5C5g9",
+     "exact": true,
+     "score": 1.0,
+     "has_band": true,
+     "roi": [
+      62,
+      9,
+      29,
+      8
+     ]
+    },
+    {
+     "file": "300.png",
+     "path": "dataset/out/Archy-X/Krypton/map/300.png",
+     "gold_text": "Uoh3n",
+     "gold_answer": "Uoh3n",
+     "pred": "Uoh3n",
+     "pred_norm": "Uoh3n",
+     "exact": true,
+     "score": 1.0,
+     "has_band": true,
+     "roi": [
+      33,
+      5,
+      29,
+      8
+     ]
+    },
+    {
+     "file": "400.png",
+     "path": "dataset/out/Archy-X/Krypton/map/400.png",
+     "gold_text": "yvfji",
+     "gold_answer": "yvfji",
+     "pred": "yvfji",
+     "pred_norm": "yvfji",
+     "exact": true,
+     "score": 0.9976,
+     "has_band": true,
+     "roi": [
+      27,
+      78,
+      24,
+      8
+     ]
+    },
+    {
+     "file": "500.png",
+     "path": "dataset/out/Archy-X/Krypton/map/500.png",
+     "gold_text": "eT4pt",
+     "gold_answer": "eT4pt",
+     "pred": "eT4pt",
+     "pred_norm": "eT4pt",
+     "exact": true,
+     "score": 1.0,
+     "has_band": true,
+     "roi": [
+      12,
+      61,
+      27,
+      8
+     ]
+    }
+   ]
+  },
+  "out/Archy-X/Krypton/menu": {
+   "n": 500,
+   "exact_match": 0.0,
+   "exact_match_raw": 0.0,
+   "cer": 0.9986,
+   "cer_median": 1.0,
+   "pred_len_median": 1.0,
+   "pred_len_mean": 0.996,
+   "gold_len_median": 9.0,
+   "examples": [
+    {
+     "file": "001.png",
+     "path": "dataset/out/Archy-X/Krypton/menu/001.png",
+     "gold_text": "PODZOL",
+     "gold_answer": "PODZOL",
+     "pred": "1",
+     "pred_norm": "1",
+     "exact": false,
+     "score": 0.6523,
+     "has_band": false,
+     "roi": null
+    },
+    {
+     "file": "101.png",
+     "path": "dataset/out/Archy-X/Krypton/menu/101.png",
+     "gold_text": "SOUL_SAND",
+     "gold_answer": "SOUL_SAND",
+     "pred": "1",
+     "pred_norm": "1",
+     "exact": false,
+     "score": 0.897,
+     "has_band": false,
+     "roi": null
+    },
+    {
+     "file": "201.png",
+     "path": "dataset/out/Archy-X/Krypton/menu/201.png",
+     "gold_text": "GLOWSTONE",
+     "gold_answer": "GLOWSTONE",
+     "pred": "1",
+     "pred_norm": "1",
+     "exact": false,
+     "score": 0.7144,
+     "has_band": false,
+     "roi": null
+    },
+    {
+     "file": "300.png",
+     "path": "dataset/out/Archy-X/Krypton/menu/300.png",
+     "gold_text": "DEAD_BUSH",
+     "gold_answer": "DEAD_BUSH",
+     "pred": "盲",
+     "pred_norm": "盲",
+     "exact": false,
+     "score": 0.5181,
+     "has_band": false,
+     "roi": null
+    },
+    {
+     "file": "400.png",
+     "path": "dataset/out/Archy-X/Krypton/menu/400.png",
+     "gold_text": "PISTON",
+     "gold_answer": "PISTON",
+     "pred": "1",
+     "pred_norm": "1",
+     "exact": false,
+     "score": 0.8179,
+     "has_band": false,
+     "roi": null
+    },
+    {
+     "file": "500.png",
+     "path": "dataset/out/Archy-X/Krypton/menu/500.png",
+     "gold_text": "RED_SAND",
+     "gold_answer": "RED_SAND",
+     "pred": "1",
+     "pred_norm": "1",
+     "exact": false,
+     "score": 0.6665,
+     "has_band": false,
+     "roi": null
+    }
+   ]
+  },
+  "out/China2B2T/Captcha/wool": {
+   "n": 500,
+   "exact_match": 0.0,
+   "exact_match_raw": 0.0,
+   "cer": 1.0,
+   "cer_median": 1.0,
+   "pred_len_median": 1.0,
+   "pred_len_mean": 1.018,
+   "gold_len_median": 9.0,
+   "examples": [
+    {
+     "file": "001.png",
+     "path": "dataset/out/China2B2T/Captcha/wool/001.png",
+     "gold_text": "LIME_WOOL",
+     "gold_answer": "LIME_WOOL",
+     "pred": "1",
+     "pred_norm": "1",
+     "exact": false,
+     "score": 0.7944,
+     "has_band": false,
+     "roi": null
+    },
+    {
+     "file": "101.png",
+     "path": "dataset/out/China2B2T/Captcha/wool/101.png",
+     "gold_text": "LIME_WOOL",
+     "gold_answer": "LIME_WOOL",
+     "pred": "1",
+     "pred_norm": "1",
+     "exact": false,
+     "score": 0.6328,
+     "has_band": false,
+     "roi": null
+    },
+    {
+     "file": "201.png",
+     "path": "dataset/out/China2B2T/Captcha/wool/201.png",
+     "gold_text": "LIME_WOOL",
+     "gold_answer": "LIME_WOOL",
+     "pred": "1",
+     "pred_norm": "1",
+     "exact": false,
+     "score": 0.6089,
+     "has_band": false,
+     "roi": null
+    },
+    {
+     "file": "300.png",
+     "path": "dataset/out/China2B2T/Captcha/wool/300.png",
+     "gold_text": "LIME_WOOL",
+     "gold_answer": "LIME_WOOL",
+     "pred": "面",
+     "pred_norm": "面",
+     "exact": false,
+     "score": 0.2426,
+     "has_band": false,
+     "roi": null
+    },
+    {
+     "file": "400.png",
+     "path": "dataset/out/China2B2T/Captcha/wool/400.png",
+     "gold_text": "LIME_WOOL",
+     "gold_answer": "LIME_WOOL",
+     "pred": "1",
+     "pred_norm": "1",
+     "exact": false,
+     "score": 0.6914,
+     "has_band": false,
+     "roi": null
+    },
+    {
+     "file": "500.png",
+     "path": "dataset/out/China2B2T/Captcha/wool/500.png",
+     "gold_text": "LIME_WOOL",
+     "gold_answer": "LIME_WOOL",
+     "pred": "1",
+     "pred_norm": "1",
+     "exact": false,
+     "score": 0.2571,
+     "has_band": false,
+     "roi": null
+    }
+   ]
+  },
+  "out/FeelingAlive0/AdvancedCaptcha/button": {
+   "n": 500,
+   "exact_match": 0.0,
+   "exact_match_raw": 0.0,
+   "cer": 0.6045,
+   "cer_median": 0.5789,
+   "pred_len_median": 25.0,
+   "pred_len_mean": 24.436,
+   "gold_len_median": 24.0,
+   "examples": [
+    {
+     "file": "001.png",
+     "path": "dataset/out/FeelingAlive0/AdvancedCaptcha/button/001.png",
+     "gold_text": "[PressThis] in pink color",
+     "gold_answer": "[PressThis] in pink color",
+     "pred": "[PressThis] button in pink",
+     "pred_norm": "PressThisbuttoninpink",
+     "exact": false,
+     "score": 0.998,
+     "has_band": true,
+     "roi": [
+      230,
+      11,
+      208,
+      20
+     ]
+    },
+    {
+     "file": "101.png",
+     "path": "dataset/out/FeelingAlive0/AdvancedCaptcha/button/101.png",
+     "gold_text": "[Touch] in black color",
+     "gold_answer": "[Touch] in black color",
+     "pred": "[Touch] button in black",
+     "pred_norm": "Touchbuttoninblack",
+     "exact": false,
+     "score": 1.0,
+     "has_band": true,
+     "roi": [
+      230,
+      11,
+      184,
+      20
+     ]
+    },
+    {
+     "file": "201.png",
+     "path": "dataset/out/FeelingAlive0/AdvancedCaptcha/button/201.png",
+     "gold_text": "[HitNow] in red color",
+     "gold_answer": "[HitNow] in red color",
+     "pred": "[HitNow] button in red",
+     "pred_norm": "HitNowbuttoninred",
+     "exact": false,
+     "score": 1.0,
+     "has_band": true,
+     "roi": [
+      230,
+      11,
+      176,
+      20
+     ]
+    },
+    {
+     "file": "300.png",
+     "path": "dataset/out/FeelingAlive0/AdvancedCaptcha/button/300.png",
+     "gold_text": "[ClickMe] in black color",
+     "gold_answer": "[ClickMe] in black color",
+     "pred": "[ClickMe] button in black",
+     "pred_norm": "ClickMebuttoninblack",
+     "exact": false,
+     "score": 0.9995,
+     "has_band": true,
+     "roi": [
+      230,
+      11,
+      200,
+      20
+     ]
+    },
+    {
+     "file": "400.png",
+     "path": "dataset/out/FeelingAlive0/AdvancedCaptcha/button/400.png",
+     "gold_text": "[Hit] in green color",
+     "gold_answer": "[Hit] in green color",
+     "pred": "[Hit] button in green",
+     "pred_norm": "Hitbuttoningreen",
+     "exact": false,
+     "score": 1.0,
+     "has_band": true,
+     "roi": [
+      230,
+      11,
+      168,
+      20
+     ]
+    },
+    {
+     "file": "500.png",
+     "path": "dataset/out/FeelingAlive0/AdvancedCaptcha/button/500.png",
+     "gold_text": "[SelectThat] in green color",
+     "gold_answer": "[SelectThat] in green color",
+     "pred": "[SelectThat] button in green",
+     "pred_norm": "SelectThatbuttoningreen",
+     "exact": false,
+     "score": 0.9707,
+     "has_band": true,
+     "roi": [
+      230,
+      11,
+      224,
+      20
+     ]
+    }
+   ]
+  },
+  "out/FeelingAlive0/AdvancedCaptcha/math": {
+   "n": 500,
+   "exact_match": 0.998,
+   "exact_match_raw": 0.998,
+   "cer": 0.0007,
+   "cer_median": 0.0,
+   "pred_len_median": 6.0,
+   "pred_len_mean": 6.104,
+   "gold_len_median": 6.0,
+   "examples": [
+    {
+     "file": "001.png",
+     "path": "dataset/out/FeelingAlive0/AdvancedCaptcha/math/001.png",
+     "gold_text": "20 + 1",
+     "gold_answer": "21",
+     "pred": "20 + 1",
+     "pred_norm": "20+1",
+     "exact": true,
+     "score": 1.0,
+     "has_band": true,
+     "roi": [
+      231,
+      10,
+      54,
+      21
+     ]
+    },
+    {
+     "file": "101.png",
+     "path": "dataset/out/FeelingAlive0/AdvancedCaptcha/math/101.png",
+     "gold_text": "18 * 13",
+     "gold_answer": "234",
+     "pred": "18 * 13",
+     "pred_norm": "18*13",
+     "exact": true,
+     "score": 1.0,
+     "has_band": true,
+     "roi": [
+      231,
+      10,
+      63,
+      21
+     ]
+    },
+    {
+     "file": "201.png",
+     "path": "dataset/out/FeelingAlive0/AdvancedCaptcha/math/201.png",
+     "gold_text": "2 + 9",
+     "gold_answer": "11",
+     "pred": "2 + 9",
+     "pred_norm": "2+9",
+     "exact": true,
+     "score": 1.0,
+     "has_band": true,
+     "roi": [
+      231,
+      10,
+      45,
+      21
+     ]
+    },
+    {
+     "file": "300.png",
+     "path": "dataset/out/FeelingAlive0/AdvancedCaptcha/math/300.png",
+     "gold_text": "6 * 7",
+     "gold_answer": "42",
+     "pred": "6 * 7",
+     "pred_norm": "6*7",
+     "exact": true,
+     "score": 0.9014,
+     "has_band": true,
+     "roi": [
+      231,
+      10,
+      45,
+      21
+     ]
+    },
+    {
+     "file": "400.png",
+     "path": "dataset/out/FeelingAlive0/AdvancedCaptcha/math/400.png",
+     "gold_text": "11 * 7",
+     "gold_answer": "77",
+     "pred": "11 * 7",
+     "pred_norm": "11*7",
+     "exact": true,
+     "score": 1.0,
+     "has_band": true,
+     "roi": [
+      231,
+      10,
+      54,
+      21
+     ]
+    },
+    {
+     "file": "500.png",
+     "path": "dataset/out/FeelingAlive0/AdvancedCaptcha/math/500.png",
+     "gold_text": "7 - 7",
+     "gold_answer": "0",
+     "pred": "7 = 7",
+     "pred_norm": "7=7",
+     "exact": false,
+     "score": 0.8911,
+     "has_band": true,
+     "roi": [
+      231,
+      10,
+      45,
+      21
+     ]
+    }
+   ]
+  },
+  "out/InstantlyMoist/Captcha/textcaptcha": {
+   "n": 500,
+   "exact_match": 0.108,
+   "exact_match_raw": 0.09,
+   "cer": 0.5984,
+   "cer_median": 0.6,
+   "pred_len_median": 5.0,
+   "pred_len_mean": 4.37,
+   "gold_len_median": 5.0,
+   "examples": [
+    {
+     "file": "001.png",
+     "path": "dataset/out/InstantlyMoist/Captcha/textcaptcha/001.png",
+     "gold_text": "qnspj",
+     "gold_answer": "qnspj",
+     "pred": "aneer",
+     "pred_norm": "aneer",
+     "exact": false,
+     "score": 0.5068,
+     "has_band": false,
+     "roi": null
+    },
+    {
+     "file": "101.png",
+     "path": "dataset/out/InstantlyMoist/Captcha/textcaptcha/101.png",
+     "gold_text": "igaat",
+     "gold_answer": "igaat",
+     "pred": "jgaa",
+     "pred_norm": "jgaa",
+     "exact": false,
+     "score": 0.917,
+     "has_band": false,
+     "roi": null
+    },
+    {
+     "file": "201.png",
+     "path": "dataset/out/InstantlyMoist/Captcha/textcaptcha/201.png",
+     "gold_text": "bspkr",
+     "gold_answer": "bspkr",
+     "pred": "bspkt",
+     "pred_norm": "bspkt",
+     "exact": false,
+     "score": 0.896,
+     "has_band": false,
+     "roi": null
+    },
+    {
+     "file": "300.png",
+     "path": "dataset/out/InstantlyMoist/Captcha/textcaptcha/300.png",
+     "gold_text": "hktst",
+     "gold_answer": "hktst",
+     "pred": "bRtsz",
+     "pred_norm": "bRtsz",
+     "exact": false,
+     "score": 0.4521,
+     "has_band": false,
+     "roi": null
+    },
+    {
+     "file": "400.png",
+     "path": "dataset/out/InstantlyMoist/Captcha/textcaptcha/400.png",
+     "gold_text": "hlife",
+     "gold_answer": "hlife",
+     "pred": "byAe",
+     "pred_norm": "byAe",
+     "exact": false,
+     "score": 0.3213,
+     "has_band": false,
+     "roi": null
+    },
+    {
+     "file": "500.png",
+     "path": "dataset/out/InstantlyMoist/Captcha/textcaptcha/500.png",
+     "gold_text": "tbgpz",
+     "gold_answer": "tbgpz",
+     "pred": "Ihopl",
+     "pred_norm": "Ihopl",
+     "exact": false,
+     "score": 0.8066,
+     "has_band": false,
+     "roi": null
+    }
+   ]
+  },
+  "out/JSH32/Minecaptcha/map": {
+   "n": 500,
+   "exact_match": 0.95,
+   "exact_match_raw": 0.95,
+   "cer": 0.0125,
+   "cer_median": 0.0,
+   "pred_len_median": 4.0,
+   "pred_len_mean": 4.0,
+   "gold_len_median": 4.0,
+   "examples": [
+    {
+     "file": "001.png",
+     "path": "dataset/out/JSH32/Minecaptcha/map/001.png",
+     "gold_text": "HClf",
+     "gold_answer": "HClf",
+     "pred": "HClf",
+     "pred_norm": "HClf",
+     "exact": true,
+     "score": 0.9263,
+     "has_band": true,
+     "roi": [
+      34,
+      77,
+      62,
+      35
+     ]
+    },
+    {
+     "file": "101.png",
+     "path": "dataset/out/JSH32/Minecaptcha/map/101.png",
+     "gold_text": "xXux",
+     "gold_answer": "xXux",
+     "pred": "xXux",
+     "pred_norm": "xXux",
+     "exact": true,
+     "score": 1.0,
+     "has_band": true,
+     "roi": [
+      29,
+      77,
+      72,
+      35
+     ]
+    },
+    {
+     "file": "201.png",
+     "path": "dataset/out/JSH32/Minecaptcha/map/201.png",
+     "gold_text": "1tro",
+     "gold_answer": "1tro",
+     "pred": "1tro",
+     "pred_norm": "1tro",
+     "exact": true,
+     "score": 1.0,
+     "has_band": true,
+     "roi": [
+      36,
+      77,
+      57,
+      35
+     ]
+    },
+    {
+     "file": "300.png",
+     "path": "dataset/out/JSH32/Minecaptcha/map/300.png",
+     "gold_text": "AJOs",
+     "gold_answer": "AJOs",
+     "pred": "AJOs",
+     "pred_norm": "AJOs",
+     "exact": true,
+     "score": 1.0,
+     "has_band": true,
+     "roi": [
+      26,
+      77,
+      78,
+      35
+     ]
+    },
+    {
+     "file": "400.png",
+     "path": "dataset/out/JSH32/Minecaptcha/map/400.png",
+     "gold_text": "4yzR",
+     "gold_answer": "4yzR",
+     "pred": "4yzR",
+     "pred_norm": "4yzR",
+     "exact": true,
+     "score": 1.0,
+     "has_band": true,
+     "roi": [
+      30,
+      77,
+      70,
+      35
+     ]
+    },
+    {
+     "file": "500.png",
+     "path": "dataset/out/JSH32/Minecaptcha/map/500.png",
+     "gold_text": "MN5y",
+     "gold_answer": "MN5y",
+     "pred": "MN5y",
+     "pred_norm": "MN5y",
+     "exact": true,
+     "score": 1.0,
+     "has_band": true,
+     "roi": [
+      25,
+      77,
+      80,
+      35
+     ]
+    }
+   ]
+  },
+  "out/Joey61021/captcha/colorgui": {
+   "n": 500,
+   "exact_match": 0.828,
+   "exact_match_raw": 0.828,
+   "cer": 0.0287,
+   "cer_median": 0.0,
+   "pred_len_median": 4.0,
+   "pred_len_mean": 4.52,
+   "gold_len_median": 4.0,
+   "examples": [
+    {
+     "file": "001.png",
+     "path": "dataset/out/Joey61021/captcha/colorgui/001.png",
+     "gold_text": "Pink",
+     "gold_answer": "Pink",
+     "pred": "Pink",
+     "pred_norm": "Pink",
+     "exact": true,
+     "score": 0.9429,
+     "has_band": true,
+     "roi": [
+      145,
+      3,
+      28,
+      17
+     ]
+    },
+    {
+     "file": "101.png",
+     "path": "dataset/out/Joey61021/captcha/colorgui/101.png",
+     "gold_text": "Yellow",
+     "gold_answer": "Yellow",
+     "pred": "Hellow",
+     "pred_norm": "Hellow",
+     "exact": false,
+     "score": 0.6782,
+     "has_band": true,
+     "roi": [
+      126,
+      5,
+      36,
+      14
+     ]
+    },
+    {
+     "file": "201.png",
+     "path": "dataset/out/Joey61021/captcha/colorgui/201.png",
+     "gold_text": "Red",
+     "gold_answer": "Red",
+     "pred": "Red",
+     "pred_norm": "Red",
+     "exact": true,
+     "score": 0.998,
+     "has_band": true,
+     "roi": [
+      145,
+      3,
+      21,
+      17
+     ]
+    },
+    {
+     "file": "300.png",
+     "path": "dataset/out/Joey61021/captcha/colorgui/300.png",
+     "gold_text": "Red",
+     "gold_answer": "Red",
+     "pred": "Red",
+     "pred_norm": "Red",
+     "exact": true,
+     "score": 0.998,
+     "has_band": true,
+     "roi": [
+      145,
+      3,
+      21,
+      17
+     ]
+    },
+    {
+     "file": "400.png",
+     "path": "dataset/out/Joey61021/captcha/colorgui/400.png",
+     "gold_text": "Pink",
+     "gold_answer": "Pink",
+     "pred": "Pink",
+     "pred_norm": "Pink",
+     "exact": true,
+     "score": 0.9429,
+     "has_band": true,
+     "roi": [
+      145,
+      3,
+      28,
+      17
+     ]
+    },
+    {
+     "file": "500.png",
+     "path": "dataset/out/Joey61021/captcha/colorgui/500.png",
+     "gold_text": "Blue",
+     "gold_answer": "Blue",
+     "pred": "Blue",
+     "pred_norm": "Blue",
+     "exact": true,
+     "score": 0.9834,
+     "has_band": true,
+     "roi": [
+      145,
+      3,
+      28,
+      17
+     ]
+    }
+   ]
+  },
+  "out/LagBug/XProtect/code": {
+   "n": 500,
+   "exact_match": 0.0,
+   "exact_match_raw": 0.0,
+   "cer": 0.9903,
+   "cer_median": 1.0,
+   "pred_len_median": 0.0,
+   "pred_len_mean": 0.39,
+   "gold_len_median": 6.0,
+   "examples": [
+    {
+     "file": "001.png",
+     "path": "dataset/out/LagBug/XProtect/code/001.png",
+     "gold_text": "g5vyu3",
+     "gold_answer": "g5vyu3",
+     "pred": "",
+     "pred_norm": "",
+     "exact": false,
+     "score": NaN,
+     "has_band": false,
+     "roi": null
+    },
+    {
+     "file": "101.png",
+     "path": "dataset/out/LagBug/XProtect/code/101.png",
+     "gold_text": "ud9do2",
+     "gold_answer": "ud9do2",
+     "pred": "",
+     "pred_norm": "",
+     "exact": false,
+     "score": NaN,
+     "has_band": false,
+     "roi": null
+    },
+    {
+     "file": "201.png",
+     "path": "dataset/out/LagBug/XProtect/code/201.png",
+     "gold_text": "l1nTTk",
+     "gold_answer": "l1nTTk",
+     "pred": "",
+     "pred_norm": "",
+     "exact": false,
+     "score": NaN,
+     "has_band": false,
+     "roi": null
+    },
+    {
+     "file": "300.png",
+     "path": "dataset/out/LagBug/XProtect/code/300.png",
+     "gold_text": "EsnaIU",
+     "gold_answer": "EsnaIU",
+     "pred": "",
+     "pred_norm": "",
+     "exact": false,
+     "score": NaN,
+     "has_band": false,
+     "roi": null
+    },
+    {
+     "file": "400.png",
+     "path": "dataset/out/LagBug/XProtect/code/400.png",
+     "gold_text": "xaQlrs",
+     "gold_answer": "xaQlrs",
+     "pred": "NT",
+     "pred_norm": "NT",
+     "exact": false,
+     "score": 0.373,
+     "has_band": false,
+     "roi": null
+    },
+    {
+     "file": "500.png",
+     "path": "dataset/out/LagBug/XProtect/code/500.png",
+     "gold_text": "QE1YQy",
+     "gold_answer": "QE1YQy",
+     "pred": "",
+     "pred_norm": "",
+     "exact": false,
+     "score": NaN,
+     "has_band": false,
+     "roi": null
+    }
+   ]
+  },
+  "out/LagBug/XProtect/color": {
+   "n": 500,
+   "exact_match": 0.0,
+   "exact_match_raw": 0.0,
+   "cer": 0.9995,
+   "cer_median": 1.0,
+   "pred_len_median": 0.0,
+   "pred_len_mean": 0.812,
+   "gold_len_median": 5.0,
+   "examples": [
+    {
+     "file": "001.png",
+     "path": "dataset/out/LagBug/XProtect/color/001.png",
+     "gold_text": "green",
+     "gold_answer": "green",
+     "pred": "S",
+     "pred_norm": "S",
+     "exact": false,
+     "score": 0.2527,
+     "has_band": false,
+     "roi": null
+    },
+    {
+     "file": "101.png",
+     "path": "dataset/out/LagBug/XProtect/color/101.png",
+     "gold_text": "yellow",
+     "gold_answer": "yellow",
+     "pred": "S",
+     "pred_norm": "S",
+     "exact": false,
+     "score": 0.4802,
+     "has_band": false,
+     "roi": null
+    },
+    {
+     "file": "201.png",
+     "path": "dataset/out/LagBug/XProtect/color/201.png",
+     "gold_text": "purple",
+     "gold_answer": "purple",
+     "pred": "o ",
+     "pred_norm": "o",
+     "exact": false,
+     "score": 0.4675,
+     "has_band": false,
+     "roi": null
+    },
+    {
+     "file": "300.png",
+     "path": "dataset/out/LagBug/XProtect/color/300.png",
+     "gold_text": "yellow",
+     "gold_answer": "yellow",
+     "pred": "o",
+     "pred_norm": "o",
+     "exact": false,
+     "score": 0.3398,
+     "has_band": false,
+     "roi": null
+    },
+    {
+     "file": "400.png",
+     "path": "dataset/out/LagBug/XProtect/color/400.png",
+     "gold_text": "green",
+     "gold_answer": "green",
+     "pred": "",
+     "pred_norm": "",
+     "exact": false,
+     "score": NaN,
+     "has_band": false,
+     "roi": null
+    },
+    {
+     "file": "500.png",
+     "path": "dataset/out/LagBug/XProtect/color/500.png",
+     "gold_text": "black",
+     "gold_answer": "black",
+     "pred": "",
+     "pred_norm": "",
+     "exact": false,
+     "score": NaN,
+     "has_band": false,
+     "roi": null
+    }
+   ]
+  },
+  "out/LagBug/XProtect/different": {
+   "n": 500,
+   "exact_match": 0.0,
+   "exact_match_raw": 0.0,
+   "cer": 1.0,
+   "cer_median": 1.0,
+   "pred_len_median": 0.0,
+   "pred_len_mean": 0.29,
+   "gold_len_median": 13.0,
+   "examples": [
+    {
+     "file": "001.png",
+     "path": "dataset/out/LagBug/XProtect/different/001.png",
+     "gold_text": "EMERALD_BLOCK",
+     "gold_answer": "EMERALD_BLOCK",
+     "pred": "",
+     "pred_norm": "",
+     "exact": false,
+     "score": NaN,
+     "has_band": false,
+     "roi": null
+    },
+    {
+     "file": "101.png",
+     "path": "dataset/out/LagBug/XProtect/different/101.png",
+     "gold_text": "EMERALD_BLOCK",
+     "gold_answer": "EMERALD_BLOCK",
+     "pred": "",
+     "pred_norm": "",
+     "exact": false,
+     "score": NaN,
+     "has_band": false,
+     "roi": null
+    },
+    {
+     "file": "201.png",
+     "path": "dataset/out/LagBug/XProtect/different/201.png",
+     "gold_text": "EMERALD_BLOCK",
+     "gold_answer": "EMERALD_BLOCK",
+     "pred": "",
+     "pred_norm": "",
+     "exact": false,
+     "score": NaN,
+     "has_band": false,
+     "roi": null
+    },
+    {
+     "file": "300.png",
+     "path": "dataset/out/LagBug/XProtect/different/300.png",
+     "gold_text": "EMERALD_BLOCK",
+     "gold_answer": "EMERALD_BLOCK",
+     "pred": "",
+     "pred_norm": "",
+     "exact": false,
+     "score": NaN,
+     "has_band": false,
+     "roi": null
+    },
+    {
+     "file": "400.png",
+     "path": "dataset/out/LagBug/XProtect/different/400.png",
+     "gold_text": "EMERALD_BLOCK",
+     "gold_answer": "EMERALD_BLOCK",
+     "pred": "",
+     "pred_norm": "",
+     "exact": false,
+     "score": NaN,
+     "has_band": false,
+     "roi": null
+    },
+    {
+     "file": "500.png",
+     "path": "dataset/out/LagBug/XProtect/different/500.png",
+     "gold_text": "EMERALD_BLOCK",
+     "gold_answer": "EMERALD_BLOCK",
+     "pred": "",
+     "pred_norm": "",
+     "exact": false,
+     "score": NaN,
+     "has_band": false,
+     "roi": null
+    }
+   ]
+  },
+  "out/LagBug/XProtect/drop": {
+   "n": 500,
+   "exact_match": 1.0,
+   "exact_match_raw": 1.0,
+   "cer": 0.0,
+   "cer_median": 0.0,
+   "pred_len_median": 4.0,
+   "pred_len_mean": 4.0,
+   "gold_len_median": 4.0,
+   "examples": [
+    {
+     "file": "001.png",
+     "path": "dataset/out/LagBug/XProtect/drop/001.png",
+     "gold_text": "drop",
+     "gold_answer": "drop",
+     "pred": "drop",
+     "pred_norm": "drop",
+     "exact": true,
+     "score": 1.0,
+     "has_band": true,
+     "roi": [
+      150,
+      97,
+      32,
+      20
+     ]
+    },
+    {
+     "file": "101.png",
+     "path": "dataset/out/LagBug/XProtect/drop/101.png",
+     "gold_text": "drop",
+     "gold_answer": "drop",
+     "pred": "drop",
+     "pred_norm": "drop",
+     "exact": true,
+     "score": 1.0,
+     "has_band": true,
+     "roi": [
+      150,
+      75,
+      32,
+      20
+     ]
+    },
+    {
+     "file": "201.png",
+     "path": "dataset/out/LagBug/XProtect/drop/201.png",
+     "gold_text": "drop",
+     "gold_answer": "drop",
+     "pred": "drop",
+     "pred_norm": "drop",
+     "exact": true,
+     "score": 1.0,
+     "has_band": true,
+     "roi": [
+      150,
+      53,
+      32,
+      20
+     ]
+    },
+    {
+     "file": "300.png",
+     "path": "dataset/out/LagBug/XProtect/drop/300.png",
+     "gold_text": "drop",
+     "gold_answer": "drop",
+     "pred": "drop",
+     "pred_norm": "drop",
+     "exact": true,
+     "score": 1.0,
+     "has_band": true,
+     "roi": [
+      150,
+      53,
+      32,
+      20
+     ]
+    },
+    {
+     "file": "400.png",
+     "path": "dataset/out/LagBug/XProtect/drop/400.png",
+     "gold_text": "drop",
+     "gold_answer": "drop",
+     "pred": "drop",
+     "pred_norm": "drop",
+     "exact": true,
+     "score": 1.0,
+     "has_band": true,
+     "roi": [
+      150,
+      97,
+      32,
+      20
+     ]
+    },
+    {
+     "file": "500.png",
+     "path": "dataset/out/LagBug/XProtect/drop/500.png",
+     "gold_text": "drop",
+     "gold_answer": "drop",
+     "pred": "drop",
+     "pred_norm": "drop",
+     "exact": true,
+     "score": 1.0,
+     "has_band": true,
+     "roi": [
+      150,
+      53,
+      32,
+      20
+     ]
+    }
+   ]
+  },
+  "out/LagBug/XProtect/equation": {
+   "n": 500,
+   "exact_match": 1.0,
+   "exact_match_raw": 1.0,
+   "cer": 0.0,
+   "cer_median": 0.0,
+   "pred_len_median": 6.0,
+   "pred_len_mean": 5.736,
+   "gold_len_median": 6.0,
+   "examples": [
+    {
+     "file": "001.png",
+     "path": "dataset/out/LagBug/XProtect/equation/001.png",
+     "gold_text": "6 + 10",
+     "gold_answer": "16",
+     "pred": "6 + 10",
+     "pred_norm": "6+10",
+     "exact": true,
+     "score": 0.9746,
+     "has_band": true,
+     "roi": [
+      390,
+      75,
+      48,
+      20
+     ]
+    },
+    {
+     "file": "101.png",
+     "path": "dataset/out/LagBug/XProtect/equation/101.png",
+     "gold_text": "3 + 7",
+     "gold_answer": "10",
+     "pred": "3 + 7",
+     "pred_norm": "3+7",
+     "exact": true,
+     "score": 0.9995,
+     "has_band": true,
+     "roi": [
+      390,
+      53,
+      40,
+      20
+     ]
+    },
+    {
+     "file": "201.png",
+     "path": "dataset/out/LagBug/XProtect/equation/201.png",
+     "gold_text": "8 + 15",
+     "gold_answer": "23",
+     "pred": "8 + 15",
+     "pred_norm": "8+15",
+     "exact": true,
+     "score": 0.998,
+     "has_band": true,
+     "roi": [
+      390,
+      75,
+      48,
+      20
+     ]
+    },
+    {
+     "file": "300.png",
+     "path": "dataset/out/LagBug/XProtect/equation/300.png",
+     "gold_text": "11 - 1",
+     "gold_answer": "10",
+     "pred": "11 - 1",
+     "pred_norm": "11-1",
+     "exact": true,
+     "score": 0.9941,
+     "has_band": true,
+     "roi": [
+      390,
+      97,
+      48,
+      20
+     ]
+    },
+    {
+     "file": "400.png",
+     "path": "dataset/out/LagBug/XProtect/equation/400.png",
+     "gold_text": "11 + 14",
+     "gold_answer": "25",
+     "pred": "11 + 14",
+     "pred_norm": "11+14",
+     "exact": true,
+     "score": 0.9888,
+     "has_band": true,
+     "roi": [
+      390,
+      53,
+      56,
+      20
+     ]
+    },
+    {
+     "file": "500.png",
+     "path": "dataset/out/LagBug/XProtect/equation/500.png",
+     "gold_text": "7 - 3",
+     "gold_answer": "4",
+     "pred": "7 - 3",
+     "pred_norm": "7-3",
+     "exact": true,
+     "score": 0.9658,
+     "has_band": true,
+     "roi": [
+      390,
+      53,
+      40,
+      20
+     ]
+    }
+   ]
+  },
+  "out/LagBug/XProtect/gui": {
+   "n": 500,
+   "exact_match": 1.0,
+   "exact_match_raw": 1.0,
+   "cer": 0.0,
+   "cer_median": 0.0,
+   "pred_len_median": 9.0,
+   "pred_len_mean": 9.034,
+   "gold_len_median": 9.0,
+   "examples": [
+    {
+     "file": "001.png",
+     "path": "dataset/out/LagBug/XProtect/gui/001.png",
+     "gold_text": "Purpur Block",
+     "gold_answer": "Purpur Block",
+     "pred": "Purpur Block",
+     "pred_norm": "PurpurBlock",
+     "exact": true,
+     "score": 1.0,
+     "has_band": true,
+     "roi": [
+      254,
+      97,
+      96,
+      20
+     ]
+    },
+    {
+     "file": "101.png",
+     "path": "dataset/out/LagBug/XProtect/gui/101.png",
+     "gold_text": "Emerald Ore",
+     "gold_answer": "Emerald Ore",
+     "pred": "Emerald Ore",
+     "pred_norm": "EmeraldOre",
+     "exact": true,
+     "score": 1.0,
+     "has_band": true,
+     "roi": [
+      254,
+      97,
+      88,
+      20
+     ]
+    },
+    {
+     "file": "201.png",
+     "path": "dataset/out/LagBug/XProtect/gui/201.png",
+     "gold_text": "Bookshelf",
+     "gold_answer": "Bookshelf",
+     "pred": "Bookshelf",
+     "pred_norm": "Bookshelf",
+     "exact": true,
+     "score": 1.0,
+     "has_band": true,
+     "roi": [
+      254,
+      53,
+      72,
+      20
+     ]
+    },
+    {
+     "file": "300.png",
+     "path": "dataset/out/LagBug/XProtect/gui/300.png",
+     "gold_text": "Bone Block",
+     "gold_answer": "Bone Block",
+     "pred": "Bone Block",
+     "pred_norm": "BoneBlock",
+     "exact": true,
+     "score": 1.0,
+     "has_band": true,
+     "roi": [
+      254,
+      97,
+      80,
+      20
+     ]
+    },
+    {
+     "file": "400.png",
+     "path": "dataset/out/LagBug/XProtect/gui/400.png",
+     "gold_text": "Diamond Block",
+     "gold_answer": "Diamond Block",
+     "pred": "Diamond Block",
+     "pred_norm": "DiamondBlock",
+     "exact": true,
+     "score": 1.0,
+     "has_band": true,
+     "roi": [
+      254,
+      75,
+      104,
+      20
+     ]
+    },
+    {
+     "file": "500.png",
+     "path": "dataset/out/LagBug/XProtect/gui/500.png",
+     "gold_text": "Emerald Block",
+     "gold_answer": "Emerald Block",
+     "pred": "Emerald Block",
+     "pred_norm": "EmeraldBlock",
+     "exact": true,
+     "score": 1.0,
+     "has_band": true,
+     "roi": [
+      254,
+      97,
+      104,
+      20
+     ]
+    }
+   ]
+  },
+  "out/LagBug/XProtect/jump": {
+   "n": 500,
+   "exact_match": 1.0,
+   "exact_match_raw": 1.0,
+   "cer": 0.0,
+   "cer_median": 0.0,
+   "pred_len_median": 4.0,
+   "pred_len_mean": 4.0,
+   "gold_len_median": 4.0,
+   "examples": [
+    {
+     "file": "001.png",
+     "path": "dataset/out/LagBug/XProtect/jump/001.png",
+     "gold_text": "jump",
+     "gold_answer": "jump",
+     "pred": "jump",
+     "pred_norm": "jump",
+     "exact": true,
+     "score": 1.0,
+     "has_band": true,
+     "roi": [
+      150,
+      97,
+      32,
+      20
+     ]
+    },
+    {
+     "file": "101.png",
+     "path": "dataset/out/LagBug/XProtect/jump/101.png",
+     "gold_text": "jump",
+     "gold_answer": "jump",
+     "pred": "jump",
+     "pred_norm": "jump",
+     "exact": true,
+     "score": 1.0,
+     "has_band": true,
+     "roi": [
+      150,
+      97,
+      32,
+      20
+     ]
+    },
+    {
+     "file": "201.png",
+     "path": "dataset/out/LagBug/XProtect/jump/201.png",
+     "gold_text": "jump",
+     "gold_answer": "jump",
+     "pred": "jump",
+     "pred_norm": "jump",
+     "exact": true,
+     "score": 1.0,
+     "has_band": true,
+     "roi": [
+      150,
+      53,
+      32,
+      20
+     ]
+    },
+    {
+     "file": "300.png",
+     "path": "dataset/out/LagBug/XProtect/jump/300.png",
+     "gold_text": "jump",
+     "gold_answer": "jump",
+     "pred": "jump",
+     "pred_norm": "jump",
+     "exact": true,
+     "score": 1.0,
+     "has_band": true,
+     "roi": [
+      150,
+      97,
+      32,
+      20
+     ]
+    },
+    {
+     "file": "400.png",
+     "path": "dataset/out/LagBug/XProtect/jump/400.png",
+     "gold_text": "jump",
+     "gold_answer": "jump",
+     "pred": "jump",
+     "pred_norm": "jump",
+     "exact": true,
+     "score": 1.0,
+     "has_band": true,
+     "roi": [
+      150,
+      97,
+      32,
+      20
+     ]
+    },
+    {
+     "file": "500.png",
+     "path": "dataset/out/LagBug/XProtect/jump/500.png",
+     "gold_text": "jump",
+     "gold_answer": "jump",
+     "pred": "jump",
+     "pred_norm": "jump",
+     "exact": true,
+     "score": 1.0,
+     "has_band": true,
+     "roi": [
+      150,
+      97,
+      32,
+      20
+     ]
+    }
+   ]
+  },
+  "out/LagBug/XProtect/map": {
+   "n": 500,
+   "exact_match": 0.0,
+   "exact_match_raw": 0.0,
+   "cer": 0.9923,
+   "cer_median": 1.0,
+   "pred_len_median": 0.0,
+   "pred_len_mean": 0.408,
+   "gold_len_median": 6.0,
+   "examples": [
+    {
+     "file": "001.png",
+     "path": "dataset/out/LagBug/XProtect/map/001.png",
+     "gold_text": "k1VIUF",
+     "gold_answer": "k1VIUF",
+     "pred": "AN",
+     "pred_norm": "AN",
+     "exact": false,
+     "score": 0.4121,
+     "has_band": false,
+     "roi": null
+    },
+    {
+     "file": "101.png",
+     "path": "dataset/out/LagBug/XProtect/map/101.png",
+     "gold_text": "kxyxZB",
+     "gold_answer": "kxyxZB",
+     "pred": "",
+     "pred_norm": "",
+     "exact": false,
+     "score": NaN,
+     "has_band": false,
+     "roi": null
+    },
+    {
+     "file": "201.png",
+     "path": "dataset/out/LagBug/XProtect/map/201.png",
+     "gold_text": "S7X3v6",
+     "gold_answer": "S7X3v6",
+     "pred": "",
+     "pred_norm": "",
+     "exact": false,
+     "score": NaN,
+     "has_band": false,
+     "roi": null
+    },
+    {
+     "file": "300.png",
+     "path": "dataset/out/LagBug/XProtect/map/300.png",
+     "gold_text": "Rn9tCj",
+     "gold_answer": "Rn9tCj",
+     "pred": "SN",
+     "pred_norm": "SN",
+     "exact": false,
+     "score": 0.2202,
+     "has_band": false,
+     "roi": null
+    },
+    {
+     "file": "400.png",
+     "path": "dataset/out/LagBug/XProtect/map/400.png",
+     "gold_text": "ynqEnm",
+     "gold_answer": "ynqEnm",
+     "pred": "",
+     "pred_norm": "",
+     "exact": false,
+     "score": NaN,
+     "has_band": false,
+     "roi": null
+    },
+    {
+     "file": "500.png",
+     "path": "dataset/out/LagBug/XProtect/map/500.png",
+     "gold_text": "i8yByj",
+     "gold_answer": "i8yByj",
+     "pred": "",
+     "pred_norm": "",
+     "exact": false,
+     "score": NaN,
+     "has_band": false,
+     "roi": null
+    }
+   ]
+  },
+  "out/LagBug/XProtect/picture": {
+   "n": 500,
+   "exact_match": 0.0,
+   "exact_match_raw": 0.0,
+   "cer": 1.0,
+   "cer_median": 1.0,
+   "pred_len_median": 0.0,
+   "pred_len_mean": 0.052,
+   "gold_len_median": 4.0,
+   "examples": [
+    {
+     "file": "001.png",
+     "path": "dataset/out/LagBug/XProtect/picture/001.png",
+     "gold_text": "fish",
+     "gold_answer": "fish",
+     "pred": "",
+     "pred_norm": "",
+     "exact": false,
+     "score": NaN,
+     "has_band": false,
+     "roi": null
+    },
+    {
+     "file": "101.png",
+     "path": "dataset/out/LagBug/XProtect/picture/101.png",
+     "gold_text": "door",
+     "gold_answer": "door",
+     "pred": "",
+     "pred_norm": "",
+     "exact": false,
+     "score": NaN,
+     "has_band": false,
+     "roi": null
+    },
+    {
+     "file": "201.png",
+     "path": "dataset/out/LagBug/XProtect/picture/201.png",
+     "gold_text": "book",
+     "gold_answer": "book",
+     "pred": "",
+     "pred_norm": "",
+     "exact": false,
+     "score": NaN,
+     "has_band": false,
+     "roi": null
+    },
+    {
+     "file": "300.png",
+     "path": "dataset/out/LagBug/XProtect/picture/300.png",
+     "gold_text": "fish",
+     "gold_answer": "fish",
+     "pred": "",
+     "pred_norm": "",
+     "exact": false,
+     "score": NaN,
+     "has_band": false,
+     "roi": null
+    },
+    {
+     "file": "400.png",
+     "path": "dataset/out/LagBug/XProtect/picture/400.png",
+     "gold_text": "car",
+     "gold_answer": "car",
+     "pred": "",
+     "pred_norm": "",
+     "exact": false,
+     "score": NaN,
+     "has_band": false,
+     "roi": null
+    },
+    {
+     "file": "500.png",
+     "path": "dataset/out/LagBug/XProtect/picture/500.png",
+     "gold_text": "tree",
+     "gold_answer": "tree",
+     "pred": "二",
+     "pred_norm": "二",
+     "exact": false,
+     "score": 0.3855,
+     "has_band": false,
+     "roi": null
+    }
+   ]
+  },
+  "out/LagBug/XProtect/reverse": {
+   "n": 500,
+   "exact_match": 0.904,
+   "exact_match_raw": 0.904,
+   "cer": 0.0177,
+   "cer_median": 0.0,
+   "pred_len_median": 6.0,
+   "pred_len_mean": 6.002,
+   "gold_len_median": 6.0,
+   "examples": [
+    {
+     "file": "001.png",
+     "path": "dataset/out/LagBug/XProtect/reverse/001.png",
+     "gold_text": "gZsIw8",
+     "gold_answer": "8wIsZg",
+     "pred": "gZsIw8",
+     "pred_norm": "gZsIw8",
+     "exact": true,
+     "score": 1.0,
+     "has_band": true,
+     "roi": [
+      494,
+      75,
+      48,
+      20
+     ]
+    },
+    {
+     "file": "101.png",
+     "path": "dataset/out/LagBug/XProtect/reverse/101.png",
+     "gold_text": "pn2XkA",
+     "gold_answer": "AkX2np",
+     "pred": "pn2XkA",
+     "pred_norm": "pn2XkA",
+     "exact": true,
+     "score": 1.0,
+     "has_band": true,
+     "roi": [
+      494,
+      97,
+      48,
+      20
+     ]
+    },
+    {
+     "file": "201.png",
+     "path": "dataset/out/LagBug/XProtect/reverse/201.png",
+     "gold_text": "z2hxGn",
+     "gold_answer": "nGxh2z",
+     "pred": "z2hxGn",
+     "pred_norm": "z2hxGn",
+     "exact": true,
+     "score": 1.0,
+     "has_band": true,
+     "roi": [
+      494,
+      97,
+      48,
+      20
+     ]
+    },
+    {
+     "file": "300.png",
+     "path": "dataset/out/LagBug/XProtect/reverse/300.png",
+     "gold_text": "FknKBm",
+     "gold_answer": "mBKnkF",
+     "pred": "FknKBm",
+     "pred_norm": "FknKBm",
+     "exact": true,
+     "score": 1.0,
+     "has_band": true,
+     "roi": [
+      494,
+      75,
+      48,
+      20
+     ]
+    },
+    {
+     "file": "400.png",
+     "path": "dataset/out/LagBug/XProtect/reverse/400.png",
+     "gold_text": "xXkvub",
+     "gold_answer": "buvkXx",
+     "pred": "xXkvub",
+     "pred_norm": "xXkvub",
+     "exact": true,
+     "score": 1.0,
+     "has_band": true,
+     "roi": [
+      494,
+      97,
+      48,
+      20
+     ]
+    },
+    {
+     "file": "500.png",
+     "path": "dataset/out/LagBug/XProtect/reverse/500.png",
+     "gold_text": "Mc2bnF",
+     "gold_answer": "Fnb2cM",
+     "pred": "Mc2bnF",
+     "pred_norm": "Mc2bnF",
+     "exact": true,
+     "score": 0.9995,
+     "has_band": true,
+     "roi": [
+      494,
+      75,
+      48,
+      20
+     ]
+    }
+   ]
+  },
+  "out/LagBug/XProtect/slot": {
+   "n": 500,
+   "exact_match": 1.0,
+   "exact_match_raw": 1.0,
+   "cer": 0.0,
+   "cer_median": 0.0,
+   "pred_len_median": 1.0,
+   "pred_len_mean": 1.0,
+   "gold_len_median": 1.0,
+   "examples": [
+    {
+     "file": "001.png",
+     "path": "dataset/out/LagBug/XProtect/slot/001.png",
+     "gold_text": "8",
+     "gold_answer": "8",
+     "pred": "8",
+     "pred_norm": "8",
+     "exact": true,
+     "score": 1.0,
+     "has_band": true,
+     "roi": [
+      246,
+      75,
+      8,
+      20
+     ]
+    },
+    {
+     "file": "101.png",
+     "path": "dataset/out/LagBug/XProtect/slot/101.png",
+     "gold_text": "6",
+     "gold_answer": "6",
+     "pred": "6",
+     "pred_norm": "6",
+     "exact": true,
+     "score": 1.0,
+     "has_band": true,
+     "roi": [
+      246,
+      75,
+      8,
+      20
+     ]
+    },
+    {
+     "file": "201.png",
+     "path": "dataset/out/LagBug/XProtect/slot/201.png",
+     "gold_text": "6",
+     "gold_answer": "6",
+     "pred": "6",
+     "pred_norm": "6",
+     "exact": true,
+     "score": 1.0,
+     "has_band": true,
+     "roi": [
+      246,
+      97,
+      8,
+      20
+     ]
+    },
+    {
+     "file": "300.png",
+     "path": "dataset/out/LagBug/XProtect/slot/300.png",
+     "gold_text": "7",
+     "gold_answer": "7",
+     "pred": "7",
+     "pred_norm": "7",
+     "exact": true,
+     "score": 1.0,
+     "has_band": true,
+     "roi": [
+      246,
+      97,
+      8,
+      20
+     ]
+    },
+    {
+     "file": "400.png",
+     "path": "dataset/out/LagBug/XProtect/slot/400.png",
+     "gold_text": "7",
+     "gold_answer": "7",
+     "pred": "7",
+     "pred_norm": "7",
+     "exact": true,
+     "score": 1.0,
+     "has_band": true,
+     "roi": [
+      246,
+      75,
+      8,
+      20
+     ]
+    },
+    {
+     "file": "500.png",
+     "path": "dataset/out/LagBug/XProtect/slot/500.png",
+     "gold_text": "8",
+     "gold_answer": "8",
+     "pred": "8",
+     "pred_norm": "8",
+     "exact": true,
+     "score": 1.0,
+     "has_band": true,
+     "roi": [
+      246,
+      53,
+      8,
+      20
+     ]
+    }
+   ]
+  },
+  "out/LagBug/XProtect/sneak": {
+   "n": 500,
+   "exact_match": 1.0,
+   "exact_match_raw": 1.0,
+   "cer": 0.0,
+   "cer_median": 0.0,
+   "pred_len_median": 5.0,
+   "pred_len_mean": 5.0,
+   "gold_len_median": 5.0,
+   "examples": [
+    {
+     "file": "001.png",
+     "path": "dataset/out/LagBug/XProtect/sneak/001.png",
+     "gold_text": "sneak",
+     "gold_answer": "sneak",
+     "pred": "sneak",
+     "pred_norm": "sneak",
+     "exact": true,
+     "score": 1.0,
+     "has_band": true,
+     "roi": [
+      150,
+      75,
+      40,
+      20
+     ]
+    },
+    {
+     "file": "101.png",
+     "path": "dataset/out/LagBug/XProtect/sneak/101.png",
+     "gold_text": "sneak",
+     "gold_answer": "sneak",
+     "pred": "sneak",
+     "pred_norm": "sneak",
+     "exact": true,
+     "score": 1.0,
+     "has_band": true,
+     "roi": [
+      150,
+      97,
+      40,
+      20
+     ]
+    },
+    {
+     "file": "201.png",
+     "path": "dataset/out/LagBug/XProtect/sneak/201.png",
+     "gold_text": "sneak",
+     "gold_answer": "sneak",
+     "pred": "sneak",
+     "pred_norm": "sneak",
+     "exact": true,
+     "score": 1.0,
+     "has_band": true,
+     "roi": [
+      150,
+      97,
+      40,
+      20
+     ]
+    },
+    {
+     "file": "300.png",
+     "path": "dataset/out/LagBug/XProtect/sneak/300.png",
+     "gold_text": "sneak",
+     "gold_answer": "sneak",
+     "pred": "sneak",
+     "pred_norm": "sneak",
+     "exact": true,
+     "score": 1.0,
+     "has_band": true,
+     "roi": [
+      150,
+      53,
+      40,
+      20
+     ]
+    },
+    {
+     "file": "400.png",
+     "path": "dataset/out/LagBug/XProtect/sneak/400.png",
+     "gold_text": "sneak",
+     "gold_answer": "sneak",
+     "pred": "sneak",
+     "pred_norm": "sneak",
+     "exact": true,
+     "score": 1.0,
+     "has_band": true,
+     "roi": [
+      150,
+      53,
+      40,
+      20
+     ]
+    },
+    {
+     "file": "500.png",
+     "path": "dataset/out/LagBug/XProtect/sneak/500.png",
+     "gold_text": "sneak",
+     "gold_answer": "sneak",
+     "pred": "sneak",
+     "pred_norm": "sneak",
+     "exact": true,
+     "score": 1.0,
+     "has_band": true,
+     "roi": [
+      150,
+      97,
+      40,
+      20
+     ]
+    }
+   ]
+  },
+  "out/Mrbysco/Captcha/math": {
+   "n": 500,
+   "exact_match": 0.864,
+   "exact_match_raw": 0.826,
+   "cer": 0.03,
+   "cer_median": 0.0,
+   "pred_len_median": 7.0,
+   "pred_len_mean": 6.892,
+   "gold_len_median": 7.0,
+   "examples": [
+    {
+     "file": "001.png",
+     "path": "dataset/out/Mrbysco/Captcha/math/001.png",
+     "gold_text": "71 + 51",
+     "gold_answer": "122",
+     "pred": "71 + 51",
+     "pred_norm": "71+51",
+     "exact": true,
+     "score": 1.0,
+     "has_band": true,
+     "roi": [
+      211,
+      97,
+      35,
+      12
+     ]
+    },
+    {
+     "file": "101.png",
+     "path": "dataset/out/Mrbysco/Captcha/math/101.png",
+     "gold_text": "59 + 53",
+     "gold_answer": "112",
+     "pred": "55 + 53",
+     "pred_norm": "55+53",
+     "exact": false,
+     "score": 0.938,
+     "has_band": true,
+     "roi": [
+      211,
+      97,
+      35,
+      12
+     ]
+    },
+    {
+     "file": "201.png",
+     "path": "dataset/out/Mrbysco/Captcha/math/201.png",
+     "gold_text": "76 + 24",
+     "gold_answer": "100",
+     "pred": "76 + 24",
+     "pred_norm": "76+24",
+     "exact": true,
+     "score": 0.9995,
+     "has_band": true,
+     "roi": [
+      211,
+      97,
+      35,
+      12
+     ]
+    },
+    {
+     "file": "300.png",
+     "path": "dataset/out/Mrbysco/Captcha/math/300.png",
+     "gold_text": "61 + 40",
+     "gold_answer": "101",
+     "pred": "61 + 40",
+     "pred_norm": "61+40",
+     "exact": true,
+     "score": 1.0,
+     "has_band": true,
+     "roi": [
+      211,
+      97,
+      35,
+      12
+     ]
+    },
+    {
+     "file": "400.png",
+     "path": "dataset/out/Mrbysco/Captcha/math/400.png",
+     "gold_text": "21 + 88",
+     "gold_answer": "109",
+     "pred": "21 + 88",
+     "pred_norm": "21+88",
+     "exact": true,
+     "score": 0.9966,
+     "has_band": true,
+     "roi": [
+      211,
+      97,
+      35,
+      12
+     ]
+    },
+    {
+     "file": "500.png",
+     "path": "dataset/out/Mrbysco/Captcha/math/500.png",
+     "gold_text": "38 + 97",
+     "gold_answer": "135",
+     "pred": "38 + 97",
+     "pred_norm": "38+97",
+     "exact": true,
+     "score": 0.9541,
+     "has_band": true,
+     "roi": [
+      211,
+      97,
+      35,
+      12
+     ]
+    }
+   ]
+  },
+  "out/Yukun99/Captchas/itemslot": {
+   "n": 500,
+   "exact_match": 0.814,
+   "exact_match_raw": 0.814,
+   "cer": 0.0184,
+   "cer_median": 0.0,
+   "pred_len_median": 10.0,
+   "pred_len_mean": 10.534,
+   "gold_len_median": 10.0,
+   "examples": [
+    {
+     "file": "001.png",
+     "path": "dataset/out/Yukun99/Captchas/itemslot/001.png",
+     "gold_text": "Brown Mushroom",
+     "gold_answer": "Brown Mushroom",
+     "pred": "Brown Mushroom",
+     "pred_norm": "BrownMushroom",
+     "exact": true,
+     "score": 0.9126,
+     "has_band": true,
+     "roi": [
+      280,
+      87,
+      84,
+      14
+     ]
+    },
+    {
+     "file": "101.png",
+     "path": "dataset/out/Yukun99/Captchas/itemslot/101.png",
+     "gold_text": "Firework Rocket",
+     "gold_answer": "Firework Rocket",
+     "pred": "Firework Rocket",
+     "pred_norm": "FireworkRocket",
+     "exact": true,
+     "score": 0.9927,
+     "has_band": true,
+     "roi": [
+      284,
+      131,
+      90,
+      14
+     ]
+    },
+    {
+     "file": "201.png",
+     "path": "dataset/out/Yukun99/Captchas/itemslot/201.png",
+     "gold_text": "Brick",
+     "gold_answer": "Brick",
+     "pred": "Brick",
+     "pred_norm": "Brick",
+     "exact": true,
+     "score": 0.9995,
+     "has_band": true,
+     "roi": [
+      302,
+      128,
+      40,
+      18
+     ]
+    },
+    {
+     "file": "300.png",
+     "path": "dataset/out/Yukun99/Captchas/itemslot/300.png",
+     "gold_text": "Nether Brick Block",
+     "gold_answer": "Nether Brick Block",
+     "pred": "Nether Brich Block",
+     "pred_norm": "NetherBrichBlock",
+     "exact": false,
+     "score": 0.9004,
+     "has_band": true,
+     "roi": [
+      275,
+      133,
+      90,
+      12
+     ]
+    },
+    {
+     "file": "400.png",
+     "path": "dataset/out/Yukun99/Captchas/itemslot/400.png",
+     "gold_text": "Blaze Powder",
+     "gold_answer": "Blaze Powder",
+     "pred": "Blaze Powder",
+     "pred_norm": "BlazePowder",
+     "exact": true,
+     "score": 0.9688,
+     "has_band": true,
+     "roi": [
+      284,
+      109,
+      72,
+      14
+     ]
+    },
+    {
+     "file": "500.png",
+     "path": "dataset/out/Yukun99/Captchas/itemslot/500.png",
+     "gold_text": "Iron Door",
+     "gold_answer": "Iron Door",
+     "pred": "Iron Door",
+     "pred_norm": "IronDoor",
+     "exact": true,
+     "score": 0.9951,
+     "has_band": true,
+     "roi": [
+      289,
+      85,
+      63,
+      17
+     ]
+    }
+   ]
+  },
+  "out/Z4OLLIEZ4/reCaptcha/captchasx": {
+   "n": 500,
+   "exact_match": 0.926,
+   "exact_match_raw": 0.926,
+   "cer": 0.0106,
+   "cer_median": 0.0,
+   "pred_len_median": 5.0,
+   "pred_len_mean": 5.206,
+   "gold_len_median": 5.0,
+   "examples": [
+    {
+     "file": "001.png",
+     "path": "dataset/out/Z4OLLIEZ4/reCaptcha/captchasx/001.png",
+     "gold_text": "red",
+     "gold_answer": "red",
+     "pred": "red",
+     "pred_norm": "red",
+     "exact": true,
+     "score": 1.0,
+     "has_band": true,
+     "roi": [
+      124,
+      2,
+      24,
+      18
+     ]
+    },
+    {
+     "file": "101.png",
+     "path": "dataset/out/Z4OLLIEZ4/reCaptcha/captchasx/101.png",
+     "gold_text": "purple",
+     "gold_answer": "purple",
+     "pred": "purple",
+     "pred_norm": "purple",
+     "exact": true,
+     "score": 1.0,
+     "has_band": true,
+     "roi": [
+      124,
+      2,
+      48,
+      18
+     ]
+    },
+    {
+     "file": "201.png",
+     "path": "dataset/out/Z4OLLIEZ4/reCaptcha/captchasx/201.png",
+     "gold_text": "brown",
+     "gold_answer": "brown",
+     "pred": "brown",
+     "pred_norm": "brown",
+     "exact": true,
+     "score": 0.875,
+     "has_band": true,
+     "roi": [
+      124,
+      2,
+      40,
+      18
+     ]
+    },
+    {
+     "file": "300.png",
+     "path": "dataset/out/Z4OLLIEZ4/reCaptcha/captchasx/300.png",
+     "gold_text": "orange",
+     "gold_answer": "orange",
+     "pred": "orange",
+     "pred_norm": "orange",
+     "exact": true,
+     "score": 0.9976,
+     "has_band": true,
+     "roi": [
+      124,
+      2,
+      48,
+      18
+     ]
+    },
+    {
+     "file": "400.png",
+     "path": "dataset/out/Z4OLLIEZ4/reCaptcha/captchasx/400.png",
+     "gold_text": "yellow",
+     "gold_answer": "yellow",
+     "pred": "yellow",
+     "pred_norm": "yellow",
+     "exact": true,
+     "score": 0.9937,
+     "has_band": true,
+     "roi": [
+      124,
+      2,
+      48,
+      18
+     ]
+    },
+    {
+     "file": "500.png",
+     "path": "dataset/out/Z4OLLIEZ4/reCaptcha/captchasx/500.png",
+     "gold_text": "lime",
+     "gold_answer": "lime",
+     "pred": "lime",
+     "pred_norm": "lime",
+     "exact": true,
+     "score": 0.9941,
+     "has_band": true,
+     "roi": [
+      124,
+      2,
+      32,
+      18
+     ]
+    }
+   ]
+  },
+  "out/haq/mapcha/map": {
+   "n": 500,
+   "exact_match": 0.944,
+   "exact_match_raw": 0.944,
+   "cer": 0.0155,
+   "cer_median": 0.0,
+   "pred_len_median": 4.0,
+   "pred_len_mean": 4.0,
+   "gold_len_median": 4.0,
+   "examples": [
+    {
+     "file": "001.png",
+     "path": "dataset/out/haq/mapcha/map/001.png",
+     "gold_text": "zPyf",
+     "gold_answer": "zPyf",
+     "pred": "zPyf",
+     "pred_norm": "zPyf",
+     "exact": true,
+     "score": 1.0,
+     "has_band": true,
+     "roi": [
+      23,
+      68,
+      82,
+      46
+     ]
+    },
+    {
+     "file": "101.png",
+     "path": "dataset/out/haq/mapcha/map/101.png",
+     "gold_text": "gbjW",
+     "gold_answer": "gbjW",
+     "pred": "gbjW",
+     "pred_norm": "gbjW",
+     "exact": true,
+     "score": 1.0,
+     "has_band": true,
+     "roi": [
+      15,
+      68,
+      98,
+      46
+     ]
+    },
+    {
+     "file": "201.png",
+     "path": "dataset/out/haq/mapcha/map/201.png",
+     "gold_text": "6ASB",
+     "gold_answer": "6ASB",
+     "pred": "6ASB",
+     "pred_norm": "6ASB",
+     "exact": true,
+     "score": 1.0,
+     "has_band": true,
+     "roi": [
+      11,
+      68,
+      105,
+      46
+     ]
+    },
+    {
+     "file": "300.png",
+     "path": "dataset/out/haq/mapcha/map/300.png",
+     "gold_text": "EYrx",
+     "gold_answer": "EYrx",
+     "pred": "EYrx",
+     "pred_norm": "EYrx",
+     "exact": true,
+     "score": 1.0,
+     "has_band": true,
+     "roi": [
+      19,
+      68,
+      90,
+      46
+     ]
+    },
+    {
+     "file": "400.png",
+     "path": "dataset/out/haq/mapcha/map/400.png",
+     "gold_text": "ugWP",
+     "gold_answer": "ugWP",
+     "pred": "ugWP",
+     "pred_norm": "ugWP",
+     "exact": true,
+     "score": 1.0,
+     "has_band": true,
+     "roi": [
+      7,
+      68,
+      113,
+      46
+     ]
+    },
+    {
+     "file": "500.png",
+     "path": "dataset/out/haq/mapcha/map/500.png",
+     "gold_text": "yFwL",
+     "gold_answer": "yFwL",
+     "pred": "yFwL",
+     "pred_norm": "yFwL",
+     "exact": true,
+     "score": 1.0,
+     "has_band": true,
+     "roi": [
+      13,
+      68,
+      101,
+      46
+     ]
+    }
+   ]
+  },
+  "out/irootdev/AnBot/captcha": {
+   "n": 500,
+   "exact_match": 0.948,
+   "exact_match_raw": 0.948,
+   "cer": 0.018,
+   "cer_median": 0.0,
+   "pred_len_median": 3.0,
+   "pred_len_mean": 2.984,
+   "gold_len_median": 3.0,
+   "examples": [
+    {
+     "file": "001.png",
+     "path": "dataset/out/irootdev/AnBot/captcha/001.png",
+     "gold_text": "998",
+     "gold_answer": "998",
+     "pred": "998",
+     "pred_norm": "998",
+     "exact": true,
+     "score": 1.0,
+     "has_band": false,
+     "roi": null
+    },
+    {
+     "file": "101.png",
+     "path": "dataset/out/irootdev/AnBot/captcha/101.png",
+     "gold_text": "r4s",
+     "gold_answer": "r4s",
+     "pred": "r4s",
+     "pred_norm": "r4s",
+     "exact": true,
+     "score": 1.0,
+     "has_band": false,
+     "roi": null
+    },
+    {
+     "file": "201.png",
+     "path": "dataset/out/irootdev/AnBot/captcha/201.png",
+     "gold_text": "u9o",
+     "gold_answer": "u9o",
+     "pred": "u9o",
+     "pred_norm": "u9o",
+     "exact": true,
+     "score": 0.999,
+     "has_band": false,
+     "roi": null
+    },
+    {
+     "file": "300.png",
+     "path": "dataset/out/irootdev/AnBot/captcha/300.png",
+     "gold_text": "764",
+     "gold_answer": "764",
+     "pred": "764",
+     "pred_norm": "764",
+     "exact": true,
+     "score": 1.0,
+     "has_band": false,
+     "roi": null
+    },
+    {
+     "file": "400.png",
+     "path": "dataset/out/irootdev/AnBot/captcha/400.png",
+     "gold_text": "496",
+     "gold_answer": "496",
+     "pred": "496",
+     "pred_norm": "496",
+     "exact": true,
+     "score": 1.0,
+     "has_band": false,
+     "roi": null
+    },
+    {
+     "file": "500.png",
+     "path": "dataset/out/irootdev/AnBot/captcha/500.png",
+     "gold_text": "413",
+     "gold_answer": "413",
+     "pred": "413",
+     "pred_norm": "413",
+     "exact": true,
+     "score": 1.0,
+     "has_band": false,
+     "roi": null
+    }
+   ]
+  },
+  "out/jSdCool/minecaptcha/image": {
+   "n": 500,
+   "exact_match": 0.0,
+   "exact_match_raw": 0.0,
+   "cer": 0.5541,
+   "cer_median": 0.5273,
+   "pred_len_median": 25.0,
+   "pred_len_mean": 23.622,
+   "gold_len_median": 67.0,
+   "examples": [
+    {
+     "file": "001.png",
+     "path": "dataset/out/jSdCool/minecaptcha/image/001.png",
+     "gold_text": "img2223, img2990, img2721, img2117, img85, img1197, img2061, img442",
+     "gold_answer": "img2223, img2990, img2721, img2117, img85, img1197, img2061, img442",
+     "pred": "23291171971612",
+     "pred_norm": "23291171971612",
+     "exact": false,
+     "score": 0.522,
+     "has_band": true,
+     "roi": [
+      81,
+      128,
+      490,
+      56
+     ]
+    },
+    {
+     "file": "101.png",
+     "path": "dataset/out/jSdCool/minecaptcha/image/101.png",
+     "gold_text": "img1488, img587, img2931, img968, img2207, img2639, img1742, img1052",
+     "gold_answer": "img1488, img587, img2931, img968, img2207, img2639, img1742, img1052",
+     "pred": "14885872931962207263917421052",
+     "pred_norm": "14885872931962207263917421052",
+     "exact": false,
+     "score": 0.666,
+     "has_band": true,
+     "roi": [
+      81,
+      128,
+      490,
+      56
+     ]
+    },
+    {
+     "file": "201.png",
+     "path": "dataset/out/jSdCool/minecaptcha/image/201.png",
+     "gold_text": "img736, img881, img1687, img14, img339, img962, img605, img19",
+     "gold_answer": "img736, img881, img1687, img14, img339, img962, img605, img19",
+     "pred": "73688116871433996260519",
+     "pred_norm": "73688116871433996260519",
+     "exact": false,
+     "score": 0.9756,
+     "has_band": true,
+     "roi": [
+      81,
+      128,
+      490,
+      56
+     ]
+    },
+    {
+     "file": "300.png",
+     "path": "dataset/out/jSdCool/minecaptcha/image/300.png",
+     "gold_text": "img1973, img578, img210, img1097, img54, img748, img457, img2737",
+     "gold_answer": "img1973, img578, img210, img1097, img54, img748, img457, img2737",
+     "pred": "19735782101097547484572737",
+     "pred_norm": "19735782101097547484572737",
+     "exact": false,
+     "score": 0.9639,
+     "has_band": true,
+     "roi": [
+      81,
+      128,
+      490,
+      56
+     ]
+    },
+    {
+     "file": "400.png",
+     "path": "dataset/out/jSdCool/minecaptcha/image/400.png",
+     "gold_text": "img1642, img371, img902, img1636, img2389, img2939, img2738, img2145",
+     "gold_answer": "img1642, img371, img902, img1636, img2389, img2939, img2738, img2145",
+     "pred": "1623719021636238929392732145",
+     "pred_norm": "1623719021636238929392732145",
+     "exact": false,
+     "score": 0.7134,
+     "has_band": true,
+     "roi": [
+      81,
+      128,
+      490,
+      56
+     ]
+    },
+    {
+     "file": "500.png",
+     "path": "dataset/out/jSdCool/minecaptcha/image/500.png",
+     "gold_text": "img1587, img1907, img2078, img2584, img786, img115, img2128, img1161",
+     "gold_answer": "img1587, img1907, img2078, img2584, img786, img115, img2128, img1161",
+     "pred": "157190720782578112161",
+     "pred_norm": "157190720782578112161",
+     "exact": false,
+     "score": 0.6772,
+     "has_band": true,
+     "roi": [
+      81,
+      128,
+      490,
+      56
+     ]
+    }
+   ]
+  },
+  "out/jSdCool/minecaptcha/text": {
+   "n": 500,
+   "exact_match": 0.986,
+   "exact_match_raw": 0.986,
+   "cer": 0.0018,
+   "cer_median": 0.0,
+   "pred_len_median": 8.0,
+   "pred_len_mean": 8.0,
+   "gold_len_median": 8.0,
+   "examples": [
+    {
+     "file": "001.png",
+     "path": "dataset/out/jSdCool/minecaptcha/text/001.png",
+     "gold_text": "BhagzUQJ",
+     "gold_answer": "BhagzUQJ",
+     "pred": "BhagzUQJ",
+     "pred_norm": "BhagzUQJ",
+     "exact": true,
+     "score": 1.0,
+     "has_band": true,
+     "roi": [
+      223,
+      129,
+      104,
+      30
+     ]
+    },
+    {
+     "file": "101.png",
+     "path": "dataset/out/jSdCool/minecaptcha/text/101.png",
+     "gold_text": "72pAN46g",
+     "gold_answer": "72pAN46g",
+     "pred": "72pAN46g",
+     "pred_norm": "72pAN46g",
+     "exact": true,
+     "score": 1.0,
+     "has_band": true,
+     "roi": [
+      223,
+      129,
+      104,
+      30
+     ]
+    },
+    {
+     "file": "201.png",
+     "path": "dataset/out/jSdCool/minecaptcha/text/201.png",
+     "gold_text": "zW0GsgZf",
+     "gold_answer": "zW0GsgZf",
+     "pred": "zW0GsgZf",
+     "pred_norm": "zW0GsgZf",
+     "exact": true,
+     "score": 0.9878,
+     "has_band": true,
+     "roi": [
+      223,
+      129,
+      104,
+      30
+     ]
+    },
+    {
+     "file": "300.png",
+     "path": "dataset/out/jSdCool/minecaptcha/text/300.png",
+     "gold_text": "bWM43bXi",
+     "gold_answer": "bWM43bXi",
+     "pred": "bWM43bXi",
+     "pred_norm": "bWM43bXi",
+     "exact": true,
+     "score": 1.0,
+     "has_band": true,
+     "roi": [
+      223,
+      129,
+      104,
+      30
+     ]
+    },
+    {
+     "file": "400.png",
+     "path": "dataset/out/jSdCool/minecaptcha/text/400.png",
+     "gold_text": "CYBxjMUK",
+     "gold_answer": "CYBxjMUK",
+     "pred": "CYBxjMUK",
+     "pred_norm": "CYBxjMUK",
+     "exact": true,
+     "score": 1.0,
+     "has_band": true,
+     "roi": [
+      223,
+      129,
+      104,
+      30
+     ]
+    },
+    {
+     "file": "500.png",
+     "path": "dataset/out/jSdCool/minecaptcha/text/500.png",
+     "gold_text": "ZPBrqeB4",
+     "gold_answer": "ZPBrqeB4",
+     "pred": "ZPBrqeB4",
+     "pred_norm": "ZPBrqeB4",
+     "exact": true,
+     "score": 1.0,
+     "has_band": true,
+     "roi": [
+      223,
+      129,
+      104,
+      30
+     ]
+    }
+   ]
+  },
+  "out/jonesdevelopment/sonar/complex": {
+   "n": 500,
+   "exact_match": 0.484,
+   "exact_match_raw": 0.484,
+   "cer": 0.2192,
+   "cer_median": 0.25,
+   "pred_len_median": 3.0,
+   "pred_len_mean": 3.422,
+   "gold_len_median": 4.0,
+   "examples": [
+    {
+     "file": "001.png",
+     "path": "dataset/out/jonesdevelopment/sonar/complex/001.png",
+     "gold_text": "pkr",
+     "gold_answer": "pkr",
+     "pred": "pyr",
+     "pred_norm": "pyr",
+     "exact": false,
+     "score": 0.7148,
+     "has_band": false,
+     "roi": null
+    },
+    {
+     "file": "101.png",
+     "path": "dataset/out/jonesdevelopment/sonar/complex/101.png",
+     "gold_text": "sxm",
+     "gold_answer": "sxm",
+     "pred": "sxm",
+     "pred_norm": "sxm",
+     "exact": true,
+     "score": 0.8398,
+     "has_band": false,
+     "roi": null
+    },
+    {
+     "file": "201.png",
+     "path": "dataset/out/jonesdevelopment/sonar/complex/201.png",
+     "gold_text": "fzaa",
+     "gold_answer": "fzaa",
+     "pred": "Ezaa",
+     "pred_norm": "Ezaa",
+     "exact": false,
+     "score": 0.8218,
+     "has_band": false,
+     "roi": null
+    },
+    {
+     "file": "300.png",
+     "path": "dataset/out/jonesdevelopment/sonar/complex/300.png",
+     "gold_text": "hah",
+     "gold_answer": "hah",
+     "pred": "hah",
+     "pred_norm": "hah",
+     "exact": true,
+     "score": 0.9971,
+     "has_band": false,
+     "roi": null
+    },
+    {
+     "file": "400.png",
+     "path": "dataset/out/jonesdevelopment/sonar/complex/400.png",
+     "gold_text": "atb",
+     "gold_answer": "atb",
+     "pred": "atb",
+     "pred_norm": "atb",
+     "exact": true,
+     "score": 0.623,
+     "has_band": false,
+     "roi": null
+    },
+    {
+     "file": "500.png",
+     "path": "dataset/out/jonesdevelopment/sonar/complex/500.png",
+     "gold_text": "ayr",
+     "gold_answer": "ayr",
+     "pred": "aNr",
+     "pred_norm": "aNr",
+     "exact": false,
+     "score": 0.7559,
+     "has_band": false,
+     "roi": null
+    }
+   ]
+  },
+  "out/jonesdevelopment/sonar/legacy": {
+   "n": 500,
+   "exact_match": 0.458,
+   "exact_match_raw": 0.458,
+   "cer": 0.2552,
+   "cer_median": 0.25,
+   "pred_len_median": 3.0,
+   "pred_len_mean": 3.382,
+   "gold_len_median": 4.0,
+   "examples": [
+    {
+     "file": "001.png",
+     "path": "dataset/out/jonesdevelopment/sonar/legacy/001.png",
+     "gold_text": "jdhe",
+     "gold_answer": "jdhe",
+     "pred": "jthe",
+     "pred_norm": "jthe",
+     "exact": false,
+     "score": 0.958,
+     "has_band": false,
+     "roi": null
+    },
+    {
+     "file": "101.png",
+     "path": "dataset/out/jonesdevelopment/sonar/legacy/101.png",
+     "gold_text": "eftx",
+     "gold_answer": "eftx",
+     "pred": "aftx",
+     "pred_norm": "aftx",
+     "exact": false,
+     "score": 0.8613,
+     "has_band": false,
+     "roi": null
+    },
+    {
+     "file": "201.png",
+     "path": "dataset/out/jonesdevelopment/sonar/legacy/201.png",
+     "gold_text": "fkon",
+     "gold_answer": "fkon",
+     "pred": "fkon",
+     "pred_norm": "fkon",
+     "exact": true,
+     "score": 0.9658,
+     "has_band": false,
+     "roi": null
+    },
+    {
+     "file": "300.png",
+     "path": "dataset/out/jonesdevelopment/sonar/legacy/300.png",
+     "gold_text": "uyr",
+     "gold_answer": "uyr",
+     "pred": "uyY",
+     "pred_norm": "uyY",
+     "exact": false,
+     "score": 0.7036,
+     "has_band": false,
+     "roi": null
+    },
+    {
+     "file": "400.png",
+     "path": "dataset/out/jonesdevelopment/sonar/legacy/400.png",
+     "gold_text": "oefp",
+     "gold_answer": "oefp",
+     "pred": "cepp",
+     "pred_norm": "cepp",
+     "exact": false,
+     "score": 0.7988,
+     "has_band": false,
+     "roi": null
+    },
+    {
+     "file": "500.png",
+     "path": "dataset/out/jonesdevelopment/sonar/legacy/500.png",
+     "gold_text": "sta",
+     "gold_answer": "sta",
+     "pred": "Fta",
+     "pred_norm": "Fta",
+     "exact": false,
+     "score": 0.4192,
+     "has_band": false,
+     "roi": null
+    }
+   ]
+  },
+  "out/jonesdevelopment/sonar/standard": {
+   "n": 500,
+   "exact_match": 0.638,
+   "exact_match_raw": 0.638,
+   "cer": 0.1503,
+   "cer_median": 0.0,
+   "pred_len_median": 3.0,
+   "pred_len_mean": 3.448,
+   "gold_len_median": 3.0,
+   "examples": [
+    {
+     "file": "001.png",
+     "path": "dataset/out/jonesdevelopment/sonar/standard/001.png",
+     "gold_text": "beh",
+     "gold_answer": "beh",
+     "pred": "beh",
+     "pred_norm": "beh",
+     "exact": true,
+     "score": 0.9277,
+     "has_band": false,
+     "roi": null
+    },
+    {
+     "file": "101.png",
+     "path": "dataset/out/jonesdevelopment/sonar/standard/101.png",
+     "gold_text": "srft",
+     "gold_answer": "srft",
+     "pred": "Sn",
+     "pred_norm": "Sn",
+     "exact": false,
+     "score": 0.4795,
+     "has_band": false,
+     "roi": null
+    },
+    {
+     "file": "201.png",
+     "path": "dataset/out/jonesdevelopment/sonar/standard/201.png",
+     "gold_text": "yrn",
+     "gold_answer": "yrn",
+     "pred": "yrm",
+     "pred_norm": "yrm",
+     "exact": false,
+     "score": 0.6846,
+     "has_band": false,
+     "roi": null
+    },
+    {
+     "file": "300.png",
+     "path": "dataset/out/jonesdevelopment/sonar/standard/300.png",
+     "gold_text": "erbs",
+     "gold_answer": "erbs",
+     "pred": "Grbs",
+     "pred_norm": "Grbs",
+     "exact": false,
+     "score": 0.9585,
+     "has_band": false,
+     "roi": null
+    },
+    {
+     "file": "400.png",
+     "path": "dataset/out/jonesdevelopment/sonar/standard/400.png",
+     "gold_text": "zbpx",
+     "gold_answer": "zbpx",
+     "pred": "zbpx",
+     "pred_norm": "zbpx",
+     "exact": true,
+     "score": 0.8789,
+     "has_band": false,
+     "roi": null
+    },
+    {
+     "file": "500.png",
+     "path": "dataset/out/jonesdevelopment/sonar/standard/500.png",
+     "gold_text": "jyf",
+     "gold_answer": "jyf",
+     "pred": "jyf",
+     "pred_norm": "jyf",
+     "exact": true,
+     "score": 0.999,
+     "has_band": false,
+     "roi": null
+    }
+   ]
+  },
+  "out/just-captcha/ProstoCaptcha/map": {
+   "n": 500,
+   "exact_match": 0.664,
+   "exact_match_raw": 0.66,
+   "cer": 0.078,
+   "cer_median": 0.0,
+   "pred_len_median": 6.0,
+   "pred_len_mean": 5.986,
+   "gold_len_median": 6.0,
+   "examples": [
+    {
+     "file": "001.png",
+     "path": "dataset/out/just-captcha/ProstoCaptcha/map/001.png",
+     "gold_text": "PWw33f",
+     "gold_answer": "PWw33f",
+     "pred": "PWw33f",
+     "pred_norm": "PWw33f",
+     "exact": true,
+     "score": 0.9702,
+     "has_band": true,
+     "roi": [
+      0,
+      33,
+      128,
+      59
+     ]
+    },
+    {
+     "file": "101.png",
+     "path": "dataset/out/just-captcha/ProstoCaptcha/map/101.png",
+     "gold_text": "xD9GDR",
+     "gold_answer": "xD9GDR",
+     "pred": "xD9GDR",
+     "pred_norm": "xD9GDR",
+     "exact": true,
+     "score": 1.0,
+     "has_band": true,
+     "roi": [
+      0,
+      33,
+      128,
+      59
+     ]
+    },
+    {
+     "file": "201.png",
+     "path": "dataset/out/just-captcha/ProstoCaptcha/map/201.png",
+     "gold_text": "UgKE3s",
+     "gold_answer": "UgKE3s",
+     "pred": "UgKE3s",
+     "pred_norm": "UgKE3s",
+     "exact": true,
+     "score": 0.9775,
+     "has_band": true,
+     "roi": [
+      0,
+      33,
+      128,
+      59
+     ]
+    },
+    {
+     "file": "300.png",
+     "path": "dataset/out/just-captcha/ProstoCaptcha/map/300.png",
+     "gold_text": "2YZqjY",
+     "gold_answer": "2YZqjY",
+     "pred": "2YZaJY",
+     "pred_norm": "2YZaJY",
+     "exact": false,
+     "score": 0.7949,
+     "has_band": true,
+     "roi": [
+      0,
+      33,
+      128,
+      59
+     ]
+    },
+    {
+     "file": "400.png",
+     "path": "dataset/out/just-captcha/ProstoCaptcha/map/400.png",
+     "gold_text": "ybjlcF",
+     "gold_answer": "ybjlcF",
+     "pred": "YPjI&",
+     "pred_norm": "YPjI",
+     "exact": false,
+     "score": 0.583,
+     "has_band": true,
+     "roi": [
+      0,
+      33,
+      128,
+      59
+     ]
+    },
+    {
+     "file": "500.png",
+     "path": "dataset/out/just-captcha/ProstoCaptcha/map/500.png",
+     "gold_text": "m8rcgT",
+     "gold_answer": "m8rcgT",
+     "pred": "m8rcgT",
+     "pred_norm": "m8rcgT",
+     "exact": true,
+     "score": 0.9966,
+     "has_band": true,
+     "roi": [
+      0,
+      33,
+      128,
+      59
+     ]
+    }
+   ]
+  },
+  "out/laforetbrut/are-you-sure/code": {
+   "n": 500,
+   "exact_match": 0.018,
+   "exact_match_raw": 0.0,
+   "cer": 0.6807,
+   "cer_median": 0.6667,
+   "pred_len_median": 12.0,
+   "pred_len_mean": 11.292,
+   "gold_len_median": 6.0,
+   "examples": [
+    {
+     "file": "001.png",
+     "path": "dataset/out/laforetbrut/are-you-sure/code/001.png",
+     "gold_text": "MPFFM5",
+     "gold_answer": "MPFFM5",
+     "pred": "M Pr F.M5",
+     "pred_norm": "MPrFM5",
+     "exact": false,
+     "score": 0.6685,
+     "has_band": true,
+     "roi": [
+      186,
+      119,
+      101,
+      18
+     ]
+    },
+    {
+     "file": "101.png",
+     "path": "dataset/out/laforetbrut/are-you-sure/code/101.png",
+     "gold_text": "FZJUFQ",
+     "gold_answer": "FZJUFQ",
+     "pred": "F z .J. y. Fe",
+     "pred_norm": "FzJyFe",
+     "exact": false,
+     "score": 0.7402,
+     "has_band": true,
+     "roi": [
+      186,
+      119,
+      101,
+      18
+     ]
+    },
+    {
+     "file": "201.png",
+     "path": "dataset/out/laforetbrut/are-you-sure/code/201.png",
+     "gold_text": "MGHJGS",
+     "gold_answer": "MGHJGS",
+     "pred": "MGH J i's",
+     "pred_norm": "MGHJis",
+     "exact": false,
+     "score": 0.6812,
+     "has_band": true,
+     "roi": [
+      186,
+      119,
+      101,
+      18
+     ]
+    },
+    {
+     "file": "300.png",
+     "path": "dataset/out/laforetbrut/are-you-sure/code/300.png",
+     "gold_text": "BU5GEB",
+     "gold_answer": "BU5GEB",
+     "pred": "B US.SEB",
+     "pred_norm": "BUSSEB",
+     "exact": false,
+     "score": 0.5864,
+     "has_band": true,
+     "roi": [
+      186,
+      119,
+      101,
+      18
+     ]
+    },
+    {
+     "file": "400.png",
+     "path": "dataset/out/laforetbrut/are-you-sure/code/400.png",
+     "gold_text": "RCKB5W",
+     "gold_answer": "RCKB5W",
+     "pred": "Ri tjk b s. W",
+     "pred_norm": "RitjkbsW",
+     "exact": false,
+     "score": 0.5659,
+     "has_band": true,
+     "roi": [
+      186,
+      119,
+      101,
+      18
+     ]
+    },
+    {
+     "file": "500.png",
+     "path": "dataset/out/laforetbrut/are-you-sure/code/500.png",
+     "gold_text": "86KYJD",
+     "gold_answer": "86KYJD",
+     "pred": "  x  y J. D",
+     "pred_norm": "xyJD",
+     "exact": false,
+     "score": 0.5977,
+     "has_band": true,
+     "roi": [
+      186,
+      119,
+      101,
+      18
+     ]
+    }
+   ]
+  },
+  "out/n1zamu/NCaptcha/anvil": {
+   "n": 500,
+   "exact_match": 1.0,
+   "exact_match_raw": 1.0,
+   "cer": 0.0,
+   "cer_median": 0.0,
+   "pred_len_median": 5.0,
+   "pred_len_mean": 4.864,
+   "gold_len_median": 5.0,
+   "examples": [
+    {
+     "file": "001.png",
+     "path": "dataset/out/n1zamu/NCaptcha/anvil/001.png",
+     "gold_text": "37761",
+     "gold_answer": "37761",
+     "pred": "37761",
+     "pred_norm": "37761",
+     "exact": true,
+     "score": 1.0,
+     "has_band": true,
+     "roi": [
+      195,
+      132,
+      35,
+      17
+     ]
+    },
+    {
+     "file": "101.png",
+     "path": "dataset/out/n1zamu/NCaptcha/anvil/101.png",
+     "gold_text": "55637",
+     "gold_answer": "55637",
+     "pred": "55637",
+     "pred_norm": "55637",
+     "exact": true,
+     "score": 1.0,
+     "has_band": true,
+     "roi": [
+      195,
+      132,
+      35,
+      17
+     ]
+    },
+    {
+     "file": "201.png",
+     "path": "dataset/out/n1zamu/NCaptcha/anvil/201.png",
+     "gold_text": "38363",
+     "gold_answer": "38363",
+     "pred": "38363",
+     "pred_norm": "38363",
+     "exact": true,
+     "score": 1.0,
+     "has_band": true,
+     "roi": [
+      195,
+      132,
+      35,
+      17
+     ]
+    },
+    {
+     "file": "300.png",
+     "path": "dataset/out/n1zamu/NCaptcha/anvil/300.png",
+     "gold_text": "52856",
+     "gold_answer": "52856",
+     "pred": "52856",
+     "pred_norm": "52856",
+     "exact": true,
+     "score": 1.0,
+     "has_band": true,
+     "roi": [
+      195,
+      132,
+      35,
+      17
+     ]
+    },
+    {
+     "file": "400.png",
+     "path": "dataset/out/n1zamu/NCaptcha/anvil/400.png",
+     "gold_text": "57883",
+     "gold_answer": "57883",
+     "pred": "57883",
+     "pred_norm": "57883",
+     "exact": true,
+     "score": 1.0,
+     "has_band": true,
+     "roi": [
+      195,
+      132,
+      35,
+      17
+     ]
+    },
+    {
+     "file": "500.png",
+     "path": "dataset/out/n1zamu/NCaptcha/anvil/500.png",
+     "gold_text": "15159",
+     "gold_answer": "15159",
+     "pred": "15159",
+     "pred_norm": "15159",
+     "exact": true,
+     "score": 1.0,
+     "has_band": true,
+     "roi": [
+      195,
+      132,
+      35,
+      17
+     ]
+    }
+   ]
+  },
+  "out/ringoame196-s-mcPlugin/ReproductionCAPTCHA/map": {
+   "n": 500,
+   "exact_match": 0.956,
+   "exact_match_raw": 0.938,
+   "cer": 0.0092,
+   "cer_median": 0.0,
+   "pred_len_median": 5.0,
+   "pred_len_mean": 5.018,
+   "gold_len_median": 5.0,
+   "examples": [
+    {
+     "file": "001.png",
+     "path": "dataset/out/ringoame196-s-mcPlugin/ReproductionCAPTCHA/map/001.png",
+     "gold_text": "61143",
+     "gold_answer": "61143",
+     "pred": "61143",
+     "pred_norm": "61143",
+     "exact": true,
+     "score": 1.0,
+     "has_band": true,
+     "roi": [
+      8,
+      68,
+      52,
+      28
+     ]
+    },
+    {
+     "file": "101.png",
+     "path": "dataset/out/ringoame196-s-mcPlugin/ReproductionCAPTCHA/map/101.png",
+     "gold_text": "59DBA",
+     "gold_answer": "59DBA",
+     "pred": "59DBA",
+     "pred_norm": "59DBA",
+     "exact": true,
+     "score": 1.0,
+     "has_band": true,
+     "roi": [
+      8,
+      68,
+      55,
+      28
+     ]
+    },
+    {
+     "file": "201.png",
+     "path": "dataset/out/ringoame196-s-mcPlugin/ReproductionCAPTCHA/map/201.png",
+     "gold_text": "C0540",
+     "gold_answer": "C0540",
+     "pred": "C0540",
+     "pred_norm": "C0540",
+     "exact": true,
+     "score": 0.9995,
+     "has_band": true,
+     "roi": [
+      8,
+      69,
+      59,
+      27
+     ]
+    },
+    {
+     "file": "300.png",
+     "path": "dataset/out/ringoame196-s-mcPlugin/ReproductionCAPTCHA/map/300.png",
+     "gold_text": "72269",
+     "gold_answer": "72269",
+     "pred": "72269",
+     "pred_norm": "72269",
+     "exact": true,
+     "score": 1.0,
+     "has_band": true,
+     "roi": [
+      8,
+      69,
+      48,
+      27
+     ]
+    },
+    {
+     "file": "400.png",
+     "path": "dataset/out/ringoame196-s-mcPlugin/ReproductionCAPTCHA/map/400.png",
+     "gold_text": "FF7F9",
+     "gold_answer": "FF7F9",
+     "pred": "FF7F9",
+     "pred_norm": "FF7F9",
+     "exact": true,
+     "score": 0.936,
+     "has_band": true,
+     "roi": [
+      8,
+      68,
+      55,
+      28
+     ]
+    },
+    {
+     "file": "500.png",
+     "path": "dataset/out/ringoame196-s-mcPlugin/ReproductionCAPTCHA/map/500.png",
+     "gold_text": "53500",
+     "gold_answer": "53500",
+     "pred": "53500",
+     "pred_norm": "53500",
+     "exact": true,
+     "score": 0.9995,
+     "has_band": true,
+     "roi": [
+      8,
+      68,
+      60,
+      28
+     ]
+    }
+   ]
+  },
+  "out_ru/BotFilter/map": {
+   "n": 500,
+   "exact_match": 0.74,
+   "exact_match_raw": 0.74,
+   "cer": 0.0844,
+   "cer_median": 0.0,
+   "pred_len_median": 4.0,
+   "pred_len_mean": 4.402,
+   "gold_len_median": 5.0,
+   "examples": [
+    {
+     "file": "001.png",
+     "path": "dataset/out_ru/BotFilter/map/001.png",
+     "gold_text": "38920",
+     "gold_answer": "38920",
+     "pred": "38920",
+     "pred_norm": "38920",
+     "exact": true,
+     "score": 0.9966,
+     "has_band": false,
+     "roi": null
+    },
+    {
+     "file": "101.png",
+     "path": "dataset/out_ru/BotFilter/map/101.png",
+     "gold_text": "22347",
+     "gold_answer": "22347",
+     "pred": "22347",
+     "pred_norm": "22347",
+     "exact": true,
+     "score": 0.9204,
+     "has_band": false,
+     "roi": null
+    },
+    {
+     "file": "201.png",
+     "path": "dataset/out_ru/BotFilter/map/201.png",
+     "gold_text": "16457",
+     "gold_answer": "16457",
+     "pred": "16457",
+     "pred_norm": "16457",
+     "exact": true,
+     "score": 1.0,
+     "has_band": false,
+     "roi": null
+    },
+    {
+     "file": "300.png",
+     "path": "dataset/out_ru/BotFilter/map/300.png",
+     "gold_text": "79824",
+     "gold_answer": "79824",
+     "pred": "79824",
+     "pred_norm": "79824",
+     "exact": true,
+     "score": 0.998,
+     "has_band": false,
+     "roi": null
+    },
+    {
+     "file": "400.png",
+     "path": "dataset/out_ru/BotFilter/map/400.png",
+     "gold_text": "24259",
+     "gold_answer": "24259",
+     "pred": "24259",
+     "pred_norm": "24259",
+     "exact": true,
+     "score": 1.0,
+     "has_band": false,
+     "roi": null
+    },
+    {
+     "file": "500.png",
+     "path": "dataset/out_ru/BotFilter/map/500.png",
+     "gold_text": "24273",
+     "gold_answer": "24273",
+     "pred": "24273",
+     "pred_norm": "24273",
+     "exact": true,
+     "score": 0.9736,
+     "has_band": false,
+     "roi": null
+    }
+   ]
+  },
+  "out_ru/CaptchaGUI/clickblock": {
+   "n": 500,
+   "exact_match": 0.0,
+   "exact_match_raw": 0.0,
+   "cer": 6.274,
+   "cer_median": 6.0,
+   "pred_len_median": 6.0,
+   "pred_len_mean": 6.274,
+   "gold_len_median": 1.0,
+   "examples": [
+    {
+     "file": "001.png",
+     "path": "dataset/out_ru/CaptchaGUI/clickblock/001.png",
+     "gold_text": "3",
+     "gold_answer": "3",
+     "pred": "XXXIXXX",
+     "pred_norm": "XXXIXXX",
+     "exact": false,
+     "score": 0.7656,
+     "has_band": false,
+     "roi": null
+    },
+    {
+     "file": "101.png",
+     "path": "dataset/out_ru/CaptchaGUI/clickblock/101.png",
+     "gold_text": "3",
+     "gold_answer": "3",
+     "pred": "XXXIXXX",
+     "pred_norm": "XXXIXXX",
+     "exact": false,
+     "score": 0.7656,
+     "has_band": false,
+     "roi": null
+    },
+    {
+     "file": "201.png",
+     "path": "dataset/out_ru/CaptchaGUI/clickblock/201.png",
+     "gold_text": "6",
+     "gold_answer": "6",
+     "pred": "XXXIXXXIX",
+     "pred_norm": "XXXIXXXIX",
+     "exact": false,
+     "score": 0.687,
+     "has_band": false,
+     "roi": null
+    },
+    {
+     "file": "300.png",
+     "path": "dataset/out_ru/CaptchaGUI/clickblock/300.png",
+     "gold_text": "6",
+     "gold_answer": "6",
+     "pred": "XXXIXXXIX",
+     "pred_norm": "XXXIXXXIX",
+     "exact": false,
+     "score": 0.687,
+     "has_band": false,
+     "roi": null
+    },
+    {
+     "file": "400.png",
+     "path": "dataset/out_ru/CaptchaGUI/clickblock/400.png",
+     "gold_text": "7",
+     "gold_answer": "7",
+     "pred": "XXXIXX",
+     "pred_norm": "XXXIXX",
+     "exact": false,
+     "score": 0.6885,
+     "has_band": false,
+     "roi": null
+    },
+    {
+     "file": "500.png",
+     "path": "dataset/out_ru/CaptchaGUI/clickblock/500.png",
+     "gold_text": "7",
+     "gold_answer": "7",
+     "pred": "XXXIXX",
+     "pred_norm": "XXXIXX",
+     "exact": false,
+     "score": 0.6885,
+     "has_band": false,
+     "roi": null
+    }
+   ]
+  },
+  "out_ru/CaptchaVerifyZ/map": {
+   "n": 500,
+   "exact_match": 0.998,
+   "exact_match_raw": 0.998,
+   "cer": 0.0004,
+   "cer_median": 0.0,
+   "pred_len_median": 5.0,
+   "pred_len_mean": 5.0,
+   "gold_len_median": 5.0,
+   "examples": [
+    {
+     "file": "001.png",
+     "path": "dataset/out_ru/CaptchaVerifyZ/map/001.png",
+     "gold_text": "NR6PI",
+     "gold_answer": "NR6PI",
+     "pred": "NR6PI",
+     "pred_norm": "NR6PI",
+     "exact": true,
+     "score": 1.0,
+     "has_band": true,
+     "roi": [
+      29,
+      48,
+      70,
+      28
+     ]
+    },
+    {
+     "file": "101.png",
+     "path": "dataset/out_ru/CaptchaVerifyZ/map/101.png",
+     "gold_text": "F7Y2X",
+     "gold_answer": "F7Y2X",
+     "pred": "F7Y2X",
+     "pred_norm": "F7Y2X",
+     "exact": true,
+     "score": 1.0,
+     "has_band": true,
+     "roi": [
+      28,
+      48,
+      72,
+      28
+     ]
+    },
+    {
+     "file": "201.png",
+     "path": "dataset/out_ru/CaptchaVerifyZ/map/201.png",
+     "gold_text": "QE26I",
+     "gold_answer": "QE26I",
+     "pred": "QE26I",
+     "pred_norm": "QE26I",
+     "exact": true,
+     "score": 0.9985,
+     "has_band": true,
+     "roi": [
+      30,
+      48,
+      67,
+      28
+     ]
+    },
+    {
+     "file": "300.png",
+     "path": "dataset/out_ru/CaptchaVerifyZ/map/300.png",
+     "gold_text": "PWD6P",
+     "gold_answer": "PWD6P",
+     "pred": "PWD6P",
+     "pred_norm": "PWD6P",
+     "exact": true,
+     "score": 1.0,
+     "has_band": true,
+     "roi": [
+      21,
+      48,
+      85,
+      28
+     ]
+    },
+    {
+     "file": "400.png",
+     "path": "dataset/out_ru/CaptchaVerifyZ/map/400.png",
+     "gold_text": "OR85S",
+     "gold_answer": "OR85S",
+     "pred": "OR85S",
+     "pred_norm": "OR85S",
+     "exact": true,
+     "score": 1.0,
+     "has_band": true,
+     "roi": [
+      25,
+      48,
+      77,
+      28
+     ]
+    },
+    {
+     "file": "500.png",
+     "path": "dataset/out_ru/CaptchaVerifyZ/map/500.png",
+     "gold_text": "U6XPY",
+     "gold_answer": "U6XPY",
+     "pred": "U6XPY",
+     "pred_norm": "U6XPY",
+     "exact": true,
+     "score": 1.0,
+     "has_band": true,
+     "roi": [
+      25,
+      48,
+      77,
+      28
+     ]
+    }
+   ]
+  },
+  "out_ru/GalleryCaptcha/ru-numberword": {
+   "n": 500,
+   "exact_match": 0.0,
+   "exact_match_raw": 0.0,
+   "cer": 1.0,
+   "cer_median": 1.0,
+   "pred_len_median": 9.0,
+   "pred_len_mean": 8.394,
+   "gold_len_median": 21.0,
+   "examples": [
+    {
+     "file": "001.png",
+     "path": "dataset/out_ru/GalleryCaptcha/ru-numberword/001.png",
+     "gold_text": "пятьсот семьдесят восемь",
+     "gold_answer": "578",
+     "pred": "CEMPRECHT",
+     "pred_norm": "CEMPRECHT",
+     "exact": false,
+     "score": 0.6479,
+     "has_band": true,
+     "roi": [
+      8,
+      40,
+      207,
+      83
+     ]
+    },
+    {
+     "file": "101.png",
+     "path": "dataset/out_ru/GalleryCaptcha/ru-numberword/101.png",
+     "gold_text": "триста семьдесят один",
+     "gold_answer": "371",
+     "pred": "CONSTRON",
+     "pred_norm": "CONSTRON",
+     "exact": false,
+     "score": 0.5215,
+     "has_band": true,
+     "roi": [
+      8,
+      40,
+      207,
+      79
+     ]
+    },
+    {
+     "file": "201.png",
+     "path": "dataset/out_ru/GalleryCaptcha/ru-numberword/201.png",
+     "gold_text": "семьсот восемьдесят восемь",
+     "gold_answer": "788",
+     "pred": "coseMneca",
+     "pred_norm": "coseMneca",
+     "exact": false,
+     "score": 0.521,
+     "has_band": true,
+     "roi": [
+      8,
+      40,
+      242,
+      109
+     ]
+    },
+    {
+     "file": "300.png",
+     "path": "dataset/out_ru/GalleryCaptcha/ru-numberword/300.png",
+     "gold_text": "триста девяносто один",
+     "gold_answer": "391",
+     "pred": "TOESHOCTO",
+     "pred_norm": "TOESHOCTO",
+     "exact": false,
+     "score": 0.7681,
+     "has_band": true,
+     "roi": [
+      8,
+      42,
+      207,
+      79
+     ]
+    },
+    {
+     "file": "400.png",
+     "path": "dataset/out_ru/GalleryCaptcha/ru-numberword/400.png",
+     "gold_text": "семьсот пятьдесят три",
+     "gold_answer": "753",
+     "pred": "ROmbpocs",
+     "pred_norm": "ROmbpocs",
+     "exact": false,
+     "score": 0.5952,
+     "has_band": true,
+     "roi": [
+      8,
+      40,
+      207,
+      81
+     ]
+    },
+    {
+     "file": "500.png",
+     "path": "dataset/out_ru/GalleryCaptcha/ru-numberword/500.png",
+     "gold_text": "восемьсот сорок пять",
+     "gold_answer": "845",
+     "pred": "GOCOKbCOT",
+     "pred_norm": "GOCOKbCOT",
+     "exact": false,
+     "score": 0.6875,
+     "has_band": true,
+     "roi": [
+      8,
+      40,
+      207,
+      75
+     ]
+    }
+   ]
+  },
+  "out_ru/GalleryCaptcha/ru-numberword-caption": {
+   "n": 500,
+   "exact_match": 0.0,
+   "exact_match_raw": 0.0,
+   "cer": 1.0,
+   "cer_median": 1.0,
+   "pred_len_median": 9.0,
+   "pred_len_mean": 8.362,
+   "gold_len_median": 21.0,
+   "examples": [
+    {
+     "file": "001.png",
+     "path": "dataset/out_ru/GalleryCaptcha/ru-numberword-caption/001.png",
+     "gold_text": "триста восемьдесят четыре",
+     "gold_answer": "384",
+     "pred": "BOSEMBrecHT",
+     "pred_norm": "BOSEMBrecHT",
+     "exact": false,
+     "score": 0.4788,
+     "has_band": true,
+     "roi": [
+      8,
+      41,
+      242,
+      86
+     ]
+    },
+    {
+     "file": "101.png",
+     "path": "dataset/out_ru/GalleryCaptcha/ru-numberword-caption/101.png",
+     "gold_text": "девятьсот сорок четыре",
+     "gold_answer": "944",
+     "pred": "CeBabgT",
+     "pred_norm": "CeBabgT",
+     "exact": false,
+     "score": 0.28,
+     "has_band": true,
+     "roi": [
+      8,
+      40,
+      207,
+      84
+     ]
+    },
+    {
+     "file": "201.png",
+     "path": "dataset/out_ru/GalleryCaptcha/ru-numberword-caption/201.png",
+     "gold_text": "двести семь",
+     "gold_answer": "207",
+     "pred": "CBe",
+     "pred_norm": "CBe",
+     "exact": false,
+     "score": 0.6357,
+     "has_band": true,
+     "roi": [
+      8,
+      40,
+      139,
+      57
+     ]
+    },
+    {
+     "file": "300.png",
+     "path": "dataset/out_ru/GalleryCaptcha/ru-numberword-caption/300.png",
+     "gold_text": "сто два",
+     "gold_answer": "102",
+     "pred": "Crea",
+     "pred_norm": "Crea",
+     "exact": false,
+     "score": 0.4128,
+     "has_band": true,
+     "roi": [
+      8,
+      41,
+      66,
+      53
+     ]
+    },
+    {
+     "file": "400.png",
+     "path": "dataset/out_ru/GalleryCaptcha/ru-numberword-caption/400.png",
+     "gold_text": "пятьсот пятьдесят четыре",
+     "gold_answer": "554",
+     "pred": "BAREROCAT",
+     "pred_norm": "BAREROCAT",
+     "exact": false,
+     "score": 0.6611,
+     "has_band": true,
+     "roi": [
+      8,
+      46,
+      207,
+      81
+     ]
+    },
+    {
+     "file": "500.png",
+     "path": "dataset/out_ru/GalleryCaptcha/ru-numberword-caption/500.png",
+     "gold_text": "четыреста один",
+     "gold_answer": "401",
+     "pred": "demmpetTa",
+     "pred_norm": "demmpetTa",
+     "exact": false,
+     "score": 0.6318,
+     "has_band": true,
+     "roi": [
+      8,
+      40,
+      209,
+      56
+     ]
+    }
+   ]
+  },
+  "out_ru/GalleryCaptcha/ru-object-swatch": {
+   "n": 500,
+   "exact_match": 0.0,
+   "exact_match_raw": 0.0,
+   "cer": 1.0,
+   "cer_median": 1.0,
+   "pred_len_median": 1.0,
+   "pred_len_mean": 0.89,
+   "gold_len_median": 6.0,
+   "examples": [
+    {
+     "file": "001.png",
+     "path": "dataset/out_ru/GalleryCaptcha/ru-object-swatch/001.png",
+     "gold_text": "красный",
+     "gold_answer": "красный",
+     "pred": "1",
+     "pred_norm": "1",
+     "exact": false,
+     "score": 0.304,
+     "has_band": false,
+     "roi": null
+    },
+    {
+     "file": "101.png",
+     "path": "dataset/out_ru/GalleryCaptcha/ru-object-swatch/101.png",
+     "gold_text": "зелёный",
+     "gold_answer": "зелёный",
+     "pred": "二",
+     "pred_norm": "二",
+     "exact": false,
+     "score": 0.7705,
+     "has_band": false,
+     "roi": null
+    },
+    {
+     "file": "201.png",
+     "path": "dataset/out_ru/GalleryCaptcha/ru-object-swatch/201.png",
+     "gold_text": "белый",
+     "gold_answer": "белый",
+     "pred": "1",
+     "pred_norm": "1",
+     "exact": false,
+     "score": 0.7842,
+     "has_band": false,
+     "roi": null
+    },
+    {
+     "file": "300.png",
+     "path": "dataset/out_ru/GalleryCaptcha/ru-object-swatch/300.png",
+     "gold_text": "зелёный",
+     "gold_answer": "зелёный",
+     "pred": "",
+     "pred_norm": "",
+     "exact": false,
+     "score": NaN,
+     "has_band": false,
+     "roi": null
+    },
+    {
+     "file": "400.png",
+     "path": "dataset/out_ru/GalleryCaptcha/ru-object-swatch/400.png",
+     "gold_text": "зелёный",
+     "gold_answer": "зелёный",
+     "pred": "",
+     "pred_norm": "",
+     "exact": false,
+     "score": NaN,
+     "has_band": false,
+     "roi": null
+    },
+    {
+     "file": "500.png",
+     "path": "dataset/out_ru/GalleryCaptcha/ru-object-swatch/500.png",
+     "gold_text": "белый",
+     "gold_answer": "белый",
+     "pred": "",
+     "pred_norm": "",
+     "exact": false,
+     "score": NaN,
+     "has_band": false,
+     "roi": null
+    }
+   ]
+  },
+  "out_ru/GalleryCaptcha/ru-symbols": {
+   "n": 500,
+   "exact_match": 0.008,
+   "exact_match_raw": 0.008,
+   "cer": 0.902,
+   "cer_median": 1.0,
+   "pred_len_median": 3.0,
+   "pred_len_mean": 3.122,
+   "gold_len_median": 3.0,
+   "examples": [
+    {
+     "file": "001.png",
+     "path": "dataset/out_ru/GalleryCaptcha/ru-symbols/001.png",
+     "gold_text": "5МП",
+     "gold_answer": "5МП",
+     "pred": "5MT",
+     "pred_norm": "5MT",
+     "exact": false,
+     "score": 0.813,
+     "has_band": true,
+     "roi": [
+      37,
+      36,
+      180,
+      88
+     ]
+    },
+    {
+     "file": "101.png",
+     "path": "dataset/out_ru/GalleryCaptcha/ru-symbols/101.png",
+     "gold_text": "0ФП",
+     "gold_answer": "0ФП",
+     "pred": "ODM",
+     "pred_norm": "ODM",
+     "exact": false,
+     "score": 0.5376,
+     "has_band": true,
+     "roi": [
+      35,
+      23,
+      189,
+      97
+     ]
+    },
+    {
+     "file": "201.png",
+     "path": "dataset/out_ru/GalleryCaptcha/ru-symbols/201.png",
+     "gold_text": "ЛДХ",
+     "gold_answer": "ЛДХ",
+     "pred": "MIX",
+     "pred_norm": "MIX",
+     "exact": false,
+     "score": 0.5527,
+     "has_band": true,
+     "roi": [
+      37,
+      26,
+      178,
+      101
+     ]
+    },
+    {
+     "file": "300.png",
+     "path": "dataset/out_ru/GalleryCaptcha/ru-symbols/300.png",
+     "gold_text": "1Т5",
+     "gold_answer": "1Т5",
+     "pred": "1T5",
+     "pred_norm": "1T5",
+     "exact": false,
+     "score": 0.8105,
+     "has_band": true,
+     "roi": [
+      35,
+      23,
+      166,
+      96
+     ]
+    },
+    {
+     "file": "400.png",
+     "path": "dataset/out_ru/GalleryCaptcha/ru-symbols/400.png",
+     "gold_text": "ДЕУ",
+     "gold_answer": "ДЕУ",
+     "pred": "nEy",
+     "pred_norm": "nEy",
+     "exact": false,
+     "score": 0.9014,
+     "has_band": true,
+     "roi": [
+      35,
+      32,
+      186,
+      95
+     ]
+    },
+    {
+     "file": "500.png",
+     "path": "dataset/out_ru/GalleryCaptcha/ru-symbols/500.png",
+     "gold_text": "2АР",
+     "gold_answer": "2АР",
+     "pred": "2AP",
+     "pred_norm": "2AP",
+     "exact": false,
+     "score": 0.9961,
+     "has_band": true,
+     "roi": [
+      39,
+      26,
+      170,
+      95
+     ]
+    }
+   ]
+  },
+  "out_ru/GalleryCaptcha/ru-web": {
+   "n": 500,
+   "exact_match": 0.946,
+   "exact_match_raw": 0.946,
+   "cer": 0.0116,
+   "cer_median": 0.0,
+   "pred_len_median": 5.0,
+   "pred_len_mean": 5.0,
+   "gold_len_median": 5.0,
+   "examples": [
+    {
+     "file": "001.png",
+     "path": "dataset/out_ru/GalleryCaptcha/ru-web/001.png",
+     "gold_text": "DdtOv",
+     "gold_answer": "DdtOv",
+     "pred": "DdtOv",
+     "pred_norm": "DdtOv",
+     "exact": true,
+     "score": 1.0,
+     "has_band": true,
+     "roi": [
+      14,
+      20,
+      123,
+      50
+     ]
+    },
+    {
+     "file": "101.png",
+     "path": "dataset/out_ru/GalleryCaptcha/ru-web/101.png",
+     "gold_text": "6OU3q",
+     "gold_answer": "6OU3q",
+     "pred": "6OU3q",
+     "pred_norm": "6OU3q",
+     "exact": true,
+     "score": 0.9995,
+     "has_band": true,
+     "roi": [
+      16,
+      18,
+      119,
+      51
+     ]
+    },
+    {
+     "file": "201.png",
+     "path": "dataset/out_ru/GalleryCaptcha/ru-web/201.png",
+     "gold_text": "rd6SD",
+     "gold_answer": "rd6SD",
+     "pred": "rd6SD",
+     "pred_norm": "rd6SD",
+     "exact": true,
+     "score": 0.9839,
+     "has_band": true,
+     "roi": [
+      16,
+      18,
+      118,
+      54
+     ]
+    },
+    {
+     "file": "300.png",
+     "path": "dataset/out_ru/GalleryCaptcha/ru-web/300.png",
+     "gold_text": "Dlhf1",
+     "gold_answer": "Dlhf1",
+     "pred": "Dlhf1",
+     "pred_norm": "Dlhf1",
+     "exact": true,
+     "score": 0.9985,
+     "has_band": true,
+     "roi": [
+      32,
+      20,
+      87,
+      46
+     ]
+    },
+    {
+     "file": "400.png",
+     "path": "dataset/out_ru/GalleryCaptcha/ru-web/400.png",
+     "gold_text": "jqru4",
+     "gold_answer": "jqru4",
+     "pred": "jqru4",
+     "pred_norm": "jqru4",
+     "exact": true,
+     "score": 1.0,
+     "has_band": true,
+     "roi": [
+      40,
+      24,
+      71,
+      39
+     ]
+    },
+    {
+     "file": "500.png",
+     "path": "dataset/out_ru/GalleryCaptcha/ru-web/500.png",
+     "gold_text": "9q5Ax",
+     "gold_answer": "9q5Ax",
+     "pred": "9q5Ax",
+     "pred_norm": "9q5Ax",
+     "exact": true,
+     "score": 1.0,
+     "has_band": true,
+     "roi": [
+      28,
+      24,
+      95,
+      42
+     ]
+    }
+   ]
+  },
+  "out_ru/LimboFilter/framed2x2": {
+   "n": 500,
+   "exact_match": 0.0,
+   "exact_match_raw": 0.0,
+   "cer": 1.0,
+   "cer_median": 1.0,
+   "pred_len_median": 1.0,
+   "pred_len_mean": 1.884,
+   "gold_len_median": 21.0,
+   "examples": [
+    {
+     "file": "001.png",
+     "path": "dataset/out_ru/LimboFilter/framed2x2/001.png",
+     "gold_text": "четыреста шесть",
+     "gold_answer": "406",
+     "pred": "MA",
+     "pred_norm": "MA",
+     "exact": false,
+     "score": 0.5112,
+     "has_band": false,
+     "roi": null
+    },
+    {
+     "file": "101.png",
+     "path": "dataset/out_ru/LimboFilter/framed2x2/101.png",
+     "gold_text": "девятьсот шестнадцать",
+     "gold_answer": "916",
+     "pred": "ayet",
+     "pred_norm": "ayet",
+     "exact": false,
+     "score": 0.3125,
+     "has_band": false,
+     "roi": null
+    },
+    {
+     "file": "201.png",
+     "path": "dataset/out_ru/LimboFilter/framed2x2/201.png",
+     "gold_text": "четыреста пятьдесят пять",
+     "gold_answer": "455",
+     "pred": "CEA",
+     "pred_norm": "CEA",
+     "exact": false,
+     "score": 0.178,
+     "has_band": false,
+     "roi": null
+    },
+    {
+     "file": "300.png",
+     "path": "dataset/out_ru/LimboFilter/framed2x2/300.png",
+     "gold_text": "восемьсот восемьдесят четыре",
+     "gold_answer": "884",
+     "pred": "",
+     "pred_norm": "",
+     "exact": false,
+     "score": NaN,
+     "has_band": false,
+     "roi": null
+    },
+    {
+     "file": "400.png",
+     "path": "dataset/out_ru/LimboFilter/framed2x2/400.png",
+     "gold_text": "шестьсот четыре",
+     "gold_answer": "604",
+     "pred": "",
+     "pred_norm": "",
+     "exact": false,
+     "score": NaN,
+     "has_band": false,
+     "roi": null
+    },
+    {
+     "file": "500.png",
+     "path": "dataset/out_ru/LimboFilter/framed2x2/500.png",
+     "gold_text": "пятьсот пятнадцать",
+     "gold_answer": "515",
+     "pred": "TAPO",
+     "pred_norm": "TAPO",
+     "exact": false,
+     "score": 0.3877,
+     "has_band": false,
+     "roi": null
+    }
+   ]
+  },
+  "out_ru/LimboFilter/framed3x3": {
+   "n": 500,
+   "exact_match": 0.0,
+   "exact_match_raw": 0.0,
+   "cer": 1.0,
+   "cer_median": 1.0,
+   "pred_len_median": 2.0,
+   "pred_len_mean": 2.192,
+   "gold_len_median": 21.5,
+   "examples": [
+    {
+     "file": "001.png",
+     "path": "dataset/out_ru/LimboFilter/framed3x3/001.png",
+     "gold_text": "пятьсот тридцать шесть",
+     "gold_answer": "536",
+     "pred": "",
+     "pred_norm": "",
+     "exact": false,
+     "score": NaN,
+     "has_band": false,
+     "roi": null
+    },
+    {
+     "file": "101.png",
+     "path": "dataset/out_ru/LimboFilter/framed3x3/101.png",
+     "gold_text": "семьсот восемьдесят девять",
+     "gold_answer": "789",
+     "pred": "R",
+     "pred_norm": "R",
+     "exact": false,
+     "score": 0.2108,
+     "has_band": false,
+     "roi": null
+    },
+    {
+     "file": "201.png",
+     "path": "dataset/out_ru/LimboFilter/framed3x3/201.png",
+     "gold_text": "семьсот пятьдесят два",
+     "gold_answer": "752",
+     "pred": "",
+     "pred_norm": "",
+     "exact": false,
+     "score": NaN,
+     "has_band": false,
+     "roi": null
+    },
+    {
+     "file": "300.png",
+     "path": "dataset/out_ru/LimboFilter/framed3x3/300.png",
+     "gold_text": "сто пятнадцать",
+     "gold_answer": "115",
+     "pred": "",
+     "pred_norm": "",
+     "exact": false,
+     "score": NaN,
+     "has_band": false,
+     "roi": null
+    },
+    {
+     "file": "400.png",
+     "path": "dataset/out_ru/LimboFilter/framed3x3/400.png",
+     "gold_text": "девятьсот двадцать",
+     "gold_answer": "920",
+     "pred": "",
+     "pred_norm": "",
+     "exact": false,
+     "score": NaN,
+     "has_band": false,
+     "roi": null
+    },
+    {
+     "file": "500.png",
+     "path": "dataset/out_ru/LimboFilter/framed3x3/500.png",
+     "gold_text": "двести девяносто два",
+     "gold_answer": "292",
+     "pred": "m",
+     "pred_norm": "m",
+     "exact": false,
+     "score": 0.1149,
+     "has_band": false,
+     "roi": null
+    }
+   ]
+  },
+  "out_ru/LimboFilter/map": {
+   "n": 500,
+   "exact_match": 0.0,
+   "exact_match_raw": 0.0,
+   "cer": 1.0,
+   "cer_median": 1.0,
+   "pred_len_median": 7.0,
+   "pred_len_mean": 6.466,
+   "gold_len_median": 21.0,
+   "examples": [
+    {
+     "file": "001.png",
+     "path": "dataset/out_ru/LimboFilter/map/001.png",
+     "gold_text": "четыреста восемьдесят один",
+     "gold_answer": "481",
+     "pred": "y",
+     "pred_norm": "y",
+     "exact": false,
+     "score": 0.9731,
+     "has_band": true,
+     "roi": [
+      4,
+      0,
+      124,
+      128
+     ]
+    },
+    {
+     "file": "101.png",
+     "path": "dataset/out_ru/LimboFilter/map/101.png",
+     "gold_text": "восемьсот один",
+     "gold_answer": "801",
+     "pred": "BOCELOCOT",
+     "pred_norm": "BOCELOCOT",
+     "exact": false,
+     "score": 0.7505,
+     "has_band": true,
+     "roi": [
+      4,
+      34,
+      106,
+      42
+     ]
+    },
+    {
+     "file": "201.png",
+     "path": "dataset/out_ru/LimboFilter/map/201.png",
+     "gold_text": "двести пятьдесят",
+     "gold_answer": "250",
+     "pred": "ABOLOCHT",
+     "pred_norm": "ABOLOCHT",
+     "exact": false,
+     "score": 0.7705,
+     "has_band": true,
+     "roi": [
+      4,
+      34,
+      106,
+      48
+     ]
+    },
+    {
+     "file": "300.png",
+     "path": "dataset/out_ru/LimboFilter/map/300.png",
+     "gold_text": "восемьсот сорок четыре",
+     "gold_answer": "844",
+     "pred": "BOOKe",
+     "pred_norm": "BOOKe",
+     "exact": false,
+     "score": 0.4126,
+     "has_band": true,
+     "roi": [
+      4,
+      34,
+      106,
+      76
+     ]
+    },
+    {
+     "file": "400.png",
+     "path": "dataset/out_ru/LimboFilter/map/400.png",
+     "gold_text": "шестьсот шестнадцать",
+     "gold_answer": "616",
+     "pred": "LesThoomari",
+     "pred_norm": "LesThoomari",
+     "exact": false,
+     "score": 0.6255,
+     "has_band": true,
+     "roi": [
+      4,
+      34,
+      124,
+      48
+     ]
+    },
+    {
+     "file": "500.png",
+     "path": "dataset/out_ru/LimboFilter/map/500.png",
+     "gold_text": "девятьсот девяносто четыре",
+     "gold_answer": "994",
+     "pred": "Kg",
+     "pred_norm": "Kg",
+     "exact": false,
+     "score": 0.2874,
+     "has_band": true,
+     "roi": [
+      4,
+      34,
+      106,
+      71
+     ]
+    }
+   ]
+  },
+  "out_ru/LimboFilter/symbols": {
+   "n": 500,
+   "exact_match": 0.004,
+   "exact_match_raw": 0.004,
+   "cer": 0.9053,
+   "cer_median": 1.0,
+   "pred_len_median": 3.0,
+   "pred_len_mean": 2.95,
+   "gold_len_median": 3.0,
+   "examples": [
+    {
+     "file": "001.png",
+     "path": "dataset/out_ru/LimboFilter/symbols/001.png",
+     "gold_text": "ШМШ",
+     "gold_answer": "ШМШ",
+     "pred": "WMI",
+     "pred_norm": "WMI",
+     "exact": false,
+     "score": 0.6611,
+     "has_band": true,
+     "roi": [
+      18,
+      37,
+      98,
+      67
+     ]
+    },
+    {
+     "file": "101.png",
+     "path": "dataset/out_ru/LimboFilter/symbols/101.png",
+     "gold_text": "Е8У",
+     "gold_answer": "Е8У",
+     "pred": "EXS",
+     "pred_norm": "EXS",
+     "exact": false,
+     "score": 0.5337,
+     "has_band": true,
+     "roi": [
+      20,
+      20,
+      94,
+      90
+     ]
+    },
+    {
+     "file": "201.png",
+     "path": "dataset/out_ru/LimboFilter/symbols/201.png",
+     "gold_text": "ЙЪХ",
+     "gold_answer": "ЙЪХ",
+     "pred": "MOX",
+     "pred_norm": "MOX",
+     "exact": false,
+     "score": 0.7378,
+     "has_band": true,
+     "roi": [
+      19,
+      20,
+      92,
+      92
+     ]
+    },
+    {
+     "file": "300.png",
+     "path": "dataset/out_ru/LimboFilter/symbols/300.png",
+     "gold_text": "Ц5З",
+     "gold_answer": "Ц5З",
+     "pred": "L53",
+     "pred_norm": "L53",
+     "exact": false,
+     "score": 0.8828,
+     "has_band": true,
+     "roi": [
+      20,
+      22,
+      88,
+      91
+     ]
+    },
+    {
+     "file": "400.png",
+     "path": "dataset/out_ru/LimboFilter/symbols/400.png",
+     "gold_text": "ФНЭ",
+     "gold_answer": "ФНЭ",
+     "pred": "OHS",
+     "pred_norm": "OHS",
+     "exact": false,
+     "score": 0.6294,
+     "has_band": true,
+     "roi": [
+      18,
+      22,
+      87,
+      65
+     ]
+    },
+    {
+     "file": "500.png",
+     "path": "dataset/out_ru/LimboFilter/symbols/500.png",
+     "gold_text": "ПЗЙ",
+     "gold_answer": "ПЗЙ",
+     "pred": "73MA",
+     "pred_norm": "73MA",
+     "exact": false,
+     "score": 0.5669,
+     "has_band": true,
+     "roi": [
+      19,
+      23,
+      95,
+      85
+     ]
+    }
+   ]
+  }
+ }
+}

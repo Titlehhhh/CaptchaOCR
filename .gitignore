@@ -20,7 +20,11 @@ train/*/ckpt/
 # The Hugging Face model cache: several GB of downloaded weights, re-downloadable
 .hf-cache/
 
-# The dataset images live on Hugging Face, not in git (ADR 0004). 4600 PNG = 43.6 MB;
+# Machine-local environment of this project (paths of this computer, may hold secrets).
+# Read by DeepSeek Harness at launch; the project copy sits next to the repo.
+.env
+
+# The dataset images live on Hugging Face, not in git (ADR 0004). 23 000 PNG = 218 MB;
 # the git history keeps every revision forever, so the payload does not belong here.
 # The labels, the generators and the per-type samples under dataset/samples/ stay tracked.
 dataset/out/**/*.png

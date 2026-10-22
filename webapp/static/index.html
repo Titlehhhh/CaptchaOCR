@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CaptchaOCR — poke the recogniser</title>
+<style>
+  :root{
+    --bg:#12151c; --panel:#1a1f29; --panel2:#212836; --line:#2c3444;
+    --fg:#e6e9ef; --dim:#8d97a8; --accent:#5ac8fa; --good:#4ade80; --bad:#f87171; --warn:#fbbf24;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--fg);
+       font:14px/1.5 "Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif}
+  header{padding:14px 20px;border-bottom:1px solid var(--line);display:flex;flex-wrap:wrap;
+         gap:10px 22px;align-items:baseline;background:var(--panel)}
+  header h1{font-size:16px;margin:0;font-weight:600;letter-spacing:.3px}
+  header .meta{color:var(--dim);font-size:12px}
+  header .meta b{color:var(--fg);font-weight:600}
+  main{display:grid;grid-template-columns:minmax(360px,1fr) minmax(380px,1fr);
+       gap:18px;padding:18px;max-width:1280px;margin:0 auto}
+  @media (max-width:900px){main{grid-template-columns:1fr}}
+  section{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px}
+  h2{font-size:13px;text-transform:uppercase;letter-spacing:.8px;color:var(--dim);
+     margin:0 0 12px;font-weight:600}
+  #drop{border:2px dashed var(--line);border-radius:10px;padding:26px 16px;text-align:center;
+        cursor:pointer;transition:.15s;background:var(--panel2)}
+  #drop.hot{border-color:var(--accent);background:#1d2735}
+  #drop .big{font-size:15px;margin-bottom:6px}
+  #drop .small{color:var(--dim);font-size:12px}
+  .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  button{background:var(--accent);color:#06202b;border:0;border-radius:7px;padding:9px 18px;
+         font-size:14px;font-weight:600;cursor:pointer}
+  button:disabled{opacity:.45;cursor:not-allowed}
+  button.ghost{background:transparent;color:var(--dim);border:1px solid var(--line);font-weight:500}
+  select,input[type=text]{background:var(--panel2);color:var(--fg);border:1px solid var(--line);
+         border-radius:7px;padding:8px 10px;font-size:13px;font-family:inherit}
+  select{max-width:100%}
+  .preview{margin-top:14px;display:none}
+  .preview.on{display:block}
+  .preview img{max-width:100%;image-rendering:pixelated;background:#0d1015;
+              border:1px solid var(--line);border-radius:8px;padding:6px}
+  .caps{margin-top:8px;color:var(--dim);font-size:12px}
+  .gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px}
+  .shot{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:8px;
+        cursor:pointer;transition:.12s}
+  .shot:hover{border-color:var(--accent)}
+  .shot.sel{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent) inset}
+  .shot img{width:100%;image-rendering:pixelated;background:#0d1015;border-radius:5px;display:block}
+  .shot .gt{margin-top:6px;font-size:11px;color:var(--dim);word-break:break-all;line-height:1.35}
+  .shot .gt b{color:var(--fg);font-family:Consolas,ui-monospace,monospace;font-size:12px}
+  .answer{margin-top:16px;padding:16px;border:1px solid var(--line);border-radius:10px;
+          background:var(--panel2);min-height:150px}
+  .pred{font-family:Consolas,ui-monospace,monospace;font-size:30px;letter-spacing:2px;
+        word-break:break-all;margin:4px 0 10px;min-height:38px}
+  .pred.empty{color:var(--dim)}
+  .badge{display:inline-block;padding:2px 9px;border-radius:20px;font-size:12px;font-weight:600}
+  .badge.ok{background:rgba(74,222,128,.15);color:var(--good);border:1px solid rgba(74,222,128,.4)}
+  .badge.no{background:rgba(248,113,113,.15);color:var(--bad);border:1px solid rgba(248,113,113,.4)}
+  .badge.na{background:rgba(141,151,168,.12);color:var(--dim);border:1px solid var(--line)}
+  .chars{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+  .chip{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:4px 8px;
+        font-family:Consolas,ui-monospace,monospace;font-size:13px;display:flex;
+        align-items:center;gap:6px}
+  .chip .c{font-size:10px;color:var(--dim)}
+  .kv{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;margin-top:14px;font-size:13px}
+  .kv dt{color:var(--dim)}
+  .kv dd{margin:0;font-family:Consolas,ui-monospace,monospace;word-break:break-all}
+  .note{color:var(--dim);font-size:12px;margin-top:12px;line-height:1.5}
+  .err{color:var(--bad);font-size:13px;margin-top:10px}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>CaptchaOCR — poke the recogniser</h1>
+  <span class="meta">model: <b id="m-model">…</b></span>
+  <span class="meta">checkpoint: <b id="m-ckpt">…</b></span>
+  <span class="meta">device: <b id="m-dev">…</b></span>
+  <span class="meta" id="m-parity"></span>
+</header>
+
+<main>
+  <!-- ------------------------------------------------------------- left -->
+  <section>
+    <h2>Your picture</h2>
+    <div id="drop">
+      <div class="big">Drop a captcha PNG here</div>
+      <div class="small">or click to pick a file &nbsp;·&nbsp; everything stays on this machine</div>
+      <input type="file" id="file" accept="image/*" hidden>
+    </div>
+    <div class="preview" id="preview">
+      <img id="preview-img" alt="the selected picture">
+      <div class="caps" id="preview-cap"></div>
+    </div>
+
+    <h2 style="margin-top:22px">Demo images from the dataset</h2>
+    <div class="row">
+      <select id="type"></select>
+      <span class="caps" id="type-cap"></span>
+    </div>
+    <div class="gallery" id="gallery"></div>
+
+    <div class="row" style="margin-top:16px">
+      <button id="go" disabled>Predict</button>
+      <button class="ghost" id="clear">Clear</button>
+      <span class="caps" id="hint"></span>
+    </div>
+  </section>
+
+  <!-- ------------------------------------------------------------ right -->
+  <section>
+    <h2>Result</h2>
+    <div class="answer">
+      <div class="caps">PREDICTION</div>
+      <div class="pred empty" id="pred">—</div>
+      <div class="row">
+        <span class="badge na" id="match">no ground truth</span>
+        <span class="caps" id="conf"></span>
+      </div>
+      <div class="chars" id="chars"></div>
+      <dl class="kv">
+        <dt>file</dt><dd id="k-file">—</dd>
+        <dt>ground truth (text)</dt><dd id="k-gt">—</dd>
+        <dt>ground truth (answer)</dt><dd id="k-gtans">—</dd>
+        <dt>band used</dt><dd id="k-band">—</dd>
+        <dt>latency</dt><dd id="k-lat">—</dd>
+        <dt>type</dt><dd id="k-type">—</dd>
+      </dl>
+      <div class="err" id="err"></div>
+    </div>
+    <div class="note">
+      The demo pictures come from <code>dataset/out/**</code> and <code>dataset/out_ru/**</code>
+      (read-only). “ground truth (text)” is the string drawn in the picture — that is what the
+      recogniser is trained to read; “(answer)” is what a player has to type. The comparison uses
+      the drawn text, with the letters/digits only.
+    </div>
+  </section>
+</main>
+
+<script>
+"use strict";
+const $ = (id) => document.getElementById(id);
+let selected = null;      // {path, file_name, gt} | {bytes, file_name}
+let demoTypes = [];
+
+function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c]));}
+
+/* ---------------------------------------------------------------- status */
+async function loadStatus(){
+  try{
+    const s = await (await fetch("/api/status")).json();
+    $("m-model").textContent = s.backend || "-";
+    $("m-ckpt").textContent = s.checkpoint || "-";
+    $("m-dev").textContent = s.device || "-";
+    $("m-parity").textContent = s.preproc_parity && s.preproc_parity !== "not checked"
+        ? "preprocessing: " + s.preproc_parity : "";
+    if (s.error){ $("err").textContent = "model error: " + s.error; }
+    if (s.loading){ $("hint").textContent = "loading the model…"; }
+  }catch(e){ $("err").textContent = "cannot reach the server: " + e; }
+}
+
+/* ----------------------------------------------------------------- types */
+async function loadTypes(){
+  const d = await (await fetch("/api/types")).json();
+  demoTypes = d.demo_types || [];
+  const sel = $("type");
+  sel.innerHTML = "";
+  const mk = (label, list) => {
+    const g = document.createElement("optgroup"); g.label = label;
+    list.forEach(t => { const o = document.createElement("option");
+                        o.value = t.id; o.textContent = t.id; g.appendChild(o); });
+    sel.appendChild(g);
+  };
+  mk("demo types", d.types.filter(t => demoTypes.includes(t.id)));
+  mk("all types", d.types.filter(t => !demoTypes.includes(t.id)));
+  sel.value = demoTypes[0] || (d.types[0] && d.types[0].id);
+  await loadDemo();
+}
+
+async function loadDemo(){
+  const id = $("type").value;
+  const d = await (await fetch("/api/demo?type=" + encodeURIComponent(id) + "&limit=3")).json();
+  $("type-cap").textContent = d.samples.length + " pictures · ground truth shown under each";
+  const g = $("gallery"); g.innerHTML = "";
+  d.samples.forEach(s => {
+    const div = document.createElement("div");
+    div.className = "shot";
+    div.innerHTML = `<img src="${esc(s.url)}" alt="${esc(s.file)}">
+      <div class="gt">drawn: <b>${esc(s.text)}</b><br>answer: <b>${esc(s.answer)}</b></div>`;
+    div.onclick = () => {
+      g.querySelectorAll(".shot").forEach(x => x.classList.remove("sel"));
+      div.classList.add("sel");
+      selected = {path: s.path, file_name: s.file, gt: s.text, gtans: s.answer,
+                  url: s.url, label: s.type + " / " + s.file};
+      showPreview(s.url, s.type + " / " + s.file + " · drawn: " + s.text +
+                  " · answer: " + s.answer);
+      $("go").disabled = false;
+      $("hint").textContent = "";
+    };
+    g.appendChild(div);
+  });
+}
+
+/* -------------------------------------------------------------- preview */
+function showPreview(url, cap){
+  $("preview-img").src = url;
+  $("preview-cap").textContent = cap || "";
+  $("preview").classList.add("on");
+}
+
+/* --------------------------------------------------------------- upload */
+const drop = $("drop"), fileInput = $("file");
+drop.onclick = () => fileInput.click();
+fileInput.onchange = () => { if (fileInput.files[0]) takeFile(fileInput.files[0]); };
+["dragenter","dragover"].forEach(ev => drop.addEventListener(ev, e => {
+  e.preventDefault(); drop.classList.add("hot"); }));
+["dragleave","drop"].forEach(ev => drop.addEventListener(ev, e => {
+  e.preventDefault(); drop.classList.remove("hot"); }));
+drop.addEventListener("drop", e => {
+  const f = e.dataTransfer.files && e.dataTransfer.files[0];
+  if (f) takeFile(f);
+});
+window.addEventListener("paste", e => {
+  const items = e.clipboardData && e.clipboardData.files;
+  if (items && items[0]) takeFile(items[0]);
+});
+
+function takeFile(f){
+  const reader = new FileReader();
+  reader.onload = () => {
+    selected = {bytes: reader.result, file_name: f.name};
+    showPreview(reader.result, f.name);
+    $("go").disabled = false;
+    $("hint").textContent = "";
+    document.querySelectorAll(".shot").forEach(x => x.classList.remove("sel"));
+  };
+  reader.readAsDataURL(f);
+}
+
+/* ------------------------------------------------------------- predict */
+$("go").onclick = async () => {
+  if (!selected) return;
+  $("go").disabled = true; $("err").textContent = "";
+  $("hint").textContent = "predicting…";
+  try{
+    let payload;
+    if (selected.path){
+      payload = {path: selected.path};
+    }else{
+      payload = {image_base64: selected.bytes.split(",")[1], file_name: selected.file_name};
+      if (selected.gt) payload.ground_truth = selected.gt;
+    }
+    const r = await fetch("/predict", {method: "POST",
+      headers: {"Content-Type": "application/json"}, body: JSON.stringify(payload)});
+    const d = await r.json();
+    if (!r.ok) throw new Error(d.error || ("HTTP " + r.status));
+    showResult(d);
+  }catch(e){
+    $("err").textContent = String(e.message || e);
+  }finally{
+    $("go").disabled = false; $("hint").textContent = "";
+  }
+};
+
+function showResult(d){
+  $("pred").textContent = d.text ? d.text : "(empty)";
+  $("pred").classList.toggle("empty", !d.text);
+  $("conf").textContent = "confidence " + (d.confidence==null ? "-" : d.confidence.toFixed(3));
+
+  const m = $("match");
+  if (d.exact_match === true){ m.textContent = "matches the ground truth"; m.className = "badge ok"; }
+  else if (d.exact_match === false){ m.textContent = "does NOT match"; m.className = "badge no"; }
+  else { m.textContent = "no ground truth"; m.className = "badge na"; }
+
+  $("chars").innerHTML = "";
+  (d.per_char || []).forEach(c => {
+    const el = document.createElement("span");
+    el.className = "chip";
+    el.innerHTML = `${esc(c.char)} <span class="c">${(c.confidence*100).toFixed(1)}%</span>`;
+    $("chars").appendChild(el);
+  });
+
+  $("k-file").textContent = d.file_name || "-";
+  $("k-gt").textContent = d.ground_truth == null ? "-" : d.ground_truth;
+  $("k-gtans").textContent = d.ground_truth_answer == null ? "-" : d.ground_truth_answer;
+  $("k-band").textContent = d.used_band ? "yes (roi)" : "no (ink crop of the frame)";
+  $("k-lat").textContent = (d.latency_ms == null ? "-" : d.latency_ms + " ms");
+  $("k-type").textContent = d.type || "-";
+}
+
+$("clear").onclick = () => {
+  selected = null;
+  $("preview").classList.remove("on");
+  $("go").disabled = true;
+  $("pred").textContent = "-"; $("pred").classList.add("empty");
+  $("chars").innerHTML = "";
+  $("err").textContent = "";
+};
+$("type").onchange = () => { loadDemo(); };
+
+loadStatus();
+loadTypes();
+setInterval(loadStatus, 15000);
+</script>
+</body>
+</html>

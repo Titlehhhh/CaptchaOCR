@@ -1,0 +1,3080 @@
+[
+ {
+  "type": "Archy-X/Krypton/map",
+  "group": "A",
+  "tree": "out",
+  "samples": 500,
+  "with_band": 500,
+  "canvas": "128x128",
+  "source": "com.archyx.krypton.captcha.MapGenerator#generateCode",
+  "solver": null,
+  "examples": [
+   {
+    "file": "001.png",
+    "answer": "93j79",
+    "text": "93j79",
+    "roi": [
+     32,
+     18,
+     29,
+     8
+    ]
+   },
+   {
+    "file": "101.png",
+    "answer": "qXohx",
+    "text": "qXohx",
+    "roi": [
+     32,
+     31,
+     29,
+     8
+    ]
+   },
+   {
+    "file": "201.png",
+    "answer": "5C5g9",
+    "text": "5C5g9",
+    "roi": [
+     62,
+     9,
+     29,
+     8
+    ]
+   },
+   {
+    "file": "300.png",
+    "answer": "Uoh3n",
+    "text": "Uoh3n",
+    "roi": [
+     33,
+     5,
+     29,
+     8
+    ]
+   },
+   {
+    "file": "400.png",
+    "answer": "yvfji",
+    "text": "yvfji",
+    "roi": [
+     27,
+     78,
+     24,
+     8
+    ]
+   },
+   {
+    "file": "500.png",
+    "answer": "eT4pt",
+    "text": "eT4pt",
+    "roi": [
+     12,
+     61,
+     27,
+     8
+    ]
+   }
+  ]
+ },
+ {
+  "type": "Archy-X/Krypton/menu",
+  "group": "B",
+  "tree": "out",
+  "samples": 500,
+  "with_band": 0,
+  "canvas": "380x324",
+  "source": "com.archyx.krypton.captcha.CaptchaMenu",
+  "solver": "-",
+  "examples": [
+   {
+    "file": "001.png",
+    "answer": "PODZOL",
+    "text": "PODZOL",
+    "roi": null
+   },
+   {
+    "file": "101.png",
+    "answer": "SOUL_SAND",
+    "text": "SOUL_SAND",
+    "roi": null
+   },
+   {
+    "file": "201.png",
+    "answer": "GLOWSTONE",
+    "text": "GLOWSTONE",
+    "roi": null
+   },
+   {
+    "file": "300.png",
+    "answer": "DEAD_BUSH",
+    "text": "DEAD_BUSH",
+    "roi": null
+   },
+   {
+    "file": "400.png",
+    "answer": "PISTON",
+    "text": "PISTON",
+    "roi": null
+   },
+   {
+    "file": "500.png",
+    "answer": "RED_SAND",
+    "text": "RED_SAND",
+    "roi": null
+   }
+  ]
+ },
+ {
+  "type": "BotFilter/map",
+  "group": "A",
+  "tree": "out_ru",
+  "samples": 500,
+  "with_band": 0,
+  "canvas": "128x128",
+  "source": "ru.leymooo.botfilter.captcha.generator.CaptchaPainter#draw",
+  "solver": null,
+  "examples": [
+   {
+    "file": "001.png",
+    "answer": "38920",
+    "text": "38920",
+    "roi": null
+   },
+   {
+    "file": "101.png",
+    "answer": "22347",
+    "text": "22347",
+    "roi": null
+   },
+   {
+    "file": "201.png",
+    "answer": "16457",
+    "text": "16457",
+    "roi": null
+   },
+   {
+    "file": "300.png",
+    "answer": "79824",
+    "text": "79824",
+    "roi": null
+   },
+   {
+    "file": "400.png",
+    "answer": "24259",
+    "text": "24259",
+    "roi": null
+   },
+   {
+    "file": "500.png",
+    "answer": "24273",
+    "text": "24273",
+    "roi": null
+   }
+  ]
+ },
+ {
+  "type": "CaptchaGUI/clickblock",
+  "group": "C",
+  "tree": "out_ru",
+  "samples": 500,
+  "with_band": 0,
+  "canvas": "186x68",
+  "source": "me.supl1na.captcha.CaptchaListener#onPlayerJoin",
+  "solver": "ответ - индекс картинки",
+  "examples": [
+   {
+    "file": "001.png",
+    "answer": "3",
+    "text": "3",
+    "roi": null
+   },
+   {
+    "file": "101.png",
+    "answer": "3",
+    "text": "3",
+    "roi": null
+   },
+   {
+    "file": "201.png",
+    "answer": "6",
+    "text": "6",
+    "roi": null
+   },
+   {
+    "file": "300.png",
+    "answer": "6",
+    "text": "6",
+    "roi": null
+   },
+   {
+    "file": "400.png",
+    "answer": "7",
+    "text": "7",
+    "roi": null
+   },
+   {
+    "file": "500.png",
+    "answer": "7",
+    "text": "7",
+    "roi": null
+   }
+  ]
+ },
+ {
+  "type": "CaptchaVerifyZ/map",
+  "group": "A",
+  "tree": "out_ru",
+  "samples": 500,
+  "with_band": 500,
+  "canvas": "128x128",
+  "source": "com.Mateitaa1.CaptchaVerifyZ$CaptchaMapRenderer#render",
+  "solver": null,
+  "examples": [
+   {
+    "file": "001.png",
+    "answer": "NR6PI",
+    "text": "NR6PI",
+    "roi": [
+     29,
+     48,
+     70,
+     28
+    ]
+   },
+   {
+    "file": "101.png",
+    "answer": "F7Y2X",
+    "text": "F7Y2X",
+    "roi": [
+     28,
+     48,
+     72,
+     28
+    ]
+   },
+   {
+    "file": "201.png",
+    "answer": "QE26I",
+    "text": "QE26I",
+    "roi": [
+     30,
+     48,
+     67,
+     28
+    ]
+   },
+   {
+    "file": "300.png",
+    "answer": "PWD6P",
+    "text": "PWD6P",
+    "roi": [
+     21,
+     48,
+     85,
+     28
+    ]
+   },
+   {
+    "file": "400.png",
+    "answer": "OR85S",
+    "text": "OR85S",
+    "roi": [
+     25,
+     48,
+     77,
+     28
+    ]
+   },
+   {
+    "file": "500.png",
+    "answer": "U6XPY",
+    "text": "U6XPY",
+    "roi": [
+     25,
+     48,
+     77,
+     28
+    ]
+   }
+  ]
+ },
+ {
+  "type": "China2B2T/Captcha/wool",
+  "group": "C",
+  "tree": "out",
+  "samples": 500,
+  "with_band": 0,
+  "canvas": "414x270",
+  "source": "org.china2b2t.captchalib.Main#onJoin",
+  "solver": "константный ответ",
+  "examples": [
+   {
+    "file": "001.png",
+    "answer": "LIME_WOOL",
+    "text": "LIME_WOOL",
+    "roi": null
+   },
+   {
+    "file": "101.png",
+    "answer": "LIME_WOOL",
+    "text": "LIME_WOOL",
+    "roi": null
+   },
+   {
+    "file": "201.png",
+    "answer": "LIME_WOOL",
+    "text": "LIME_WOOL",
+    "roi": null
+   },
+   {
+    "file": "300.png",
+    "answer": "LIME_WOOL",
+    "text": "LIME_WOOL",
+    "roi": null
+   },
+   {
+    "file": "400.png",
+    "answer": "LIME_WOOL",
+    "text": "LIME_WOOL",
+    "roi": null
+   },
+   {
+    "file": "500.png",
+    "answer": "LIME_WOOL",
+    "text": "LIME_WOOL",
+    "roi": null
+   }
+  ]
+ },
+ {
+  "type": "FeelingAlive0/AdvancedCaptcha/button",
+  "group": "C",
+  "tree": "out",
+  "samples": 500,
+  "with_band": 500,
+  "canvas": "730x84",
+  "source": "feelingalive.advancedcaptcha.captcha.ButtonCaptcha#showCaptcha",
+  "solver": "18-27 символов",
+  "examples": [
+   {
+    "file": "001.png",
+    "answer": "[PressThis] in pink color",
+    "text": "[PressThis] in pink color",
+    "roi": [
+     230,
+     11,
+     208,
+     20
+    ]
+   },
+   {
+    "file": "101.png",
+    "answer": "[Touch] in black color",
+    "text": "[Touch] in black color",
+    "roi": [
+     230,
+     11,
+     184,
+     20
+    ]
+   },
+   {
+    "file": "201.png",
+    "answer": "[HitNow] in red color",
+    "text": "[HitNow] in red color",
+    "roi": [
+     230,
+     11,
+     176,
+     20
+    ]
+   },
+   {
+    "file": "300.png",
+    "answer": "[ClickMe] in black color",
+    "text": "[ClickMe] in black color",
+    "roi": [
+     230,
+     11,
+     200,
+     20
+    ]
+   },
+   {
+    "file": "400.png",
+    "answer": "[Hit] in green color",
+    "text": "[Hit] in green color",
+    "roi": [
+     230,
+     11,
+     168,
+     20
+    ]
+   },
+   {
+    "file": "500.png",
+    "answer": "[SelectThat] in green color",
+    "text": "[SelectThat] in green color",
+    "roi": [
+     230,
+     11,
+     224,
+     20
+    ]
+   }
+  ]
+ },
+ {
+  "type": "FeelingAlive0/AdvancedCaptcha/math",
+  "group": "B",
+  "tree": "out",
+  "samples": 500,
+  "with_band": 500,
+  "canvas": "370x84",
+  "source": "feelingalive.advancedcaptcha.captcha.MathCaptcha#showCaptcha",
+  "solver": "посчитать выражение",
+  "examples": [
+   {
+    "file": "001.png",
+    "answer": "21",
+    "text": "20 + 1",
+    "roi": [
+     231,
+     10,
+     54,
+     21
+    ]
+   },
+   {
+    "file": "101.png",
+    "answer": "234",
+    "text": "18 * 13",
+    "roi": [
+     231,
+     10,
+     63,
+     21
+    ]
+   },
+   {
+    "file": "201.png",
+    "answer": "11",
+    "text": "2 + 9",
+    "roi": [
+     231,
+     10,
+     45,
+     21
+    ]
+   },
+   {
+    "file": "300.png",
+    "answer": "42",
+    "text": "6 * 7",
+    "roi": [
+     231,
+     10,
+     45,
+     21
+    ]
+   },
+   {
+    "file": "400.png",
+    "answer": "77",
+    "text": "11 * 7",
+    "roi": [
+     231,
+     10,
+     54,
+     21
+    ]
+   },
+   {
+    "file": "500.png",
+    "answer": "0",
+    "text": "7 - 7",
+    "roi": [
+     231,
+     10,
+     45,
+     21
+    ]
+   }
+  ]
+ },
+ {
+  "type": "GalleryCaptcha/ru-numberword",
+  "group": "B",
+  "tree": "out_ru",
+  "samples": 500,
+  "with_band": 500,
+  "canvas": "250x150",
+  "source": "GalleryCaptcha/ru-numberword: clean-room reconstruction of a gallery-style captcha family, measured from reference scree",
+  "solver": "русские слова -> цифры",
+  "examples": [
+   {
+    "file": "001.png",
+    "answer": "578",
+    "text": "пятьсот семьдесят восемь",
+    "roi": [
+     8,
+     40,
+     207,
+     83
+    ]
+   },
+   {
+    "file": "101.png",
+    "answer": "371",
+    "text": "триста семьдесят один",
+    "roi": [
+     8,
+     40,
+     207,
+     79
+    ]
+   },
+   {
+    "file": "201.png",
+    "answer": "788",
+    "text": "семьсот восемьдесят восемь",
+    "roi": [
+     8,
+     40,
+     242,
+     109
+    ]
+   },
+   {
+    "file": "300.png",
+    "answer": "391",
+    "text": "триста девяносто один",
+    "roi": [
+     8,
+     42,
+     207,
+     79
+    ]
+   },
+   {
+    "file": "400.png",
+    "answer": "753",
+    "text": "семьсот пятьдесят три",
+    "roi": [
+     8,
+     40,
+     207,
+     81
+    ]
+   },
+   {
+    "file": "500.png",
+    "answer": "845",
+    "text": "восемьсот сорок пять",
+    "roi": [
+     8,
+     40,
+     207,
+     75
+    ]
+   }
+  ]
+ },
+ {
+  "type": "GalleryCaptcha/ru-numberword-caption",
+  "group": "B",
+  "tree": "out_ru",
+  "samples": 500,
+  "with_band": 500,
+  "canvas": "250x150",
+  "source": "GalleryCaptcha/ru-numberword: clean-room reconstruction of a gallery-style captcha family, measured from reference scree",
+  "solver": "русские слова -> цифры",
+  "examples": [
+   {
+    "file": "001.png",
+    "answer": "384",
+    "text": "триста восемьдесят четыре",
+    "roi": [
+     8,
+     41,
+     242,
+     86
+    ]
+   },
+   {
+    "file": "101.png",
+    "answer": "944",
+    "text": "девятьсот сорок четыре",
+    "roi": [
+     8,
+     40,
+     207,
+     84
+    ]
+   },
+   {
+    "file": "201.png",
+    "answer": "207",
+    "text": "двести семь",
+    "roi": [
+     8,
+     40,
+     139,
+     57
+    ]
+   },
+   {
+    "file": "300.png",
+    "answer": "102",
+    "text": "сто два",
+    "roi": [
+     8,
+     41,
+     66,
+     53
+    ]
+   },
+   {
+    "file": "400.png",
+    "answer": "554",
+    "text": "пятьсот пятьдесят четыре",
+    "roi": [
+     8,
+     46,
+     207,
+     81
+    ]
+   },
+   {
+    "file": "500.png",
+    "answer": "401",
+    "text": "четыреста один",
+    "roi": [
+     8,
+     40,
+     209,
+     56
+    ]
+   }
+  ]
+ },
+ {
+  "type": "GalleryCaptcha/ru-object-swatch",
+  "group": "C",
+  "tree": "out_ru",
+  "samples": 500,
+  "with_band": 0,
+  "canvas": "250x150",
+  "source": "GalleryCaptcha/ru-object-swatch: clean-room reconstruction of the object-grid captcha family, measured from reference sc",
+  "solver": "ответ - название цвета",
+  "examples": [
+   {
+    "file": "001.png",
+    "answer": "красный",
+    "text": "красный",
+    "roi": null
+   },
+   {
+    "file": "101.png",
+    "answer": "зелёный",
+    "text": "зелёный",
+    "roi": null
+   },
+   {
+    "file": "201.png",
+    "answer": "белый",
+    "text": "белый",
+    "roi": null
+   },
+   {
+    "file": "300.png",
+    "answer": "зелёный",
+    "text": "зелёный",
+    "roi": null
+   },
+   {
+    "file": "400.png",
+    "answer": "зелёный",
+    "text": "зелёный",
+    "roi": null
+   },
+   {
+    "file": "500.png",
+    "answer": "белый",
+    "text": "белый",
+    "roi": null
+   }
+  ]
+ },
+ {
+  "type": "GalleryCaptcha/ru-symbols",
+  "group": "A",
+  "tree": "out_ru",
+  "samples": 500,
+  "with_band": 500,
+  "canvas": "250x150",
+  "source": "GalleryCaptcha/ru-symbols: clean-room reconstruction of a gallery-style captcha family, measured from reference screensh",
+  "solver": null,
+  "examples": [
+   {
+    "file": "001.png",
+    "answer": "5МП",
+    "text": "5МП",
+    "roi": [
+     37,
+     36,
+     180,
+     88
+    ]
+   },
+   {
+    "file": "101.png",
+    "answer": "0ФП",
+    "text": "0ФП",
+    "roi": [
+     35,
+     23,
+     189,
+     97
+    ]
+   },
+   {
+    "file": "201.png",
+    "answer": "ЛДХ",
+    "text": "ЛДХ",
+    "roi": [
+     37,
+     26,
+     178,
+     101
+    ]
+   },
+   {
+    "file": "300.png",
+    "answer": "1Т5",
+    "text": "1Т5",
+    "roi": [
+     35,
+     23,
+     166,
+     96
+    ]
+   },
+   {
+    "file": "400.png",
+    "answer": "ДЕУ",
+    "text": "ДЕУ",
+    "roi": [
+     35,
+     32,
+     186,
+     95
+    ]
+   },
+   {
+    "file": "500.png",
+    "answer": "2АР",
+    "text": "2АР",
+    "roi": [
+     39,
+     26,
+     170,
+     95
+    ]
+   }
+  ]
+ },
+ {
+  "type": "GalleryCaptcha/ru-web",
+  "group": "A",
+  "tree": "out_ru",
+  "samples": 500,
+  "with_band": 500,
+  "canvas": "150x90",
+  "source": "GalleryCaptcha/ru-web: clean-room reconstruction of the generic web-captcha family, measured from reference screenshots;",
+  "solver": null,
+  "examples": [
+   {
+    "file": "001.png",
+    "answer": "DdtOv",
+    "text": "DdtOv",
+    "roi": [
+     14,
+     20,
+     123,
+     50
+    ]
+   },
+   {
+    "file": "101.png",
+    "answer": "6OU3q",
+    "text": "6OU3q",
+    "roi": [
+     16,
+     18,
+     119,
+     51
+    ]
+   },
+   {
+    "file": "201.png",
+    "answer": "rd6SD",
+    "text": "rd6SD",
+    "roi": [
+     16,
+     18,
+     118,
+     54
+    ]
+   },
+   {
+    "file": "300.png",
+    "answer": "Dlhf1",
+    "text": "Dlhf1",
+    "roi": [
+     32,
+     20,
+     87,
+     46
+    ]
+   },
+   {
+    "file": "400.png",
+    "answer": "jqru4",
+    "text": "jqru4",
+    "roi": [
+     40,
+     24,
+     71,
+     39
+    ]
+   },
+   {
+    "file": "500.png",
+    "answer": "9q5Ax",
+    "text": "9q5Ax",
+    "roi": [
+     28,
+     24,
+     95,
+     42
+    ]
+   }
+  ]
+ },
+ {
+  "type": "InstantlyMoist/Captcha/textcaptcha",
+  "group": "A",
+  "tree": "out",
+  "samples": 500,
+  "with_band": 0,
+  "canvas": "128x128",
+  "source": "me.kyllian.captcha.spigot.captchas.TextCaptcha",
+  "solver": null,
+  "examples": [
+   {
+    "file": "001.png",
+    "answer": "qnspj",
+    "text": "qnspj",
+    "roi": null
+   },
+   {
+    "file": "101.png",
+    "answer": "igaat",
+    "text": "igaat",
+    "roi": null
+   },
+   {
+    "file": "201.png",
+    "answer": "bspkr",
+    "text": "bspkr",
+    "roi": null
+   },
+   {
+    "file": "300.png",
+    "answer": "hktst",
+    "text": "hktst",
+    "roi": null
+   },
+   {
+    "file": "400.png",
+    "answer": "hlife",
+    "text": "hlife",
+    "roi": null
+   },
+   {
+    "file": "500.png",
+    "answer": "tbgpz",
+    "text": "tbgpz",
+    "roi": null
+   }
+  ]
+ },
+ {
+  "type": "JSH32/Minecaptcha/map",
+  "group": "A",
+  "tree": "out",
+  "samples": 500,
+  "with_band": 500,
+  "canvas": "130x130",
+  "source": "riku32.captcha.player.CaptchaPlayer#render",
+  "solver": null,
+  "examples": [
+   {
+    "file": "001.png",
+    "answer": "HClf",
+    "text": "HClf",
+    "roi": [
+     34,
+     77,
+     62,
+     35
+    ]
+   },
+   {
+    "file": "101.png",
+    "answer": "xXux",
+    "text": "xXux",
+    "roi": [
+     29,
+     77,
+     72,
+     35
+    ]
+   },
+   {
+    "file": "201.png",
+    "answer": "1tro",
+    "text": "1tro",
+    "roi": [
+     36,
+     77,
+     57,
+     35
+    ]
+   },
+   {
+    "file": "300.png",
+    "answer": "AJOs",
+    "text": "AJOs",
+    "roi": [
+     26,
+     77,
+     78,
+     35
+    ]
+   },
+   {
+    "file": "400.png",
+    "answer": "4yzR",
+    "text": "4yzR",
+    "roi": [
+     30,
+     77,
+     70,
+     35
+    ]
+   },
+   {
+    "file": "500.png",
+    "answer": "MN5y",
+    "text": "MN5y",
+    "roi": [
+     25,
+     77,
+     80,
+     35
+    ]
+   }
+  ]
+ },
+ {
+  "type": "Joey61021/captcha/colorgui",
+  "group": "C",
+  "tree": "out",
+  "samples": 500,
+  "with_band": 500,
+  "canvas": "186x104",
+  "source": "com.captcha.plugin.services.CaptchaService#gui",
+  "solver": "ответ - название цвета",
+  "examples": [
+   {
+    "file": "001.png",
+    "answer": "Pink",
+    "text": "Pink",
+    "roi": [
+     145,
+     3,
+     28,
+     17
+    ]
+   },
+   {
+    "file": "101.png",
+    "answer": "Yellow",
+    "text": "Yellow",
+    "roi": [
+     126,
+     5,
+     36,
+     14
+    ]
+   },
+   {
+    "file": "201.png",
+    "answer": "Red",
+    "text": "Red",
+    "roi": [
+     145,
+     3,
+     21,
+     17
+    ]
+   },
+   {
+    "file": "300.png",
+    "answer": "Red",
+    "text": "Red",
+    "roi": [
+     145,
+     3,
+     21,
+     17
+    ]
+   },
+   {
+    "file": "400.png",
+    "answer": "Pink",
+    "text": "Pink",
+    "roi": [
+     145,
+     3,
+     28,
+     17
+    ]
+   },
+   {
+    "file": "500.png",
+    "answer": "Blue",
+    "text": "Blue",
+    "roi": [
+     145,
+     3,
+     28,
+     17
+    ]
+   }
+  ]
+ },
+ {
+  "type": "LagBug/XProtect/code",
+  "group": "A",
+  "tree": "out",
+  "samples": 500,
+  "with_band": 0,
+  "canvas": "130x130",
+  "source": "me.lagbug.xprotect.spigot.captchas.Code#execute",
+  "solver": null,
+  "examples": [
+   {
+    "file": "001.png",
+    "answer": "g5vyu3",
+    "text": "g5vyu3",
+    "roi": null
+   },
+   {
+    "file": "101.png",
+    "answer": "ud9do2",
+    "text": "ud9do2",
+    "roi": null
+   },
+   {
+    "file": "201.png",
+    "answer": "l1nTTk",
+    "text": "l1nTTk",
+    "roi": null
+   },
+   {
+    "file": "300.png",
+    "answer": "EsnaIU",
+    "text": "EsnaIU",
+    "roi": null
+   },
+   {
+    "file": "400.png",
+    "answer": "xaQlrs",
+    "text": "xaQlrs",
+    "roi": null
+   },
+   {
+    "file": "500.png",
+    "answer": "QE1YQy",
+    "text": "QE1YQy",
+    "roi": null
+   }
+  ]
+ },
+ {
+  "type": "LagBug/XProtect/color",
+  "group": "C",
+  "tree": "out",
+  "samples": 500,
+  "with_band": 0,
+  "canvas": "420x136",
+  "source": "me.lagbug.xprotect.spigot.captchas.Color#execute",
+  "solver": "ответ - название цвета",
+  "examples": [
+   {
+    "file": "001.png",
+    "answer": "green",
+    "text": "green",
+    "roi": null
+   },
+   {
+    "file": "101.png",
+    "answer": "yellow",
+    "text": "yellow",
+    "roi": null
+   },
+   {
+    "file": "201.png",
+    "answer": "purple",
+    "text": "purple",
+    "roi": null
+   },
+   {
+    "file": "300.png",
+    "answer": "yellow",
+    "text": "yellow",
+    "roi": null
+   },
+   {
+    "file": "400.png",
+    "answer": "green",
+    "text": "green",
+    "roi": null
+   },
+   {
+    "file": "500.png",
+    "answer": "black",
+    "text": "black",
+    "roi": null
+   }
+  ]
+ },
+ {
+  "type": "LagBug/XProtect/different",
+  "group": "C",
+  "tree": "out",
+  "samples": 500,
+  "with_band": 0,
+  "canvas": "398x180",
+  "source": "me.lagbug.xprotect.spigot.captchas.Different#execute",
+  "solver": "константный ответ",
+  "examples": [
+   {
+    "file": "001.png",
+    "answer": "EMERALD_BLOCK",
+    "text": "EMERALD_BLOCK",
+    "roi": null
+   },
+   {
+    "file": "101.png",
+    "answer": "EMERALD_BLOCK",
+    "text": "EMERALD_BLOCK",
+    "roi": null
+   },
+   {
+    "file": "201.png",
+    "answer": "EMERALD_BLOCK",
+    "text": "EMERALD_BLOCK",
+    "roi": null
+   },
+   {
+    "file": "300.png",
+    "answer": "EMERALD_BLOCK",
+    "text": "EMERALD_BLOCK",
+    "roi": null
+   },
+   {
+    "file": "400.png",
+    "answer": "EMERALD_BLOCK",
+    "text": "EMERALD_BLOCK",
+    "roi": null
+   },
+   {
+    "file": "500.png",
+    "answer": "EMERALD_BLOCK",
+    "text": "EMERALD_BLOCK",
+    "roi": null
+   }
+  ]
+ },
+ {
+  "type": "LagBug/XProtect/drop",
+  "group": "C",
+  "tree": "out",
+  "samples": 500,
+  "with_band": 500,
+  "canvas": "590x180",
+  "source": "me.lagbug.xprotect.spigot.captchas.Drop#execute",
+  "solver": "константный ответ",
+  "examples": [
+   {
+    "file": "001.png",
+    "answer": "drop",
+    "text": "drop",
+    "roi": [
+     150,
+     97,
+     32,
+     20
+    ]
+   },
+   {
+    "file": "101.png",
+    "answer": "drop",
+    "text": "drop",
+    "roi": [
+     150,
+     75,
+     32,
+     20
+    ]
+   },
+   {
+    "file": "201.png",
+    "answer": "drop",
+    "text": "drop",
+    "roi": [
+     150,
+     53,
+     32,
+     20
+    ]
+   },
+   {
+    "file": "300.png",
+    "answer": "drop",
+    "text": "drop",
+    "roi": [
+     150,
+     53,
+     32,
+     20
+    ]
+   },
+   {
+    "file": "400.png",
+    "answer": "drop",
+    "text": "drop",
+    "roi": [
+     150,
+     97,
+     32,
+     20
+    ]
+   },
+   {
+    "file": "500.png",
+    "answer": "drop",
+    "text": "drop",
+    "roi": [
+     150,
+     53,
+     32,
+     20
+    ]
+   }
+  ]
+ },
+ {
+  "type": "LagBug/XProtect/equation",
+  "group": "B",
+  "tree": "out",
+  "samples": 500,
+  "with_band": 500,
+  "canvas": "478x114",
+  "source": "me.lagbug.xprotect.spigot.captchas.Equation#execute",
+  "solver": "посчитать выражение",
+  "examples": [
+   {
+    "file": "001.png",
+    "answer": "16",
+    "text": "6 + 10",
+    "roi": [
+     390,
+     75,
+     48,
+     20
+    ]
+   },
+   {
+    "file": "101.png",
+    "answer": "10",
+    "text": "3 + 7",
+    "roi": [
+     390,
+     53,
+     40,
+     20
+    ]
+   },
+   {
+    "file": "201.png",
+    "answer": "23",
+    "text": "8 + 15",
+    "roi": [
+     390,
+     75,
+     48,
+     20
+    ]
+   },
+   {
+    "file": "300.png",
+    "answer": "10",
+    "text": "11 - 1",
+    "roi": [
+     390,
+     97,
+     48,
+     20
+    ]
+   },
+   {
+    "file": "400.png",
+    "answer": "25",
+    "text": "11 + 14",
+    "roi": [
+     390,
+     53,
+     56,
+     20
+    ]
+   },
+   {
+    "file": "500.png",
+    "answer": "4",
+    "text": "7 - 3",
+    "roi": [
+     390,
+     53,
+     40,
+     20
+    ]
+   }
+  ]
+ },
+ {
+  "type": "LagBug/XProtect/gui",
+  "group": "B",
+  "tree": "out",
+  "samples": 500,
+  "with_band": 500,
+  "canvas": "390x260",
+  "source": "me.lagbug.xprotect.spigot.captchas.Gui#execute",
+  "solver": "строка 3-20 символов",
+  "examples": [
+   {
+    "file": "001.png",
+    "answer": "Purpur Block",
+    "text": "Purpur Block",
+    "roi": [
+     254,
+     97,
+     96,
+     20
+    ]
+   },
+   {
+    "file": "101.png",
+    "answer": "Emerald Ore",
+    "text": "Emerald Ore",
+    "roi": [
+     254,
+     97,
+     88,
+     20
+    ]
+   },
+   {
+    "file": "201.png",
+    "answer": "Bookshelf",
+    "text": "Bookshelf",
+    "roi": [
+     254,
+     53,
+     72,
+     20
+    ]
+   },
+   {
+    "file": "300.png",
+    "answer": "Bone Block",
+    "text": "Bone Block",
+    "roi": [
+     254,
+     97,
+     80,
+     20
+    ]
+   },
+   {
+    "file": "400.png",
+    "answer": "Diamond Block",
+    "text": "Diamond Block",
+    "roi": [
+     254,
+     75,
+     104,
+     20
+    ]
+   },
+   {
+    "file": "500.png",
+    "answer": "Emerald Block",
+    "text": "Emerald Block",
+    "roi": [
+     254,
+     97,
+     104,
+     20
+    ]
+   }
+  ]
+ },
+ {
+  "type": "LagBug/XProtect/jump",
+  "group": "C",
+  "tree": "out",
+  "samples": 500,
+  "with_band": 500,
+  "canvas": "430x190",
+  "source": "me.lagbug.xprotect.spigot.captchas.Jump#execute",
+  "solver": "константный ответ",
+  "examples": [
+   {
+    "file": "001.png",
+    "answer": "jump",
+    "text": "jump",
+    "roi": [
+     150,
+     97,
+     32,
+     20
+    ]
+   },
+   {
+    "file": "101.png",
+    "answer": "jump",
+    "text": "jump",
+    "roi": [
+     150,
+     97,
+     32,
+     20
+    ]
+   },
+   {
+    "file": "201.png",
+    "answer": "jump",
+    "text": "jump",
+    "roi": [
+     150,
+     53,
+     32,
+     20
+    ]
+   },
+   {
+    "file": "300.png",
+    "answer": "jump",
+    "text": "jump",
+    "roi": [
+     150,
+     97,
+     32,
+     20
+    ]
+   },
+   {
+    "file": "400.png",
+    "answer": "jump",
+    "text": "jump",
+    "roi": [
+     150,
+     97,
+     32,
+     20
+    ]
+   },
+   {
+    "file": "500.png",
+    "answer": "jump",
+    "text": "jump",
+    "roi": [
+     150,
+     97,
+     32,
+     20
+    ]
+   }
+  ]
+ },
+ {
+  "type": "LagBug/XProtect/map",
+  "group": "A",
+  "tree": "out",
+  "samples": 500,
+  "with_band": 0,
+  "canvas": "130x130",
+  "source": "me.lagbug.xprotect.spigot.captchas.Map#generateCaptcha",
+  "solver": null,
+  "examples": [
+   {
+    "file": "001.png",
+    "answer": "k1VIUF",
+    "text": "k1VIUF",
+    "roi": null
+   },
+   {
+    "file": "101.png",
+    "answer": "kxyxZB",
+    "text": "kxyxZB",
+    "roi": null
+   },
+   {
+    "file": "201.png",
+    "answer": "S7X3v6",
+    "text": "S7X3v6",
+    "roi": null
+   },
+   {
+    "file": "300.png",
+    "answer": "Rn9tCj",
+    "text": "Rn9tCj",
+    "roi": null
+   },
+   {
+    "file": "400.png",
+    "answer": "ynqEnm",
+    "text": "ynqEnm",
+    "roi": null
+   },
+   {
+    "file": "500.png",
+    "answer": "i8yByj",
+    "text": "i8yByj",
+    "roi": null
+   }
+  ]
+ },
+ {
+  "type": "LagBug/XProtect/picture",
+  "group": "A",
+  "tree": "out",
+  "samples": 500,
+  "with_band": 0,
+  "canvas": "114x174",
+  "source": "me.lagbug.xprotect.spigot.captchas.Picture#execute",
+  "solver": null,
+  "examples": [
+   {
+    "file": "001.png",
+    "answer": "fish",
+    "text": "fish",
+    "roi": null
+   },
+   {
+    "file": "101.png",
+    "answer": "door",
+    "text": "door",
+    "roi": null
+   },
+   {
+    "file": "201.png",
+    "answer": "book",
+    "text": "book",
+    "roi": null
+   },
+   {
+    "file": "300.png",
+    "answer": "fish",
+    "text": "fish",
+    "roi": null
+   },
+   {
+    "file": "400.png",
+    "answer": "car",
+    "text": "car",
+    "roi": null
+   },
+   {
+    "file": "500.png",
+    "answer": "tree",
+    "text": "tree",
+    "roi": null
+   }
+  ]
+ },
+ {
+  "type": "LagBug/XProtect/reverse",
+  "group": "B",
+  "tree": "out",
+  "samples": 500,
+  "with_band": 500,
+  "canvas": "582x114",
+  "source": "me.lagbug.xprotect.spigot.captchas.Reverse#execute",
+  "solver": "развернуть строку",
+  "examples": [
+   {
+    "file": "001.png",
+    "answer": "8wIsZg",
+    "text": "gZsIw8",
+    "roi": [
+     494,
+     75,
+     48,
+     20
+    ]
+   },
+   {
+    "file": "101.png",
+    "answer": "AkX2np",
+    "text": "pn2XkA",
+    "roi": [
+     494,
+     97,
+     48,
+     20
+    ]
+   },
+   {
+    "file": "201.png",
+    "answer": "nGxh2z",
+    "text": "z2hxGn",
+    "roi": [
+     494,
+     97,
+     48,
+     20
+    ]
+   },
+   {
+    "file": "300.png",
+    "answer": "mBKnkF",
+    "text": "FknKBm",
+    "roi": [
+     494,
+     75,
+     48,
+     20
+    ]
+   },
+   {
+    "file": "400.png",
+    "answer": "buvkXx",
+    "text": "xXkvub",
+    "roi": [
+     494,
+     97,
+     48,
+     20
+    ]
+   },
+   {
+    "file": "500.png",
+    "answer": "Fnb2cM",
+    "text": "Mc2bnF",
+    "roi": [
+     494,
+     75,
+     48,
+     20
+    ]
+   }
+  ]
+ },
+ {
+  "type": "LagBug/XProtect/slot",
+  "group": "C",
+  "tree": "out",
+  "samples": 500,
+  "with_band": 500,
+  "canvas": "470x161",
+  "source": "me.lagbug.xprotect.spigot.captchas.Slot#execute",
+  "solver": "ответ - номер слота",
+  "examples": [
+   {
+    "file": "001.png",
+    "answer": "8",
+    "text": "8",
+    "roi": [
+     246,
+     75,
+     8,
+     20
+    ]
+   },
+   {
+    "file": "101.png",
+    "answer": "6",
+    "text": "6",
+    "roi": [
+     246,
+     75,
+     8,
+     20
+    ]
+   },
+   {
+    "file": "201.png",
+    "answer": "6",
+    "text": "6",
+    "roi": [
+     246,
+     97,
+     8,
+     20
+    ]
+   },
+   {
+    "file": "300.png",
+    "answer": "7",
+    "text": "7",
+    "roi": [
+     246,
+     97,
+     8,
+     20
+    ]
+   },
+   {
+    "file": "400.png",
+    "answer": "7",
+    "text": "7",
+    "roi": [
+     246,
+     75,
+     8,
+     20
+    ]
+   },
+   {
+    "file": "500.png",
+    "answer": "8",
+    "text": "8",
+    "roi": [
+     246,
+     53,
+     8,
+     20
+    ]
+   }
+  ]
+ },
+ {
+  "type": "LagBug/XProtect/sneak",
+  "group": "C",
+  "tree": "out",
+  "samples": 500,
+  "with_band": 500,
+  "canvas": "438x168",
+  "source": "me.lagbug.xprotect.spigot.captchas.Sneak#execute",
+  "solver": "константный ответ",
+  "examples": [
+   {
+    "file": "001.png",
+    "answer": "sneak",
+    "text": "sneak",
+    "roi": [
+     150,
+     75,
+     40,
+     20
+    ]
+   },
+   {
+    "file": "101.png",
+    "answer": "sneak",
+    "text": "sneak",
+    "roi": [
+     150,
+     97,
+     40,
+     20
+    ]
+   },
+   {
+    "file": "201.png",
+    "answer": "sneak",
+    "text": "sneak",
+    "roi": [
+     150,
+     97,
+     40,
+     20
+    ]
+   },
+   {
+    "file": "300.png",
+    "answer": "sneak",
+    "text": "sneak",
+    "roi": [
+     150,
+     53,
+     40,
+     20
+    ]
+   },
+   {
+    "file": "400.png",
+    "answer": "sneak",
+    "text": "sneak",
+    "roi": [
+     150,
+     53,
+     40,
+     20
+    ]
+   },
+   {
+    "file": "500.png",
+    "answer": "sneak",
+    "text": "sneak",
+    "roi": [
+     150,
+     97,
+     40,
+     20
+    ]
+   }
+  ]
+ },
+ {
+  "type": "LimboFilter/framed2x2",
+  "group": "C",
+  "tree": "out_ru",
+  "samples": 500,
+  "with_band": 0,
+  "canvas": "256x256",
+  "source": "net.elytrium.limbofilter.captcha.painter.CaptchaPainter#drawCaptcha; net.elytrium.limbofilter.captcha.CaptchaGenerator#r",
+  "solver": "ответ в повёрнутых рамках",
+  "examples": [
+   {
+    "file": "001.png",
+    "answer": "406",
+    "text": "четыреста шесть",
+    "roi": null
+   },
+   {
+    "file": "101.png",
+    "answer": "916",
+    "text": "девятьсот шестнадцать",
+    "roi": null
+   },
+   {
+    "file": "201.png",
+    "answer": "455",
+    "text": "четыреста пятьдесят пять",
+    "roi": null
+   },
+   {
+    "file": "300.png",
+    "answer": "884",
+    "text": "восемьсот восемьдесят четыре",
+    "roi": null
+   },
+   {
+    "file": "400.png",
+    "answer": "604",
+    "text": "шестьсот четыре",
+    "roi": null
+   },
+   {
+    "file": "500.png",
+    "answer": "515",
+    "text": "пятьсот пятнадцать",
+    "roi": null
+   }
+  ]
+ },
+ {
+  "type": "LimboFilter/framed3x3",
+  "group": "C",
+  "tree": "out_ru",
+  "samples": 500,
+  "with_band": 0,
+  "canvas": "384x384",
+  "source": "net.elytrium.limbofilter.captcha.painter.CaptchaPainter#drawCaptcha; net.elytrium.limbofilter.captcha.CaptchaGenerator#r",
+  "solver": "ответ в повёрнутых рамках",
+  "examples": [
+   {
+    "file": "001.png",
+    "answer": "536",
+    "text": "пятьсот тридцать шесть",
+    "roi": null
+   },
+   {
+    "file": "101.png",
+    "answer": "789",
+    "text": "семьсот восемьдесят девять",
+    "roi": null
+   },
+   {
+    "file": "201.png",
+    "answer": "752",
+    "text": "семьсот пятьдесят два",
+    "roi": null
+   },
+   {
+    "file": "300.png",
+    "answer": "115",
+    "text": "сто пятнадцать",
+    "roi": null
+   },
+   {
+    "file": "400.png",
+    "answer": "920",
+    "text": "девятьсот двадцать",
+    "roi": null
+   },
+   {
+    "file": "500.png",
+    "answer": "292",
+    "text": "двести девяносто два",
+    "roi": null
+   }
+  ]
+ },
+ {
+  "type": "LimboFilter/map",
+  "group": "B",
+  "tree": "out_ru",
+  "samples": 500,
+  "with_band": 500,
+  "canvas": "128x128",
+  "source": "net.elytrium.limbofilter.captcha.painter.CaptchaPainter#drawCaptcha; net.elytrium.limbofilter.captcha.CaptchaGenerator#r",
+  "solver": "русские слова -> цифры",
+  "examples": [
+   {
+    "file": "001.png",
+    "answer": "481",
+    "text": "четыреста восемьдесят один",
+    "roi": [
+     4,
+     0,
+     124,
+     128
+    ]
+   },
+   {
+    "file": "101.png",
+    "answer": "801",
+    "text": "восемьсот один",
+    "roi": [
+     4,
+     34,
+     106,
+     42
+    ]
+   },
+   {
+    "file": "201.png",
+    "answer": "250",
+    "text": "двести пятьдесят",
+    "roi": [
+     4,
+     34,
+     106,
+     48
+    ]
+   },
+   {
+    "file": "300.png",
+    "answer": "844",
+    "text": "восемьсот сорок четыре",
+    "roi": [
+     4,
+     34,
+     106,
+     76
+    ]
+   },
+   {
+    "file": "400.png",
+    "answer": "616",
+    "text": "шестьсот шестнадцать",
+    "roi": [
+     4,
+     34,
+     124,
+     48
+    ]
+   },
+   {
+    "file": "500.png",
+    "answer": "994",
+    "text": "девятьсот девяносто четыре",
+    "roi": [
+     4,
+     34,
+     106,
+     71
+    ]
+   }
+  ]
+ },
+ {
+  "type": "LimboFilter/symbols",
+  "group": "A",
+  "tree": "out_ru",
+  "samples": 500,
+  "with_band": 500,
+  "canvas": "128x128",
+  "source": "net.elytrium.limbofilter.captcha.painter.CaptchaPainter#drawCaptcha; net.elytrium.limbofilter.captcha.CaptchaGenerator#r",
+  "solver": null,
+  "examples": [
+   {
+    "file": "001.png",
+    "answer": "ШМШ",
+    "text": "ШМШ",
+    "roi": [
+     18,
+     37,
+     98,
+     67
+    ]
+   },
+   {
+    "file": "101.png",
+    "answer": "Е8У",
+    "text": "Е8У",
+    "roi": [
+     20,
+     20,
+     94,
+     90
+    ]
+   },
+   {
+    "file": "201.png",
+    "answer": "ЙЪХ",
+    "text": "ЙЪХ",
+    "roi": [
+     19,
+     20,
+     92,
+     92
+    ]
+   },
+   {
+    "file": "300.png",
+    "answer": "Ц5З",
+    "text": "Ц5З",
+    "roi": [
+     20,
+     22,
+     88,
+     91
+    ]
+   },
+   {
+    "file": "400.png",
+    "answer": "ФНЭ",
+    "text": "ФНЭ",
+    "roi": [
+     18,
+     22,
+     87,
+     65
+    ]
+   },
+   {
+    "file": "500.png",
+    "answer": "ПЗЙ",
+    "text": "ПЗЙ",
+    "roi": [
+     19,
+     23,
+     95,
+     85
+    ]
+   }
+  ]
+ },
+ {
+  "type": "Mrbysco/Captcha/math",
+  "group": "B",
+  "tree": "out",
+  "samples": 500,
+  "with_band": 500,
+  "canvas": "520x560",
+  "source": "MathScreen#changeQuestion",
+  "solver": "посчитать выражение",
+  "examples": [
+   {
+    "file": "001.png",
+    "answer": "122",
+    "text": "71 + 51",
+    "roi": [
+     211,
+     97,
+     35,
+     12
+    ]
+   },
+   {
+    "file": "101.png",
+    "answer": "112",
+    "text": "59 + 53",
+    "roi": [
+     211,
+     97,
+     35,
+     12
+    ]
+   },
+   {
+    "file": "201.png",
+    "answer": "100",
+    "text": "76 + 24",
+    "roi": [
+     211,
+     97,
+     35,
+     12
+    ]
+   },
+   {
+    "file": "300.png",
+    "answer": "101",
+    "text": "61 + 40",
+    "roi": [
+     211,
+     97,
+     35,
+     12
+    ]
+   },
+   {
+    "file": "400.png",
+    "answer": "109",
+    "text": "21 + 88",
+    "roi": [
+     211,
+     97,
+     35,
+     12
+    ]
+   },
+   {
+    "file": "500.png",
+    "answer": "135",
+    "text": "38 + 97",
+    "roi": [
+     211,
+     97,
+     35,
+     12
+    ]
+   }
+  ]
+ },
+ {
+  "type": "Yukun99/Captchas/itemslot",
+  "group": "B",
+  "tree": "out",
+  "samples": 500,
+  "with_band": 500,
+  "canvas": "614x252",
+  "source": "me.yukun.captchas.gui.Captcha",
+  "solver": "-",
+  "examples": [
+   {
+    "file": "001.png",
+    "answer": "Brown Mushroom",
+    "text": "Brown Mushroom",
+    "roi": [
+     280,
+     87,
+     84,
+     14
+    ]
+   },
+   {
+    "file": "101.png",
+    "answer": "Firework Rocket",
+    "text": "Firework Rocket",
+    "roi": [
+     284,
+     131,
+     90,
+     14
+    ]
+   },
+   {
+    "file": "201.png",
+    "answer": "Brick",
+    "text": "Brick",
+    "roi": [
+     302,
+     128,
+     40,
+     18
+    ]
+   },
+   {
+    "file": "300.png",
+    "answer": "Nether Brick Block",
+    "text": "Nether Brick Block",
+    "roi": [
+     275,
+     133,
+     90,
+     12
+    ]
+   },
+   {
+    "file": "400.png",
+    "answer": "Blaze Powder",
+    "text": "Blaze Powder",
+    "roi": [
+     284,
+     109,
+     72,
+     14
+    ]
+   },
+   {
+    "file": "500.png",
+    "answer": "Iron Door",
+    "text": "Iron Door",
+    "roi": [
+     289,
+     85,
+     63,
+     17
+    ]
+   }
+  ]
+ },
+ {
+  "type": "Z4OLLIEZ4/reCaptcha/captchasx",
+  "group": "C",
+  "tree": "out",
+  "samples": 500,
+  "with_band": 500,
+  "canvas": "186x122",
+  "source": "main.olliez4.captcha.CaptchaGUI#send",
+  "solver": "ответ - название цвета",
+  "examples": [
+   {
+    "file": "001.png",
+    "answer": "red",
+    "text": "red",
+    "roi": [
+     124,
+     2,
+     24,
+     18
+    ]
+   },
+   {
+    "file": "101.png",
+    "answer": "purple",
+    "text": "purple",
+    "roi": [
+     124,
+     2,
+     48,
+     18
+    ]
+   },
+   {
+    "file": "201.png",
+    "answer": "brown",
+    "text": "brown",
+    "roi": [
+     124,
+     2,
+     40,
+     18
+    ]
+   },
+   {
+    "file": "300.png",
+    "answer": "orange",
+    "text": "orange",
+    "roi": [
+     124,
+     2,
+     48,
+     18
+    ]
+   },
+   {
+    "file": "400.png",
+    "answer": "yellow",
+    "text": "yellow",
+    "roi": [
+     124,
+     2,
+     48,
+     18
+    ]
+   },
+   {
+    "file": "500.png",
+    "answer": "lime",
+    "text": "lime",
+    "roi": [
+     124,
+     2,
+     32,
+     18
+    ]
+   }
+  ]
+ },
+ {
+  "type": "haq/mapcha/map",
+  "group": "A",
+  "tree": "out",
+  "samples": 500,
+  "with_band": 499,
+  "canvas": "128x128",
+  "source": "dev.affan.mapcha.player.CaptchaPlayer#generateCaptcha",
+  "solver": null,
+  "examples": [
+   {
+    "file": "001.png",
+    "answer": "zPyf",
+    "text": "zPyf",
+    "roi": [
+     23,
+     68,
+     82,
+     46
+    ]
+   },
+   {
+    "file": "101.png",
+    "answer": "gbjW",
+    "text": "gbjW",
+    "roi": [
+     15,
+     68,
+     98,
+     46
+    ]
+   },
+   {
+    "file": "201.png",
+    "answer": "6ASB",
+    "text": "6ASB",
+    "roi": [
+     11,
+     68,
+     105,
+     46
+    ]
+   },
+   {
+    "file": "300.png",
+    "answer": "EYrx",
+    "text": "EYrx",
+    "roi": [
+     19,
+     68,
+     90,
+     46
+    ]
+   },
+   {
+    "file": "400.png",
+    "answer": "ugWP",
+    "text": "ugWP",
+    "roi": [
+     7,
+     68,
+     113,
+     46
+    ]
+   },
+   {
+    "file": "500.png",
+    "answer": "yFwL",
+    "text": "yFwL",
+    "roi": [
+     13,
+     68,
+     101,
+     46
+    ]
+   }
+  ]
+ },
+ {
+  "type": "irootdev/AnBot/captcha",
+  "group": "A",
+  "tree": "out",
+  "samples": 500,
+  "with_band": 0,
+  "canvas": "128x128",
+  "source": "iroot.Main#getCaptcha",
+  "solver": null,
+  "examples": [
+   {
+    "file": "001.png",
+    "answer": "998",
+    "text": "998",
+    "roi": null
+   },
+   {
+    "file": "101.png",
+    "answer": "r4s",
+    "text": "r4s",
+    "roi": null
+   },
+   {
+    "file": "201.png",
+    "answer": "u9o",
+    "text": "u9o",
+    "roi": null
+   },
+   {
+    "file": "300.png",
+    "answer": "764",
+    "text": "764",
+    "roi": null
+   },
+   {
+    "file": "400.png",
+    "answer": "496",
+    "text": "496",
+    "roi": null
+   },
+   {
+    "file": "500.png",
+    "answer": "413",
+    "text": "413",
+    "roi": null
+   }
+  ]
+ },
+ {
+  "type": "jSdCool/minecaptcha/image",
+  "group": "C",
+  "tree": "out",
+  "samples": 500,
+  "with_band": 500,
+  "canvas": "640x398",
+  "source": "org.cbigames.captcha.CaptchaTask#start",
+  "solver": "63-70 символов, нечитаемо",
+  "examples": [
+   {
+    "file": "001.png",
+    "answer": "img2223, img2990, img2721, img2117, img85, img1197, img2061, img442",
+    "text": "img2223, img2990, img2721, img2117, img85, img1197, img2061, img442",
+    "roi": [
+     81,
+     128,
+     490,
+     56
+    ]
+   },
+   {
+    "file": "101.png",
+    "answer": "img1488, img587, img2931, img968, img2207, img2639, img1742, img1052",
+    "text": "img1488, img587, img2931, img968, img2207, img2639, img1742, img1052",
+    "roi": [
+     81,
+     128,
+     490,
+     56
+    ]
+   },
+   {
+    "file": "201.png",
+    "answer": "img736, img881, img1687, img14, img339, img962, img605, img19",
+    "text": "img736, img881, img1687, img14, img339, img962, img605, img19",
+    "roi": [
+     81,
+     128,
+     490,
+     56
+    ]
+   },
+   {
+    "file": "300.png",
+    "answer": "img1973, img578, img210, img1097, img54, img748, img457, img2737",
+    "text": "img1973, img578, img210, img1097, img54, img748, img457, img2737",
+    "roi": [
+     81,
+     128,
+     490,
+     56
+    ]
+   },
+   {
+    "file": "400.png",
+    "answer": "img1642, img371, img902, img1636, img2389, img2939, img2738, img2145",
+    "text": "img1642, img371, img902, img1636, img2389, img2939, img2738, img2145",
+    "roi": [
+     81,
+     128,
+     490,
+     56
+    ]
+   },
+   {
+    "file": "500.png",
+    "answer": "img1587, img1907, img2078, img2584, img786, img115, img2128, img1161",
+    "text": "img1587, img1907, img2078, img2584, img786, img115, img2128, img1161",
+    "roi": [
+     81,
+     128,
+     490,
+     56
+    ]
+   }
+  ]
+ },
+ {
+  "type": "jSdCool/minecaptcha/text",
+  "group": "A",
+  "tree": "out",
+  "samples": 500,
+  "with_band": 500,
+  "canvas": "550x356",
+  "source": "org.cbigames.captcha.CaptchaTask#start",
+  "solver": null,
+  "examples": [
+   {
+    "file": "001.png",
+    "answer": "BhagzUQJ",
+    "text": "BhagzUQJ",
+    "roi": [
+     223,
+     129,
+     104,
+     30
+    ]
+   },
+   {
+    "file": "101.png",
+    "answer": "72pAN46g",
+    "text": "72pAN46g",
+    "roi": [
+     223,
+     129,
+     104,
+     30
+    ]
+   },
+   {
+    "file": "201.png",
+    "answer": "zW0GsgZf",
+    "text": "zW0GsgZf",
+    "roi": [
+     223,
+     129,
+     104,
+     30
+    ]
+   },
+   {
+    "file": "300.png",
+    "answer": "bWM43bXi",
+    "text": "bWM43bXi",
+    "roi": [
+     223,
+     129,
+     104,
+     30
+    ]
+   },
+   {
+    "file": "400.png",
+    "answer": "CYBxjMUK",
+    "text": "CYBxjMUK",
+    "roi": [
+     223,
+     129,
+     104,
+     30
+    ]
+   },
+   {
+    "file": "500.png",
+    "answer": "ZPBrqeB4",
+    "text": "ZPBrqeB4",
+    "roi": [
+     223,
+     129,
+     104,
+     30
+    ]
+   }
+  ]
+ },
+ {
+  "type": "jonesdevelopment/sonar/complex",
+  "group": "A",
+  "tree": "out",
+  "samples": 500,
+  "with_band": 0,
+  "canvas": "128x128",
+  "source": "xyz.jonesdev.sonar.captcha.complex.ComplexCaptchaGenerator#createImage",
+  "solver": null,
+  "examples": [
+   {
+    "file": "001.png",
+    "answer": "pkr",
+    "text": "pkr",
+    "roi": null
+   },
+   {
+    "file": "101.png",
+    "answer": "sxm",
+    "text": "sxm",
+    "roi": null
+   },
+   {
+    "file": "201.png",
+    "answer": "fzaa",
+    "text": "fzaa",
+    "roi": null
+   },
+   {
+    "file": "300.png",
+    "answer": "hah",
+    "text": "hah",
+    "roi": null
+   },
+   {
+    "file": "400.png",
+    "answer": "atb",
+    "text": "atb",
+    "roi": null
+   },
+   {
+    "file": "500.png",
+    "answer": "ayr",
+    "text": "ayr",
+    "roi": null
+   }
+  ]
+ },
+ {
+  "type": "jonesdevelopment/sonar/legacy",
+  "group": "A",
+  "tree": "out",
+  "samples": 500,
+  "with_band": 0,
+  "canvas": "128x128",
+  "source": "xyz.jonesdev.sonar.captcha.legacy.LegacyCaptchaGenerator#createImage",
+  "solver": null,
+  "examples": [
+   {
+    "file": "001.png",
+    "answer": "jdhe",
+    "text": "jdhe",
+    "roi": null
+   },
+   {
+    "file": "101.png",
+    "answer": "eftx",
+    "text": "eftx",
+    "roi": null
+   },
+   {
+    "file": "201.png",
+    "answer": "fkon",
+    "text": "fkon",
+    "roi": null
+   },
+   {
+    "file": "300.png",
+    "answer": "uyr",
+    "text": "uyr",
+    "roi": null
+   },
+   {
+    "file": "400.png",
+    "answer": "oefp",
+    "text": "oefp",
+    "roi": null
+   },
+   {
+    "file": "500.png",
+    "answer": "sta",
+    "text": "sta",
+    "roi": null
+   }
+  ]
+ },
+ {
+  "type": "jonesdevelopment/sonar/standard",
+  "group": "A",
+  "tree": "out",
+  "samples": 500,
+  "with_band": 0,
+  "canvas": "128x128",
+  "source": "xyz.jonesdev.sonar.captcha.StandardCaptchaGenerator#createImage",
+  "solver": null,
+  "examples": [
+   {
+    "file": "001.png",
+    "answer": "beh",
+    "text": "beh",
+    "roi": null
+   },
+   {
+    "file": "101.png",
+    "answer": "srft",
+    "text": "srft",
+    "roi": null
+   },
+   {
+    "file": "201.png",
+    "answer": "yrn",
+    "text": "yrn",
+    "roi": null
+   },
+   {
+    "file": "300.png",
+    "answer": "erbs",
+    "text": "erbs",
+    "roi": null
+   },
+   {
+    "file": "400.png",
+    "answer": "zbpx",
+    "text": "zbpx",
+    "roi": null
+   },
+   {
+    "file": "500.png",
+    "answer": "jyf",
+    "text": "jyf",
+    "roi": null
+   }
+  ]
+ },
+ {
+  "type": "just-captcha/ProstoCaptcha/map",
+  "group": "A",
+  "tree": "out",
+  "samples": 500,
+  "with_band": 500,
+  "canvas": "128x128",
+  "source": "me.prostoac.captcha.CaptchaSessionHandler#renderCaptchaImage",
+  "solver": null,
+  "examples": [
+   {
+    "file": "001.png",
+    "answer": "PWw33f",
+    "text": "PWw33f",
+    "roi": [
+     0,
+     33,
+     128,
+     59
+    ]
+   },
+   {
+    "file": "101.png",
+    "answer": "xD9GDR",
+    "text": "xD9GDR",
+    "roi": [
+     0,
+     33,
+     128,
+     59
+    ]
+   },
+   {
+    "file": "201.png",
+    "answer": "UgKE3s",
+    "text": "UgKE3s",
+    "roi": [
+     0,
+     33,
+     128,
+     59
+    ]
+   },
+   {
+    "file": "300.png",
+    "answer": "2YZqjY",
+    "text": "2YZqjY",
+    "roi": [
+     0,
+     33,
+     128,
+     59
+    ]
+   },
+   {
+    "file": "400.png",
+    "answer": "ybjlcF",
+    "text": "ybjlcF",
+    "roi": [
+     0,
+     33,
+     128,
+     59
+    ]
+   },
+   {
+    "file": "500.png",
+    "answer": "m8rcgT",
+    "text": "m8rcgT",
+    "roi": [
+     0,
+     33,
+     128,
+     59
+    ]
+   }
+  ]
+ },
+ {
+  "type": "laforetbrut/are-you-sure/code",
+  "group": "A",
+  "tree": "out",
+  "samples": 500,
+  "with_band": 500,
+  "canvas": "480x270",
+  "source": "com.vyrriox.areyousure.SureScreen#newCode",
+  "solver": null,
+  "examples": [
+   {
+    "file": "001.png",
+    "answer": "MPFFM5",
+    "text": "MPFFM5",
+    "roi": [
+     186,
+     119,
+     101,
+     18
+    ]
+   },
+   {
+    "file": "101.png",
+    "answer": "FZJUFQ",
+    "text": "FZJUFQ",
+    "roi": [
+     186,
+     119,
+     101,
+     18
+    ]
+   },
+   {
+    "file": "201.png",
+    "answer": "MGHJGS",
+    "text": "MGHJGS",
+    "roi": [
+     186,
+     119,
+     101,
+     18
+    ]
+   },
+   {
+    "file": "300.png",
+    "answer": "BU5GEB",
+    "text": "BU5GEB",
+    "roi": [
+     186,
+     119,
+     101,
+     18
+    ]
+   },
+   {
+    "file": "400.png",
+    "answer": "RCKB5W",
+    "text": "RCKB5W",
+    "roi": [
+     186,
+     119,
+     101,
+     18
+    ]
+   },
+   {
+    "file": "500.png",
+    "answer": "86KYJD",
+    "text": "86KYJD",
+    "roi": [
+     186,
+     119,
+     101,
+     18
+    ]
+   }
+  ]
+ },
+ {
+  "type": "n1zamu/NCaptcha/anvil",
+  "group": "B",
+  "tree": "out",
+  "samples": 500,
+  "with_band": 500,
+  "canvas": "420x150",
+  "source": "wtf.n1zamu.utils.VerifyUtil#verification",
+  "solver": "ответ уже обычными цифрами",
+  "examples": [
+   {
+    "file": "001.png",
+    "answer": "37761",
+    "text": "37761",
+    "roi": [
+     195,
+     132,
+     35,
+     17
+    ]
+   },
+   {
+    "file": "101.png",
+    "answer": "55637",
+    "text": "55637",
+    "roi": [
+     195,
+     132,
+     35,
+     17
+    ]
+   },
+   {
+    "file": "201.png",
+    "answer": "38363",
+    "text": "38363",
+    "roi": [
+     195,
+     132,
+     35,
+     17
+    ]
+   },
+   {
+    "file": "300.png",
+    "answer": "52856",
+    "text": "52856",
+    "roi": [
+     195,
+     132,
+     35,
+     17
+    ]
+   },
+   {
+    "file": "400.png",
+    "answer": "57883",
+    "text": "57883",
+    "roi": [
+     195,
+     132,
+     35,
+     17
+    ]
+   },
+   {
+    "file": "500.png",
+    "answer": "15159",
+    "text": "15159",
+    "roi": [
+     195,
+     132,
+     35,
+     17
+    ]
+   }
+  ]
+ },
+ {
+  "type": "ringoame196-s-mcPlugin/ReproductionCAPTCHA/map",
+  "group": "A",
+  "tree": "out",
+  "samples": 500,
+  "with_band": 500,
+  "canvas": "128x128",
+  "source": "AuthMapManager#makeAuthImage",
+  "solver": null,
+  "examples": [
+   {
+    "file": "001.png",
+    "answer": "61143",
+    "text": "61143",
+    "roi": [
+     8,
+     68,
+     52,
+     28
+    ]
+   },
+   {
+    "file": "101.png",
+    "answer": "59DBA",
+    "text": "59DBA",
+    "roi": [
+     8,
+     68,
+     55,
+     28
+    ]
+   },
+   {
+    "file": "201.png",
+    "answer": "C0540",
+    "text": "C0540",
+    "roi": [
+     8,
+     69,
+     59,
+     27
+    ]
+   },
+   {
+    "file": "300.png",
+    "answer": "72269",
+    "text": "72269",
+    "roi": [
+     8,
+     69,
+     48,
+     27
+    ]
+   },
+   {
+    "file": "400.png",
+    "answer": "FF7F9",
+    "text": "FF7F9",
+    "roi": [
+     8,
+     68,
+     55,
+     28
+    ]
+   },
+   {
+    "file": "500.png",
+    "answer": "53500",
+    "text": "53500",
+    "roi": [
+     8,
+     68,
+     60,
+     28
+    ]
+   }
+  ]
+ }
+]

@@ -6,11 +6,16 @@
 > это **проектная записка, а не измерение**, и `reports/` теперь содержит только измеренные результаты.
 > Относительные ссылки внутри документа поправлены; измеренные числа остались в
 > `reports/TRAINING_MINIMAL_LATIN.md`.
+>
+> **Заметка (2026-10-22): счётчики датасета пересчитаны.** Датасет пересобран
+> (46 типов × 500 = 23 000 PNG), два бага генераторов починены, модель опубликована на
+> Hugging Face. Числа, зависящие от размера датасета, приведены к текущему рендеру;
+> измеренные результаты обучения не тронуты.
 
 **Date:** 2026-10-21 · **Status:** a **design note for the next session**, not a measurement.
 **Measured numbers live in [`reports/TRAINING_MINIMAL_LATIN.md`](TRAINING_MINIMAL_LATIN.md);** this document
 only points at them and proposes the parts that do not exist yet. Every number in the "measured" rows below
-was re-counted from the `labels.jsonl` files in this repository on 2026-10-21; everything else is marked
+was re-counted from the `labels.jsonl` files in this repository on 2026-10-22; everything else is marked
 **proposal** or **not verified**.
 
 ---
@@ -100,9 +105,9 @@ def solve_captcha(png_path, type_id, model, encoder, cfg):
 ## 3. Layer 1 — the cropper
 
 **Measured:** the band is already known for the dataset. In the current tree **29 of the 46 types carry a
-band** (`roi` non-null), 17 do not, and **1 701 of the 4 600 label rows have `roi = null`**
-(re-counted from every `labels.jsonl`; the same figure is in `agents/INDEX.md` §3 and
-`reports/TRAINING_MINIMAL_LATIN.md` §7). The crop itself is 4 lines (`train/captcha_crnn.py:162-168`).
+band** (`roi` non-null), 17 do not, and **8 501 of the 23 000 label rows have `roi = null`**
+(re-counted from every `labels.jsonl` on 2026-10-22; the figure for the older 100-per-type render
+is in `reports/TRAINING_MINIMAL_LATIN.md` §7). The crop itself is 4 lines (`train/captcha_crnn.py:162-168`).
 
 **Proposal — three variants**, in increasing order of cost per plugin:
 
@@ -126,8 +131,8 @@ cheapest accuracy in the whole project**: no training, no data, just a constrain
 | parameter | where it comes from | what it buys |
 |---|---|---|
 | `roi` — the band | the `labels.jsonl` of the type (29 of 46 types) | the recogniser is shown the answer line and nothing else |
-| **alphabet mask** | the characters observed in the type's 100 labels | `BotFilter/map` is digits only; `CaptchaVerifyZ/map` is `0-9A-Z`; `GalleryCaptcha/ru-web` uses upper + lower + digits. Measured per type, below. |
-| **length prior** | the lengths observed in the type's 100 labels | `CaptchaVerifyZ/map` is exactly 5, `GalleryCaptcha/ru-web` is exactly 5, `BotFilter/map` is 4 or 5 |
+| **alphabet mask** | the characters observed in the type's 500 labels | `BotFilter/map` is digits only; `CaptchaVerifyZ/map` is `0-9A-Z`; `GalleryCaptcha/ru-web` uses upper + lower + digits. Measured per type, below. |
+| **length prior** | the lengths observed in the type's 500 labels | `CaptchaVerifyZ/map` is exactly 5, `GalleryCaptcha/ru-web` is exactly 5, `BotFilter/map` is 4 or 5 |
 | **candidate bands** | several bands of the same type, when the answer moves | pick the band whose decode has the highest confidence |
 | **model choice** | the alphabet of the type | Latin model (63 classes) vs Cyrillic model — see the class-count problem in §9 |
 
@@ -139,25 +144,25 @@ one JSON per type. **Proposal** - the script does not exist yet.
 
 ### 4.2 The measured alphabet and length per type
 
-Re-counted from the 4 600 label rows on 2026-10-21. "A" = upper case only, "a" = lower case only,
+Re-counted from the 23 000 label rows on 2026-10-22. "A" = upper case only, "a" = lower case only,
 "Aa" = both, "0" = digits, "+" = other characters (space, `_`, `+`, `-`, `=`).
 
-| type | band | alphabet | length | distinct answers / 100 |
+| type | band | alphabet | length | distinct answers / 500 |
 |---|---|---|---|---|
-| `BotFilter/map` | no | `0` | 4–5 | 100 |
-| `CaptchaVerifyZ/map` | yes | `A0` | 5 | 100 |
-| `GalleryCaptcha/ru-web` | yes | `Aa0` | 5 | 100 |
-| `JSH32/Minecaptcha/map` | yes | `Aa0` | 4 | 100 |
-| `haq/mapcha/map` | yes | `Aa0` | 4 | 100 |
-| `laforetbrut/are-you-sure/code` | yes | `A0` | 6 | 100 |
-| `ringoame196-s-mcPlugin/ReproductionCAPTCHA/map` | yes | `A0` | 5 | 100 |
-| `jSdCool/minecaptcha/text` | yes | `Aa0` | 8 | 100 |
-| `just-captcha/ProstoCaptcha/map` | yes | `Aa0` | 6 | 100 |
-| `n1zamu/NCaptcha/anvil` | yes | `0` | 3–5 | 100 |
-| `LagBug/XProtect/reverse` | yes | `Aa0` | 6 | 100 |
-| `Archy-X/Krypton/map` | yes | `Aa0` | 5 | 100 |
+| `BotFilter/map` | no | `0` | 4–5 | 494 |
+| `CaptchaVerifyZ/map` | yes | `A0` | 5 | 500 |
+| `GalleryCaptcha/ru-web` | yes | `Aa0` | 5 | 500 |
+| `JSH32/Minecaptcha/map` | yes | `Aa0` | 4 | 500 |
+| `haq/mapcha/map` | yes | `Aa0` | 4 | 500 |
+| `laforetbrut/are-you-sure/code` | yes | `A0` | 6 | 500 |
+| `ringoame196-s-mcPlugin/ReproductionCAPTCHA/map` | yes | `A0` | 5 | 500 |
+| `jSdCool/minecaptcha/text` | yes | `Aa0` | 8 | 500 |
+| `just-captcha/ProstoCaptcha/map` | yes | `Aa0` | 6 | 500 |
+| `n1zamu/NCaptcha/anvil` | yes | `0` | 3–5 | 495 |
+| `LagBug/XProtect/reverse` | yes | `Aa0` | 6 | 500 |
+| `Archy-X/Krypton/map` | yes | `Aa0` | 5 | 500 |
 
-A note on `ru-web`: the task statement for this note said "all 62". The **measured** alphabet of its 100
+A note on `ru-web`: the task statement for this note said "all 62". The **measured** alphabet of its 500
 labels is upper + lower + digits; the *model's* charset is the full 62-symbol set
 (`train/captcha_crnn.py:36`). A mask built from the observed alphabet is the tighter of the two, and it is
 what the generator would produce.
@@ -173,12 +178,13 @@ what the generator would produce.
 | reversed | `LagBug/XProtect/reverse` | reverse the string | 1 line |
 | arithmetic | `LagBug/XProtect/equation`, `FeelingAlive0/AdvancedCaptcha/math`, `Mrbysco/Captcha/math` | evaluate the expression (`19 - 11` → `8`) | ~3 lines, **with a whitelist of characters** - never `eval` on untrusted text |
 | Russian number words | `LimboFilter/map`, `GalleryCaptcha/ru-numberword`, `GalleryCaptcha/ru-numberword-caption` | a lexicon of Russian number words → digits | a lexicon of ~40 entries |
-| none | the other 38 types | `text == answer`, nothing to do | 0 lines |
+| none | the other 37 types | `text == answer`, nothing to do | 0 lines |
 
-The solver is deterministic and its inputs are all measured: `text != answer` in **8 of the 46 types**
-(3 arithmetic, 3 Russian number words, and the same words inside the two rotated frames
-`LimboFilter/framed2x2` and `framed3x3`; re-counted over every row, and recorded in `agents/INDEX.md` §3.3).
-The other 38 types need no conversion.
+The solver is deterministic and its inputs are all measured: `text != answer` in **9 of the 46 types**
+(3 arithmetic, 3 Russian number words, the same words inside the two rotated frames
+`LimboFilter/framed2x2` and `framed3x3`, and the reversed string of `LagBug/XProtect/reverse`;
+re-counted over every row of the current 23 000, and recorded in `agents/INDEX.md` §3.3).
+The other 37 types need no conversion.
 
 **Important:** the Russian number family is **multi-line** - the band is a two or three line block, and the
 glyph is only a fifth of the band (`train/captcha_crnn.py:171-186`). It therefore needs a per-line cropper
@@ -191,7 +197,7 @@ glyph is only a fifth of the band (`train/captcha_crnn.py:171-186`). It therefor
 | stage | what it is | data | status |
 |---|---|---|---|
 | **1. pretrain** | learn *glyphs* on a public captcha corpus | hammer888 1.37 M / szili2011 1.8 M images | **not done** - proposed; the corpus is named in `HANDOVER.md` §7 (M6) and `reports/MODEL_PLAN.md` §6 |
-| **2. fine-tune per plugin** | adapt the model to one plugin's style | the 100 generated images of that plugin | **measured, and it works**: 1.000 exact match / 0.000 CER on the types it was fine-tuned on (`reports/TRAINING_MINIMAL_LATIN.md` §1 and §6.3) |
+| **2. fine-tune per plugin** | adapt the model to one plugin's style | the 500 generated images of that plugin | **measured, and it works**: 1.000 exact match / 0.000 CER on the types it was fine-tuned on (`reports/TRAINING_MINIMAL_LATIN.md` §1 and §6.3) |
 | **3. assemble the slot** | attach the cropper, the mask, the length prior and the solver to the fine-tuned model | - | **not done** - proposed; this document |
 
 Stage 2 is the important one to understand: **the model is excellent on a plugin it was fine-tuned on and
@@ -202,8 +208,8 @@ adapter, plus the two cheap per-plugin layers.
 
 **Alternative to stage 2 for a plugin whose position moves:** a clone of the generator that synthesises tens
 of thousands of variants of that plugin. This repository already has the generators
-(`dataset/generator/`, `dataset/generator_ru/`) - but they produce 100 images per type, and the volume is
-the thing that is missing. **Proposal.**
+(`dataset/generator/`, `dataset/generator_ru/`) - but they produce 500 images per type (23 000 in total),
+and that volume is still the thing that is missing. **Proposal.**
 
 ---
 
@@ -213,8 +219,8 @@ the thing that is missing. **Proposal.**
 |---|---|---|---|
 | **1** | build the whole pipeline: cropper + alphabet mask + length prior + solver + a confidence threshold, **around the model that already exists** | a correctly *formatted* answer end to end, with a "ask a human" path when the confidence is low. **No new neural network, ~300 lines.** | not started (proposal) |
 | **2** | pretrain on a public captcha corpus (hammer888 / szili2011) | the only lever that changes the regime: the model has to learn *letters*, not *styles* | not started (proposal; `HANDOVER.md` §7 M6) |
-| **3** | fine-tune per plugin on its 100 generated images | the measured 1.000 on the plugin it was tuned for | **the mechanism exists and is measured** (`reports/TRAINING_MINIMAL_LATIN.md` §1, §6.3) |
-| **4** | fix the two broken types in the dataset, then regenerate and re-measure | `Archy-X/Krypton/map` (the band clips the fifth character) and `LagBug/XProtect/reverse` (the `text` field holds the reversed string) become trainable; the 4-fold can be completed | the bugs are **measured and documented** (`reports/TRAINING_MINIMAL_LATIN.md` §7.1, §7.2); the fix and the rebuild are **not done** |
+| **3** | fine-tune per plugin on its 500 generated images | the measured 1.000 on the plugin it was tuned for | **the mechanism exists and is measured** (`reports/TRAINING_MINIMAL_LATIN.md` §1, §6.3) |
+| **4** | fix the two broken types in the dataset, then regenerate and re-measure | `Archy-X/Krypton/map` (the band clips the fifth character) and `LagBug/XProtect/reverse` (the `text` field holds the reversed string) become trainable; the 4-fold can be completed | the bugs were **measured and documented** (`reports/TRAINING_MINIMAL_LATIN.md` §7.1, §7.2); the fix and the rebuild were **done on 2026-10-22** - the dataset now holds 500 images per type |
 
 Step 1 is worth doing **before** step 2: it is small, it needs no new data, and it makes every later
 measurement meaningful, because the pipeline then produces an answer in the right format.
@@ -223,9 +229,9 @@ measurement meaningful, because the pipeline then produces an answer in the righ
 
 ## 8. The limits of applicability — stated precisely
 
-There are **17 types of the 46** whose labels carry `roi = null`, and **1 701 of the 4 600 rows** have a
-null band (measured by re-counting every `labels.jsonl`; the same figures are in `agents/INDEX.md` §3.2 and
-`reports/TRAINING_MINIMAL_LATIN.md` §7).
+There are **17 types of the 46** whose labels carry `roi = null`, and **8 501 of the 23 000 rows** have a
+null band (measured by re-counting every `labels.jsonl` on 2026-10-22; the figure for the older
+100-per-type render is in `reports/TRAINING_MINIMAL_LATIN.md` §7).
 
 Two different statements get mixed up here, and only one of them is a measurement:
 
@@ -239,7 +245,7 @@ types, and the difference matters:
 
 | case | example | why it is different |
 |---|---|---|
-| the answer may well be drawn, the band was simply never computed | `LagBug/XProtect/code` (100 distinct 6-symbol answers, 100 distinct texts) | nothing in the data says the code is not in the frame; only that nobody drew a rectangle around it |
+| the answer may well be drawn, the band was simply never computed | `LagBug/XProtect/code` (500 distinct 6-symbol answers, 500 distinct texts) | nothing in the data says the code is not in the frame; only that nobody drew a rectangle around it |
 | the answer occupies the whole frame | `BotFilter/map` (digits, 4–5 characters, 128×128) | the code is the picture; a cropper would be "the whole image" |
 | the answer is not text at all | `CaptchaGUI/clickblock` (the answer is a slot index), `GalleryCaptcha/ru-object-swatch` (the answer is a colour name) | a different task, not an OCR task |
 | the answer is one of a few constants | `China2B2T/Captcha/wool`, `LagBug/XProtect/different` | a single answer per type |
@@ -260,12 +266,12 @@ generator-side rule is in `AGENTS.md` §5: *a band that does not fit inside the 
 
 | step | what already exists | what is missing | where it is described |
 |---|---|---|---|
-| dataset and bands | 4 600 labelled images, 46 types, `roi` on 29 types; the band rule; the checkers `tools/check_labels_and_roi.py` and `tools/check_band_vs_answer.py` | the bands for the 17 band-less types; the colour-level band rule (it lives only in `build/scratch/roilabel.py`) | `AGENTS.md` §3, `agents/INDEX.md` §3, `reports/TRAINING_MINIMAL_LATIN.md` §7 |
+| dataset and bands | 23 000 labelled images, 46 types, `roi` on 29 types; the band rule; the checkers `tools/check_labels_and_roi.py` and `tools/check_band_vs_answer.py` | the bands for the 17 band-less types; the colour-level band rule (it lives only in `build/scratch/roilabel.py`) | `AGENTS.md` §3, `agents/INDEX.md` §3, `reports/TRAINING_MINIMAL_LATIN.md` §7 |
 | the recogniser | `train/captcha_crnn.py` (model, charset, dataset, decode) and `train/train.py` (loop, type-held-out split, checkpoints) | the per-type alphabet / length mask in the decoder; the Cyrillic model is **34 classes instead of 44**, so the digits in the Cyrillic labels are dropped silently | `reports/MODEL_PLAN.md` §4.1, §4.3, §4.4; `HANDOVER.md` §3, §6.5 |
 | the training recipe | the fine-tune-per-plugin step, measured at 1.000 on the tuned types | the pretrain stage on a public corpus; the completed 4-fold (folds C and D were not finished) | `HANDOVER.md` §7 (M4, M6); `reports/TRAINING_MINIMAL_LATIN.md` §6.4, §10 |
 | the cropper | the band data, and the crop itself (4 lines) | any cropper code; the template-search and detector variants | `reports/TRAINING_MINIMAL_LATIN.md` §7.3 (contact sheets) |
 | the solver | the rule per family, derivable from the labels | the solver code itself | `HANDOVER.md` §2 (groups A/B/C) |
-| the publishing | `train/export_hf.py` exists but was **never executed** | the HF release, `reports/HF_RELEASE.md`, the per-family dataset repos | `HANDOVER.md` §7; `reports/MODEL_PLAN.md` §5 |
+| the publishing | **done**: the model is published as `Titlehhhh/captchaocr-ppocrv6` (commit `43a65582…`) and the dataset as `Titlehhhh/captchaocr-dataset` (commit `6248c5b9…`) | the per-family dataset repos | `HANDOVER.md` §7; `reports/MODEL_PLAN.md` §5 |
 | the comparison | the measured baselines | the baselines were **not all measured on the same input**: `bench/bench_hf.py` reads the whole frame (`bench/bench_hf.py:136`), the other harnesses crop by the band | `reports/TRAINING_MINIMAL_LATIN.md` §8 |
 
 ---
@@ -276,7 +282,7 @@ Everything in this document is a design except where it says otherwise. The hone
 
 1. **Every part of layers 1 and 3 is a proposal.** No cropper code and no solver code exists in the
    repository. The *data* for the fixed-rectangle cropper exists; the code does not.
-2. **The alphabet masks and length priors are measured from the dataset's own 100 labels per type**, which
+2. **The alphabet masks and length priors are measured from the dataset's own 500 labels per type**, which
    is what a generator would produce, but **they have never been applied to a decoder and their effect on
    accuracy has never been measured.** "The cheapest accuracy in the project" is a claim from the plan
    (`reports/MODEL_PLAN.md` §4.3), not a measurement of this repository.
@@ -297,7 +303,8 @@ Everything in this document is a design except where it says otherwise. The hone
    recogniser's 0.000 on unseen types (`reports/TRAINING_MINIMAL_LATIN.md` §1) is the number that matters
    for any type that has not been fine-tuned.
 9. **The "generator clone" alternative** in §6 is a proposal: the generators exist and are faithful
-   re-implementations, but the volume (tens of thousands of variants per plugin) has never been produced,
+   re-implementations, but the volume (tens of thousands of variants per plugin; the dataset has 500 per
+   type, 23 000 in total) has never been produced,
    and the fonts are machine-dependent, so the dataset is an artefact rather than a function
    (`agents/INDEX.md` §6).
 
@@ -305,4 +312,5 @@ Everything in this document is a design except where it says otherwise. The hone
 
 *Design note written 2026-10-21. The measurements it cites were made in the same session and are stored
 in `reports/TRAINING_MINIMAL_LATIN.md`; the type table in §4.2 and the counts in §8 were re-derived here
-directly from the `labels.jsonl` files. No measured result was edited while writing this.*
+directly from the `labels.jsonl` files. The dataset counters were re-derived on 2026-10-22 from the
+current 23 000-row render. No measured result was edited while writing this.*

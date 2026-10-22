@@ -5,7 +5,7 @@
 
 > **Бюджет контекста.** Харнесс обрезает суммарный отрисованный текст инструкций на **64 КиБ**
 > (`maxBytes` в `packages/bundle/base/cordis.patch.yml`), Codex CLI — на **32 КиБ** и **молча**.
-> Этот файл держим ниже **20 КБ** (сейчас 18.6 КБ). Если нужна новая информация — она идёт в
+> Этот файл держим ниже **20 КБ** (сейчас 19.9 КБ). Если нужна новая информация — она идёт в
 > `docs/` или `agents/`, а не сюда. Обоснование: `agents/REPO_CONVENTIONS_RESEARCH.md`
 > (по arXiv:2602.11988: «обзоры архитектуры в контекст-файле не помогают, дублирование вредит»).
 
@@ -99,7 +99,8 @@ this repository's history: `McUi.drawColored` and `TextBand`. Everything else go
 | `docs/adr/` | принятые решения (почему так) |
 | `llms.txt` | машинная карта репозитория (формат llms.txt) |
 | `HANDOVER.md` | состояние проекта и все измеренные числа |
-| `reports/CAPTCHA_SYSTEM_OVERVIEW.md` | большой документ: как распознавание устроено внутри, что готово, что делаем |
+| `reports/HTML/index.html` | **единственный browsable-отчёт** для владельца: все измеренные числа |
+| `reports/README.md` | индекс отчётов; обзор системы — в `reports/archive/2026-10-22-overview/` |
 
 ---
 
@@ -110,11 +111,11 @@ this repository's history: `McUi.drawColored` and `TextBand`. Everything else go
 
 | Half | What it is | Where |
 |---|---|---|
-| **Dataset** | A Java 21 generator that re-renders, pixel-faithfully, the captchas that real open-source Minecraft anti-bot plugins produce — 46 types, 4600 labelled PNGs. | `dataset/generator/`, `dataset/generator_ru/`, output in `dataset/out/` and `dataset/out_ru/` |
+| **Dataset** | A Java 21 generator that re-renders, pixel-faithfully, the captchas that real open-source Minecraft anti-bot plugins produce — 46 types, 23 000 labelled PNGs. | `dataset/generator/`, `dataset/generator_ru/`, output in `dataset/out/` and `dataset/out_ru/` |
 | **Models** | Benchmark harnesses over existing OCR/captcha models, and a CRNN+CTC trained from scratch on our data. | `bench/`, `train/` |
 
-Measured baselines are bad (the best of them is 0.404 exact match on the answer band and 0.078 on the whole
-frame — `reports/bench_models/ppocrv6-medium.json`), which is the reason the project exists. Details, dataset contract and the type table: `agents/INDEX.md`.
+The best measured baseline is 0.552 exact match on the answer band and 0.035 on the whole frame — the
+**cropper** decides, not the model (`reports/bench_models/ppocrv6-medium.json`). Details, dataset contract and the type table: `agents/INDEX.md`.
 
 ## 2. The goal (stated by the project owner)
 
@@ -130,13 +131,13 @@ publish a model (or an ensemble) on Hugging Face that is actually useful on this
 | path | что лежит | подробности |
 |---|---|---|
 | `dataset/generator/`, `dataset/generator_ru/` | Java-генераторы 23 плагинов | `dataset/generator/AGENTS.md` — как добавить тип, house rules, правило полосы |
-| `dataset/out/`, `dataset/out_ru/` | **сгенерированный** датасет: 46 типов × 100 PNG + `labels.jsonl` | **артефакт машины**: **генераторы не засеяны** — шрифты AWT те же, сами сэмплы случайны, пересборка даст другой набор |
+| `dataset/out/`, `dataset/out_ru/` | **сгенерированный** датасет: 46 типов × 500 PNG + `labels.jsonl` | **артефакт машины**: **генераторы не засеяны** — шрифты AWT те же, сами сэмплы случайны, пересборка даст другой набор |
 | `dataset/out_ru/*/real_shots/` | 517 эталонных скриншотов — **не публикуются** (чужие скриншоты) | в публичный репозиторий и в датасет на HF они не идут |
-| `train/` | CRNN+CTC (`captcha_crnn.py`), тренажер (`train.py`), экспорт ONNX/HF (`export_hf.py`) | `train/AGENTS.md` — как запускать эксперименты, плато CTC, правило полосы |
+| `train/` | CRNN+CTC (`captcha_crnn.py`), тренажер (`train.py`), PP-OCRv6 (`finetune_ppocr.py`, `soup_eval.py`, `export_ppocr_hf.py`) | `train/AGENTS.md` — как запускать эксперименты, плато CTC, правило полосы |
 | `bench/` | 6 харнессов для чужих моделей + `bench_models.py` (единый протокол) | результаты в `reports/bench_models/` |
 | `tools/` | чекеры меток и полос, анализ группы типов GalleryCaptcha, отчёты | |
-| `reports/` | измеренные результаты (никогда не править JSON результатов) | `research2/` — 10 отчётов по исследованию, `research/` — синтез |
-| `docs/` | онбординг, глоссарий, ADR, записка о конвейере | |
+| `reports/` | измеренные результаты (никогда не править JSON результатов) | индекс — `reports/README.md`, отчёт — `reports/HTML/index.html`, старое — `reports/archive/` |
+| `docs/` | онбординг, глоссарий, ADR, runbook (`HOW_TO_TRAIN.md`), конвейер (`INPUT_PIPELINE.md`) | |
 | `agents/` | карта репозитория, журнал сессий, правила оркестратора | |
 | `research/` | апстримы, декомпиляция, эталоны, исходники рантайма | |
 
@@ -194,29 +195,40 @@ pretty, дефекты апстрима воспроизводятся, `source(
 Состояние живёт в **`HANDOVER.md`** (цифры и что не сделано) и в **`reports/`** (измерения).
 Коротко, чтобы не искать:
 
-- **Датасет готов**: 46 типов, 4600 размеченных PNG, 23 плагина-источника (12 faithful,
-  10 clean-room, 1 reconstructed; по типам — 25 / 16 / 5), 517 эталонных скриншотов (не публикуются).
-  Разбивка типов на группы A/B/C — `agents/INDEX.md` §4.
-- **Минимальная модель измерена** (`reports/TRAINING_MINIMAL_LATIN.md`): наш CRNN — **1.000** на
-  типах, на которых учили, и **0.000** на невиданных (это запоминание, доказано подменой пикселей).
-  Лучшая готовая модель **PP-OCRv6_medium_rec** даёт **0.40** на наших типах по полосе.
-- **Главный измеренный вывод**: решает **кроппер, а не модель**. На 29 типах, у которых есть полоса,
-  `PP-OCRv6_medium_rec` даёт **0.552** exact match по полосе и **0.035** по целому кадру — в **16 раз**
-  хуже на кадре (`reports/bench_models/ppocrv6-medium.json`).
+- **Датасет готов**: 46 типов, **23 000** размеченных PNG (было 46 × 100), 23 апстрим-плагина
+  (12 faithful, 10 clean-room, 1 reconstructed; по типам — 25 / 16 / 5), 517 эталонных скриншотов
+  (не публикуются). Разбивка типов на группы A/B/C — `agents/INDEX.md` §4.
+- **Опубликовано на Hugging Face**: датасет — `Titlehhhh/captchaocr-dataset`, коммит `6248c5b9…`
+  (23 000 PNG + 46 `labels.jsonl`); модель — `Titlehhhh/captchaocr-ppocrv6`, коммит `43a65582…`
+  (8 файлов, 77 085 348 Б) — WiSE-FT-интерполяция `θ = 0.4·θ_ft + 0.6·θ_pretrained`.
+- **PP-OCRv6 на 7 удержанных типах / 5 плагинах / 3 500 картинках** (один и тот же пайплайн):
+
+  | вариант | median exact | median CER | micro exact | micro CER |
+  |---|---|---|---|---|
+  | предобученная (нулевой шаг) | 0.588 | 0.1657 | 0.5646 | 0.2446 |
+  | дообученная как есть | 0.480 | 0.2233 | 0.5480 | 0.2181 |
+  | **+ интерполяция α = 0.4 (опубликована)** | **0.638** | 0.1503 | 0.6123 | 0.2004 |
+
+  α и эпоху выбирали **на том же удержанном наборе** — число оптимистично.
+- **Наш CRNN+CTC с нуля** (7 типов учили, 4 удержали): на невиданных плагинах median **0.372** /
+  CER 0.322, micro **0.381** / 0.410; на своих типах **1.000** — разрыв запоминания 62.8 п.п.
+  (на старом рендере 100/тип было 0.000) — `reports/TRAINING_CRNN_BIG.md`.
+- **TrOCR-small — не лучше**: нулевой шаг median 0.00, после одной эпохи 0.002, в 5 раз медленнее
+  PP-OCRv6 — `reports/TRAINING_TROCR_BIG.md`.
 - **Два бага генераторов починены 2026-10-22, датасет пересобран**: полоса `Archy-X/Krypton/map`
-  была на 4 px ýже текста (резала 5-й символ) — теперь `band()` прибавляет `code.length()-1`;
-  в `text` типа `LagBug/XProtect/reverse` лежала **перевёрнутая** строка — теперь `text()`
-  возвращает нарисованный код.
-- **Сделано**: датасет **опубликован** на Hugging Face (22.10.2026,
-  <https://huggingface.co/datasets/Titlehhhh/captchaocr-dataset> — 4600 PNG + разметка),
-  репозиторий модели **создан** (22.10.2026, <https://huggingface.co/Titlehhhh/captchaocr-ppocrv6>);
-  в нём пока только карточка, **весов нет**.
-- **Не сделано**: выгрузка весов модели (`train/export_hf.py` написан, но **никогда не запускался**),
-  per-family репозитории по лицензиям, дообучение на публичном корпусе.
+  была на 4 px ýже текста — теперь `band()` прибавляет `code.length()-1`; в `text` типа
+  `LagBug/XProtect/reverse` лежала **перевёрнутая** строка — теперь `text()` возвращает нарисованный код.
+- **Не сделано**: per-family репозитории по лицензиям, дообучение на публичном корпусе,
+  независимая (не выбранная на held-out) проверка α.
 
 ## 7. Environment notes (Windows, this machine)
 
-- **Java 21** — JDK 21 в `PATH` (`java -version` → 21) или переменная `JAVA_HOME`.
+- **Java 21** — JDK 21 в `I:\ForAndroid\Java\21` (диск I:, внутренний том); `JAVA_HOME` уже задан на
+  уровне пользователя Windows, новый shell наследует его сам (`java -version` → 21.0.8).
+- **Локальный тулчейн** (JDK, токен HF, навыки, слои `.env`) — `docs/LOCAL_ENV.md` и навык
+  `.agents/skills/captcha-toolchain/SKILL.md`: читай перед правкой `.env` и вызовом `hf`.
+- **HF**: токен `Titlehhhh` в `.hf-cache/token` (gitignored), нужен `HF_HOME` = путь к `.hf-cache`.
+- **Навыки**: `.agents/skills/` (проект) / `~/.dsh/skills/` (пользователь); `.env`: `<cwd>/.env` и `~/.dsh/.env`.
 - **GPU**: NVIDIA GeForce GTX 1080 Ti (11.8 ГБ, sm_61), драйвер 581.57. CUDA-сборка torch живёт в
   `.venv-gpu/` (`torch 2.14.1+cu126` — в нём ещё есть sm_61), **системный python — CPU-only**.
   Тренировка: `.venv-gpu\Scripts\python.exe train\train.py ...`.

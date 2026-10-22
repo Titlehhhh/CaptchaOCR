@@ -261,6 +261,10 @@ def main():
     ap.add_argument("--eval-every", type=int, default=2, help="evaluate every N epochs")
     ap.add_argument("--max-minutes", type=float, default=None, help="stop after this many minutes")
     ap.add_argument("--resume", action="store_true")
+    ap.add_argument("--init-from", default=None,
+                    help="start from the weights of this checkpoint (model only; a fresh "
+                         "optimiser and a fresh OneCycleLR schedule are created). Use it to "
+                         "continue a finished run with a new, gentler schedule.")
     ap.add_argument("--zero-step", action="store_true", help="only measure the pretrained model")
     ap.add_argument("--eval-only", action="store_true")
     ap.add_argument("--device", default="auto")
@@ -298,6 +302,14 @@ def main():
     log(f"params: {n_params}  model_type={model.config.model_type} "
         f"hidden_size={model.config.hidden_size} head_out_channels={model.config.head_out_channels} "
         f"backbone={model.config.backbone_config.model_type}")
+
+    if args.init_from:
+        # start from the weights of another checkpoint (model only); the optimiser and the
+        # OneCycleLR schedule are created fresh. The zero step below then measures THAT model.
+        init_ck = torch.load(args.init_from, map_location="cpu", weights_only=False)
+        model.load_state_dict(init_ck["model"])
+        log(f"initialised the weights from {args.init_from} "
+            f"(epoch={init_ck.get('epoch')} step={init_ck.get('step')})")
 
     # -- the model's own dictionary ------------------------------------------- #
     from huggingface_hub import hf_hub_download

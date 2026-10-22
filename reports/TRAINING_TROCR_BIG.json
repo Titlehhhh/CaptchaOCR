@@ -1,0 +1,1852 @@
+{
+ "title": "TrOCR-small-printed vs PP-OCRv6-medium-rec on the same 7 held-out captcha types",
+ "generated": "2026-10-22 16:01:03",
+ "held_out_types": [
+  "out/JSH32/Minecaptcha/map",
+  "out/jonesdevelopment/sonar/complex",
+  "out/jonesdevelopment/sonar/legacy",
+  "out/jonesdevelopment/sonar/standard",
+  "out/laforetbrut/are-you-sure/code",
+  "out_ru/BotFilter/map",
+  "out_ru/CaptchaVerifyZ/map"
+ ],
+ "train_types": [
+  "out/Archy-X/Krypton/map",
+  "out/FeelingAlive0/AdvancedCaptcha/math",
+  "out/LagBug/XProtect/equation",
+  "out/LagBug/XProtect/gui",
+  "out/LagBug/XProtect/reverse",
+  "out/Mrbysco/Captcha/math",
+  "out/Yukun99/Captchas/itemslot",
+  "out/haq/mapcha/map",
+  "out/jSdCool/minecaptcha/text",
+  "out/just-captcha/ProstoCaptcha/map",
+  "out/n1zamu/NCaptcha/anvil",
+  "out/ringoame196-s-mcPlugin/ReproductionCAPTCHA/map",
+  "out_ru/GalleryCaptcha/ru-web"
+ ],
+ "dropped_types": {
+  "out/Archy-X/Krypton/menu": "group C: not an OCR task",
+  "out/China2B2T/Captcha/wool": "group C: not an OCR task",
+  "out/FeelingAlive0/AdvancedCaptcha/button": "group C: not an OCR task",
+  "out/InstantlyMoist/Captcha/textcaptcha": "no band (roi = null): not a recognition target",
+  "out/Joey61021/captcha/colorgui": "group C: not an OCR task",
+  "out/LagBug/XProtect/code": "no band (roi = null): not a recognition target",
+  "out/LagBug/XProtect/color": "group C: not an OCR task",
+  "out/LagBug/XProtect/different": "group C: not an OCR task",
+  "out/LagBug/XProtect/drop": "group C: not an OCR task",
+  "out/LagBug/XProtect/jump": "group C: not an OCR task",
+  "out/LagBug/XProtect/map": "no band (roi = null): not a recognition target",
+  "out/LagBug/XProtect/picture": "no band (roi = null): not a recognition target",
+  "out/LagBug/XProtect/slot": "group C: not an OCR task",
+  "out/LagBug/XProtect/sneak": "group C: not an OCR task",
+  "out/Z4OLLIEZ4/reCaptcha/captchasx": "group C: not an OCR task",
+  "out/irootdev/AnBot/captcha": "no band (roi = null): not a recognition target",
+  "out/jSdCool/minecaptcha/image": "group C: not an OCR task",
+  "out_ru/CaptchaGUI/clickblock": "group C: not an OCR task",
+  "out_ru/GalleryCaptcha/ru-numberword": "label outside the ASCII alphabet:  <U+0430><U+0432><U+0434><U+0435><U+0438><U+043A><U+043C><U+043D><U+043E><U+043F><U+0440><U+0441><U+0442><U+0446><U+0447><U+0448><U+044B><U+044C><U+044F>",
+  "out_ru/GalleryCaptcha/ru-numberword-caption": "label outside the ASCII alphabet:  <U+0430><U+0432><U+0434><U+0435><U+0438><U+043A><U+043C><U+043D><U+043E><U+043F><U+0440><U+0441><U+0442><U+0446><U+0447><U+0448><U+044B><U+044C><U+044F>",
+  "out_ru/GalleryCaptcha/ru-object-swatch": "group C: not an OCR task",
+  "out_ru/GalleryCaptcha/ru-symbols": "label outside the ASCII alphabet: <U+0401><U+0410><U+0411><U+0412><U+0413><U+0414><U+0415><U+0416><U+0417><U+0418><U+0419><U+041A><U+041B><U+041C><U+041D><U+041E><U+041F><U+0420><U+0421><U+0422><U+0423><U+0424><U+0425><U+0426><U+0427><U+0428><U+0429><U+042A><U+042B><U+042C><U+042D><U+042E><U+042F>",
+  "out_ru/LimboFilter/framed2x2": "group C: not an OCR task",
+  "out_ru/LimboFilter/framed3x3": "group C: not an OCR task",
+  "out_ru/LimboFilter/map": "label outside the ASCII alphabet:  <U+0430><U+0432><U+0434><U+0435><U+0438><U+043A><U+043C><U+043D><U+043E><U+043F><U+0440><U+0441><U+0442><U+0446><U+0447><U+0448><U+044B><U+044C><U+044F>",
+  "out_ru/LimboFilter/symbols": "label outside the ASCII alphabet: <U+0401><U+0410><U+0411><U+0412><U+0413><U+0414><U+0415><U+0416><U+0417><U+0418><U+0419><U+041A><U+041B><U+041C><U+041D><U+041E><U+041F><U+0420><U+0421><U+0422><U+0423><U+0424><U+0425><U+0426><U+0427><U+0428><U+0429><U+042A><U+042B><U+042C><U+042D><U+042E><U+042F>"
+ },
+ "train_items": 6499,
+ "held_out_items": 3500,
+ "model": {
+  "repo": "microsoft/trocr-small-printed",
+  "params": 61596672,
+  "transformers": "5.19.0",
+  "torch": "2.14.1+cu126",
+  "decoder_vocab": 64044,
+  "tokenizer_vocab": 64002,
+  "pad_id": 1,
+  "decoder_start_token_id": 2,
+  "input": "384x384 RGB, the processor's own DeiTImageProcessor"
+ },
+ "charset": {
+  "per_type": [
+   {
+    "type": "out/Archy-X/Krypton/map",
+    "n": 500,
+    "labels_not_roundtripping": 0,
+    "non_latin_chars": ""
+   },
+   {
+    "type": "out/FeelingAlive0/AdvancedCaptcha/math",
+    "n": 500,
+    "labels_not_roundtripping": 0,
+    "non_latin_chars": ""
+   },
+   {
+    "type": "out/LagBug/XProtect/equation",
+    "n": 500,
+    "labels_not_roundtripping": 0,
+    "non_latin_chars": ""
+   },
+   {
+    "type": "out/LagBug/XProtect/gui",
+    "n": 500,
+    "labels_not_roundtripping": 0,
+    "non_latin_chars": ""
+   },
+   {
+    "type": "out/LagBug/XProtect/reverse",
+    "n": 500,
+    "labels_not_roundtripping": 0,
+    "non_latin_chars": ""
+   },
+   {
+    "type": "out/Mrbysco/Captcha/math",
+    "n": 500,
+    "labels_not_roundtripping": 0,
+    "non_latin_chars": ""
+   },
+   {
+    "type": "out/Yukun99/Captchas/itemslot",
+    "n": 500,
+    "labels_not_roundtripping": 0,
+    "non_latin_chars": ""
+   },
+   {
+    "type": "out/haq/mapcha/map",
+    "n": 500,
+    "labels_not_roundtripping": 0,
+    "non_latin_chars": ""
+   },
+   {
+    "type": "out/jSdCool/minecaptcha/text",
+    "n": 500,
+    "labels_not_roundtripping": 0,
+    "non_latin_chars": ""
+   },
+   {
+    "type": "out/just-captcha/ProstoCaptcha/map",
+    "n": 500,
+    "labels_not_roundtripping": 0,
+    "non_latin_chars": ""
+   },
+   {
+    "type": "out/n1zamu/NCaptcha/anvil",
+    "n": 500,
+    "labels_not_roundtripping": 0,
+    "non_latin_chars": ""
+   },
+   {
+    "type": "out/ringoame196-s-mcPlugin/ReproductionCAPTCHA/map",
+    "n": 500,
+    "labels_not_roundtripping": 0,
+    "non_latin_chars": ""
+   },
+   {
+    "type": "out_ru/GalleryCaptcha/ru-web",
+    "n": 500,
+    "labels_not_roundtripping": 0,
+    "non_latin_chars": ""
+   },
+   {
+    "type": "out/JSH32/Minecaptcha/map",
+    "n": 500,
+    "labels_not_roundtripping": 0,
+    "non_latin_chars": ""
+   },
+   {
+    "type": "out/jonesdevelopment/sonar/complex",
+    "n": 500,
+    "labels_not_roundtripping": 0,
+    "non_latin_chars": ""
+   },
+   {
+    "type": "out/jonesdevelopment/sonar/legacy",
+    "n": 500,
+    "labels_not_roundtripping": 0,
+    "non_latin_chars": ""
+   },
+   {
+    "type": "out/jonesdevelopment/sonar/standard",
+    "n": 500,
+    "labels_not_roundtripping": 0,
+    "non_latin_chars": ""
+   },
+   {
+    "type": "out/laforetbrut/are-you-sure/code",
+    "n": 500,
+    "labels_not_roundtripping": 0,
+    "non_latin_chars": ""
+   },
+   {
+    "type": "out_ru/BotFilter/map",
+    "n": 500,
+    "labels_not_roundtripping": 0,
+    "non_latin_chars": ""
+   },
+   {
+    "type": "out_ru/CaptchaVerifyZ/map",
+    "n": 500,
+    "labels_not_roundtripping": 0,
+    "non_latin_chars": ""
+   }
+  ],
+  "chars_total": 56076,
+  "chars_non_latin": 0,
+  "fraction_latin": 1.0,
+  "note": "TrOCR's tokenizer is the checkpoint's own XLMRobertaTokenizer (64 002 sentencepiece pieces); it can spell Cyrillic as well, but the four Cyrillic types are excluded to keep the training set identical to the PP-OCRv6 run, whose dictionary has no Cyrillic at all."
+ },
+ "trocr_zero_step": {
+  "held_out": {
+   "types": 7,
+   "items": 3500,
+   "exact_match_median_pct": 0.0,
+   "cer_median_pct": 107.42,
+   "exact_match_micro_pct": 2.66,
+   "cer_micro_pct": 98.25
+  },
+  "per_type": [
+   {
+    "type": "out/JSH32/Minecaptcha/map",
+    "n": 500,
+    "exact_match_pct": 11.6,
+    "cer_pct": 44.35
+   },
+   {
+    "type": "out/jonesdevelopment/sonar/complex",
+    "n": 500,
+    "exact_match_pct": 0.0,
+    "cer_pct": 107.42
+   },
+   {
+    "type": "out/jonesdevelopment/sonar/legacy",
+    "n": 500,
+    "exact_match_pct": 0.0,
+    "cer_pct": 117.85
+   },
+   {
+    "type": "out/jonesdevelopment/sonar/standard",
+    "n": 500,
+    "exact_match_pct": 0.0,
+    "cer_pct": 158.18
+   },
+   {
+    "type": "out/laforetbrut/are-you-sure/code",
+    "n": 500,
+    "exact_match_pct": 0.0,
+    "cer_pct": 123.73
+   },
+   {
+    "type": "out_ru/BotFilter/map",
+    "n": 500,
+    "exact_match_pct": 5.0,
+    "cer_pct": 68.77
+   },
+   {
+    "type": "out_ru/CaptchaVerifyZ/map",
+    "n": 500,
+    "exact_match_pct": 2.0,
+    "cer_pct": 67.48
+   }
+  ],
+  "seconds": 244.1
+ },
+ "trocr_finetuned": {
+  "held_out": {
+   "types": 7,
+   "items": 3500,
+   "exact_match_median_pct": 0.2,
+   "cer_median_pct": 100.4,
+   "exact_match_micro_pct": 19.74,
+   "cer_micro_pct": 77.8
+  },
+  "per_type": [
+   {
+    "type": "out/JSH32/Minecaptcha/map",
+    "n": 500,
+    "exact_match_pct": 89.8,
+    "cer_pct": 2.55
+   },
+   {
+    "type": "out/jonesdevelopment/sonar/complex",
+    "n": 500,
+    "exact_match_pct": 0.2,
+    "cer_pct": 100.4
+   },
+   {
+    "type": "out/jonesdevelopment/sonar/legacy",
+    "n": 500,
+    "exact_match_pct": 0.0,
+    "cer_pct": 127.0
+   },
+   {
+    "type": "out/jonesdevelopment/sonar/standard",
+    "n": 500,
+    "exact_match_pct": 0.0,
+    "cer_pct": 136.03
+   },
+   {
+    "type": "out/laforetbrut/are-you-sure/code",
+    "n": 500,
+    "exact_match_pct": 0.0,
+    "cer_pct": 110.37
+   },
+   {
+    "type": "out_ru/BotFilter/map",
+    "n": 500,
+    "exact_match_pct": 9.0,
+    "cer_pct": 50.3
+   },
+   {
+    "type": "out_ru/CaptchaVerifyZ/map",
+    "n": 500,
+    "exact_match_pct": 39.2,
+    "cer_pct": 17.96
+   }
+  ],
+  "epoch": 0,
+  "step": 800,
+  "checkpoint": "C:\\Users\\Title\\Projects\\CapthaModel\\train\\run\\trocr_big\\ckpt\\step_000800.pt",
+  "note": "the BEST TrOCR checkpoint (epoch 0). The second epoch is worse - see trocr_finetuned_epoch1."
+ },
+ "trocr_finetuned_epoch1": {
+  "held_out": {
+   "types": 7,
+   "items": 3500,
+   "exact_match_median_pct": 0.0,
+   "cer_median_pct": 108.93,
+   "exact_match_micro_pct": 12.74,
+   "cer_micro_pct": 82.86
+  },
+  "per_type": [
+   {
+    "type": "out/JSH32/Minecaptcha/map",
+    "n": 500,
+    "exact_match_pct": 59.4,
+    "cer_pct": 13.0
+   },
+   {
+    "type": "out/jonesdevelopment/sonar/complex",
+    "n": 500,
+    "exact_match_pct": 0.0,
+    "cer_pct": 109.62
+   },
+   {
+    "type": "out/jonesdevelopment/sonar/legacy",
+    "n": 500,
+    "exact_match_pct": 0.0,
+    "cer_pct": 122.5
+   },
+   {
+    "type": "out/jonesdevelopment/sonar/standard",
+    "n": 500,
+    "exact_match_pct": 0.0,
+    "cer_pct": 136.6
+   },
+   {
+    "type": "out/laforetbrut/are-you-sure/code",
+    "n": 500,
+    "exact_match_pct": 0.0,
+    "cer_pct": 108.93
+   },
+   {
+    "type": "out_ru/BotFilter/map",
+    "n": 500,
+    "exact_match_pct": 2.4,
+    "cer_pct": 63.84
+   },
+   {
+    "type": "out_ru/CaptchaVerifyZ/map",
+    "n": 500,
+    "exact_match_pct": 27.4,
+    "cer_pct": 25.52
+   }
+  ],
+  "epoch": 1,
+  "step": 1613,
+  "note": "the continuation run (--resume --epochs 2): one more epoch, worse"
+ },
+ "ppocr_v6": {
+  "source": "C:\\Users\\Title\\Projects\\CapthaModel\\train\\run_ppocr\\big\\result.json",
+  "runtime": {
+   "seconds": 2182.7,
+   "minutes": 36.38,
+   "img_per_s": 76.8,
+   "step_ms": 414.6,
+   "ctc_infeasible_batches": 0
+  },
+  "zero_step": {
+   "held_out": {
+    "types": 7,
+    "items": 3500,
+    "exact_match_median_pct": 58.8,
+    "cer_median_pct": 16.57,
+    "exact_match_micro_pct": 56.46,
+    "cer_micro_pct": 24.46
+   },
+   "per_type": [
+    {
+     "type": "out/JSH32/Minecaptcha/map",
+     "n": 500,
+     "exact_match_pct": 93.8,
+     "cer_pct": 1.55
+    },
+    {
+     "type": "out/jonesdevelopment/sonar/complex",
+     "n": 500,
+     "exact_match_pct": 38.8,
+     "cer_pct": 29.08
+    },
+    {
+     "type": "out/jonesdevelopment/sonar/legacy",
+     "n": 500,
+     "exact_match_pct": 34.2,
+     "cer_pct": 33.53
+    },
+    {
+     "type": "out/jonesdevelopment/sonar/standard",
+     "n": 500,
+     "exact_match_pct": 58.8,
+     "cer_pct": 16.57
+    },
+    {
+     "type": "out/laforetbrut/are-you-sure/code",
+     "n": 500,
+     "exact_match_pct": 0.0,
+     "cer_pct": 80.83
+    },
+    {
+     "type": "out_ru/BotFilter/map",
+     "n": 500,
+     "exact_match_pct": 73.0,
+     "cer_pct": 8.98
+    },
+    {
+     "type": "out_ru/CaptchaVerifyZ/map",
+     "n": 500,
+     "exact_match_pct": 96.6,
+     "cer_pct": 0.68
+    }
+   ],
+   "seconds": 41.3
+  },
+  "finetuned": {
+   "held_out": {
+    "types": 7,
+    "items": 3500,
+    "exact_match_median_pct": 48.0,
+    "cer_median_pct": 22.33,
+    "exact_match_micro_pct": 54.8,
+    "cer_micro_pct": 21.81
+   },
+   "per_type": [
+    {
+     "type": "out/JSH32/Minecaptcha/map",
+     "n": 500,
+     "exact_match_pct": 95.4,
+     "cer_pct": 1.2
+    },
+    {
+     "type": "out/jonesdevelopment/sonar/complex",
+     "n": 500,
+     "exact_match_pct": 44.6,
+     "cer_pct": 22.33
+    },
+    {
+     "type": "out/jonesdevelopment/sonar/legacy",
+     "n": 500,
+     "exact_match_pct": 38.0,
+     "cer_pct": 29.9
+    },
+    {
+     "type": "out/jonesdevelopment/sonar/standard",
+     "n": 500,
+     "exact_match_pct": 48.0,
+     "cer_pct": 23.8
+    },
+    {
+     "type": "out/laforetbrut/are-you-sure/code",
+     "n": 500,
+     "exact_match_pct": 2.4,
+     "cer_pct": 60.03
+    },
+    {
+     "type": "out_ru/BotFilter/map",
+     "n": 500,
+     "exact_match_pct": 56.0,
+     "cer_pct": 15.25
+    },
+    {
+     "type": "out_ru/CaptchaVerifyZ/map",
+     "n": 500,
+     "exact_match_pct": 99.2,
+     "cer_pct": 0.16
+    }
+   ],
+   "epoch": 7,
+   "step": 1632
+  },
+  "history": [
+   {
+    "epoch": 0,
+    "step": 204,
+    "loss": 0.81802,
+    "held_out": {
+     "types": 7,
+     "items": 3500,
+     "exact_match_median": 0.262,
+     "cer_median": 0.383,
+     "exact_match_micro": 0.4511,
+     "cer_micro": 0.2957
+    },
+    "per_type": {
+     "out/JSH32/Minecaptcha/map": {
+      "n": 500,
+      "exact_match": 0.892,
+      "exact_match_raw": 0.892,
+      "cer": 0.0295
+     },
+     "out/jonesdevelopment/sonar/complex": {
+      "n": 500,
+      "exact_match": 0.252,
+      "exact_match_raw": 0.252,
+      "cer": 0.383
+     },
+     "out/jonesdevelopment/sonar/legacy": {
+      "n": 500,
+      "exact_match": 0.232,
+      "exact_match_raw": 0.232,
+      "cer": 0.4497
+     },
+     "out/jonesdevelopment/sonar/standard": {
+      "n": 500,
+      "exact_match": 0.262,
+      "exact_match_raw": 0.262,
+      "cer": 0.4165
+     },
+     "out/laforetbrut/are-you-sure/code": {
+      "n": 500,
+      "exact_match": 0.012,
+      "exact_match_raw": 0.0,
+      "cer": 0.6237
+     },
+     "out_ru/BotFilter/map": {
+      "n": 500,
+      "exact_match": 0.516,
+      "exact_match_raw": 0.516,
+      "cer": 0.1661
+     },
+     "out_ru/CaptchaVerifyZ/map": {
+      "n": 500,
+      "exact_match": 0.992,
+      "exact_match_raw": 0.992,
+      "cer": 0.0016
+     }
+    },
+    "epoch_seconds": 92.4
+   },
+   {
+    "epoch": 1,
+    "step": 408,
+    "loss": 0.06224,
+    "held_out": {
+     "types": 7,
+     "items": 3500,
+     "exact_match_median": 0.364,
+     "cer_median": 0.2855,
+     "exact_match_micro": 0.4989,
+     "cer_micro": 0.2611
+    },
+    "per_type": {
+     "out/JSH32/Minecaptcha/map": {
+      "n": 500,
+      "exact_match": 0.948,
+      "exact_match_raw": 0.948,
+      "cer": 0.013
+     },
+     "out/jonesdevelopment/sonar/complex": {
+      "n": 500,
+      "exact_match": 0.364,
+      "exact_match_raw": 0.362,
+      "cer": 0.2855
+     },
+     "out/jonesdevelopment/sonar/legacy": {
+      "n": 500,
+      "exact_match": 0.294,
+      "exact_match_raw": 0.294,
+      "cer": 0.3782
+     },
+     "out/jonesdevelopment/sonar/standard": {
+      "n": 500,
+      "exact_match": 0.336,
+      "exact_match_raw": 0.336,
+      "cer": 0.3382
+     },
+     "out/laforetbrut/are-you-sure/code": {
+      "n": 500,
+      "exact_match": 0.016,
+      "exact_match_raw": 0.0,
+      "cer": 0.65
+     },
+     "out_ru/BotFilter/map": {
+      "n": 500,
+      "exact_match": 0.536,
+      "exact_match_raw": 0.536,
+      "cer": 0.1621
+     },
+     "out_ru/CaptchaVerifyZ/map": {
+      "n": 500,
+      "exact_match": 0.998,
+      "exact_match_raw": 0.998,
+      "cer": 0.0004
+     }
+    },
+    "epoch_seconds": 62.6
+   },
+   {
+    "epoch": 2,
+    "step": 612,
+    "loss": 0.02417,
+    "held_out": {
+     "types": 7,
+     "items": 3500,
+     "exact_match_median": 0.396,
+     "cer_median": 0.2565,
+     "exact_match_micro": 0.524,
+     "cer_micro": 0.2473
+    },
+    "per_type": {
+     "out/JSH32/Minecaptcha/map": {
+      "n": 500,
+      "exact_match": 0.944,
+      "exact_match_raw": 0.944,
+      "cer": 0.014
+     },
+     "out/jonesdevelopment/sonar/complex": {
+      "n": 500,
+      "exact_match": 0.396,
+      "exact_match_raw": 0.396,
+      "cer": 0.2565
+     },
+     "out/jonesdevelopment/sonar/legacy": {
+      "n": 500,
+      "exact_match": 0.328,
+      "exact_match_raw": 0.328,
+      "cer": 0.3535
+     },
+     "out/jonesdevelopment/sonar/standard": {
+      "n": 500,
+      "exact_match": 0.388,
+      "exact_match_raw": 0.388,
+      "cer": 0.3103
+     },
+     "out/laforetbrut/are-you-sure/code": {
+      "n": 500,
+      "exact_match": 0.018,
+      "exact_match_raw": 0.0,
+      "cer": 0.66
+     },
+     "out_ru/BotFilter/map": {
+      "n": 500,
+      "exact_match": 0.594,
+      "exact_match_raw": 0.594,
+      "cer": 0.1365
+     },
+     "out_ru/CaptchaVerifyZ/map": {
+      "n": 500,
+      "exact_match": 1.0,
+      "exact_match_raw": 1.0,
+      "cer": 0.0
+     }
+    },
+    "epoch_seconds": 73.0
+   },
+   {
+    "epoch": 3,
+    "step": 816,
+    "loss": 0.01448,
+    "held_out": {
+     "types": 7,
+     "items": 3500,
+     "exact_match_median": 0.47,
+     "cer_median": 0.2328,
+     "exact_match_micro": 0.5403,
+     "cer_micro": 0.2304
+    },
+    "per_type": {
+     "out/JSH32/Minecaptcha/map": {
+      "n": 500,
+      "exact_match": 0.944,
+      "exact_match_raw": 0.944,
+      "cer": 0.0145
+     },
+     "out/jonesdevelopment/sonar/complex": {
+      "n": 500,
+      "exact_match": 0.434,
+      "exact_match_raw": 0.434,
+      "cer": 0.2328
+     },
+     "out/jonesdevelopment/sonar/legacy": {
+      "n": 500,
+      "exact_match": 0.354,
+      "exact_match_raw": 0.354,
+      "cer": 0.3228
+     },
+     "out/jonesdevelopment/sonar/standard": {
+      "n": 500,
+      "exact_match": 0.47,
+      "exact_match_raw": 0.47,
+      "cer": 0.241
+     },
+     "out/laforetbrut/are-you-sure/code": {
+      "n": 500,
+      "exact_match": 0.022,
+      "exact_match_raw": 0.0,
+      "cer": 0.6463
+     },
+     "out_ru/BotFilter/map": {
+      "n": 500,
+      "exact_match": 0.566,
+      "exact_match_raw": 0.566,
+      "cer": 0.154
+     },
+     "out_ru/CaptchaVerifyZ/map": {
+      "n": 500,
+      "exact_match": 0.992,
+      "exact_match_raw": 0.992,
+      "cer": 0.0016
+     }
+    },
+    "epoch_seconds": 78.9
+   },
+   {
+    "epoch": 4,
+    "step": 1020,
+    "loss": 0.00774,
+    "held_out": {
+     "types": 7,
+     "items": 3500,
+     "exact_match_median": 0.41,
+     "cer_median": 0.2575,
+     "exact_match_micro": 0.5317,
+     "cer_micro": 0.2313
+    },
+    "per_type": {
+     "out/JSH32/Minecaptcha/map": {
+      "n": 500,
+      "exact_match": 0.95,
+      "exact_match_raw": 0.95,
+      "cer": 0.0125
+     },
+     "out/jonesdevelopment/sonar/complex": {
+      "n": 500,
+      "exact_match": 0.41,
+      "exact_match_raw": 0.408,
+      "cer": 0.2575
+     },
+     "out/jonesdevelopment/sonar/legacy": {
+      "n": 500,
+      "exact_match": 0.344,
+      "exact_match_raw": 0.344,
+      "cer": 0.3242
+     },
+     "out/jonesdevelopment/sonar/standard": {
+      "n": 500,
+      "exact_match": 0.394,
+      "exact_match_raw": 0.394,
+      "cer": 0.3083
+     },
+     "out/laforetbrut/are-you-sure/code": {
+      "n": 500,
+      "exact_match": 0.026,
+      "exact_match_raw": 0.0,
+      "cer": 0.5837
+     },
+     "out_ru/BotFilter/map": {
+      "n": 500,
+      "exact_match": 0.6,
+      "exact_match_raw": 0.6,
+      "cer": 0.1327
+     },
+     "out_ru/CaptchaVerifyZ/map": {
+      "n": 500,
+      "exact_match": 0.998,
+      "exact_match_raw": 0.998,
+      "cer": 0.0004
+     }
+    },
+    "epoch_seconds": 58.0
+   },
+   {
+    "epoch": 5,
+    "step": 1224,
+    "loss": 0.00525,
+    "held_out": {
+     "types": 7,
+     "items": 3500,
+     "exact_match_median": 0.412,
+     "cer_median": 0.252,
+     "exact_match_micro": 0.53,
+     "cer_micro": 0.2363
+    },
+    "per_type": {
+     "out/JSH32/Minecaptcha/map": {
+      "n": 500,
+      "exact_match": 0.95,
+      "exact_match_raw": 0.95,
+      "cer": 0.0125
+     },
+     "out/jonesdevelopment/sonar/complex": {
+      "n": 500,
+      "exact_match": 0.412,
+      "exact_match_raw": 0.412,
+      "cer": 0.252
+     },
+     "out/jonesdevelopment/sonar/legacy": {
+      "n": 500,
+      "exact_match": 0.374,
+      "exact_match_raw": 0.374,
+      "cer": 0.2962
+     },
+     "out/jonesdevelopment/sonar/standard": {
+      "n": 500,
+      "exact_match": 0.384,
+      "exact_match_raw": 0.384,
+      "cer": 0.3068
+     },
+     "out/laforetbrut/are-you-sure/code": {
+      "n": 500,
+      "exact_match": 0.012,
+      "exact_match_raw": 0.0,
+      "cer": 0.6463
+     },
+     "out_ru/BotFilter/map": {
+      "n": 500,
+      "exact_match": 0.584,
+      "exact_match_raw": 0.584,
+      "cer": 0.1389
+     },
+     "out_ru/CaptchaVerifyZ/map": {
+      "n": 500,
+      "exact_match": 0.994,
+      "exact_match_raw": 0.994,
+      "cer": 0.0012
+     }
+    },
+    "epoch_seconds": 62.4
+   },
+   {
+    "epoch": 6,
+    "step": 1428,
+    "loss": 0.00377,
+    "held_out": {
+     "types": 7,
+     "items": 3500,
+     "exact_match_median": 0.414,
+     "cer_median": 0.2635,
+     "exact_match_micro": 0.5217,
+     "cer_micro": 0.2503
+    },
+    "per_type": {
+     "out/JSH32/Minecaptcha/map": {
+      "n": 500,
+      "exact_match": 0.948,
+      "exact_match_raw": 0.948,
+      "cer": 0.013
+     },
+     "out/jonesdevelopment/sonar/complex": {
+      "n": 500,
+      "exact_match": 0.414,
+      "exact_match_raw": 0.412,
+      "cer": 0.2635
+     },
+     "out/jonesdevelopment/sonar/legacy": {
+      "n": 500,
+      "exact_match": 0.348,
+      "exact_match_raw": 0.348,
+      "cer": 0.3153
+     },
+     "out/jonesdevelopment/sonar/standard": {
+      "n": 500,
+      "exact_match": 0.36,
+      "exact_match_raw": 0.354,
+      "cer": 0.3265
+     },
+     "out/laforetbrut/are-you-sure/code": {
+      "n": 500,
+      "exact_match": 0.014,
+      "exact_match_raw": 0.0,
+      "cer": 0.6893
+     },
+     "out_ru/BotFilter/map": {
+      "n": 500,
+      "exact_match": 0.574,
+      "exact_match_raw": 0.574,
+      "cer": 0.1435
+     },
+     "out_ru/CaptchaVerifyZ/map": {
+      "n": 500,
+      "exact_match": 0.994,
+      "exact_match_raw": 0.994,
+      "cer": 0.0012
+     }
+    },
+    "epoch_seconds": 90.8
+   },
+   {
+    "epoch": 7,
+    "step": 1632,
+    "loss": 0.00311,
+    "held_out": {
+     "types": 7,
+     "items": 3500,
+     "exact_match_median": 0.48,
+     "cer_median": 0.2233,
+     "exact_match_micro": 0.548,
+     "cer_micro": 0.2181
+    },
+    "per_type": {
+     "out/JSH32/Minecaptcha/map": {
+      "n": 500,
+      "exact_match": 0.954,
+      "exact_match_raw": 0.954,
+      "cer": 0.012
+     },
+     "out/jonesdevelopment/sonar/complex": {
+      "n": 500,
+      "exact_match": 0.446,
+      "exact_match_raw": 0.444,
+      "cer": 0.2233
+     },
+     "out/jonesdevelopment/sonar/legacy": {
+      "n": 500,
+      "exact_match": 0.38,
+      "exact_match_raw": 0.38,
+      "cer": 0.299
+     },
+     "out/jonesdevelopment/sonar/standard": {
+      "n": 500,
+      "exact_match": 0.48,
+      "exact_match_raw": 0.48,
+      "cer": 0.238
+     },
+     "out/laforetbrut/are-you-sure/code": {
+      "n": 500,
+      "exact_match": 0.024,
+      "exact_match_raw": 0.0,
+      "cer": 0.6003
+     },
+     "out_ru/BotFilter/map": {
+      "n": 500,
+      "exact_match": 0.56,
+      "exact_match_raw": 0.56,
+      "cer": 0.1525
+     },
+     "out_ru/CaptchaVerifyZ/map": {
+      "n": 500,
+      "exact_match": 0.992,
+      "exact_match_raw": 0.992,
+      "cer": 0.0016
+     }
+    },
+    "epoch_seconds": 93.2
+   },
+   {
+    "epoch": 8,
+    "step": 1836,
+    "loss": 0.00365,
+    "held_out": {
+     "types": 7,
+     "items": 3500,
+     "exact_match_median": 0.41,
+     "cer_median": 0.2603,
+     "exact_match_micro": 0.5269,
+     "cer_micro": 0.2372
+    },
+    "per_type": {
+     "out/JSH32/Minecaptcha/map": {
+      "n": 500,
+      "exact_match": 0.95,
+      "exact_match_raw": 0.95,
+      "cer": 0.013
+     },
+     "out/jonesdevelopment/sonar/complex": {
+      "n": 500,
+      "exact_match": 0.41,
+      "exact_match_raw": 0.41,
+      "cer": 0.2603
+     },
+     "out/jonesdevelopment/sonar/legacy": {
+      "n": 500,
+      "exact_match": 0.364,
+      "exact_match_raw": 0.364,
+      "cer": 0.299
+     },
+     "out/jonesdevelopment/sonar/standard": {
+      "n": 500,
+      "exact_match": 0.394,
+      "exact_match_raw": 0.394,
+      "cer": 0.293
+     },
+     "out/laforetbrut/are-you-sure/code": {
+      "n": 500,
+      "exact_match": 0.012,
+      "exact_match_raw": 0.0,
+      "cer": 0.6497
+     },
+     "out_ru/BotFilter/map": {
+      "n": 500,
+      "exact_match": 0.56,
+      "exact_match_raw": 0.56,
+      "cer": 0.1449
+     },
+     "out_ru/CaptchaVerifyZ/map": {
+      "n": 500,
+      "exact_match": 0.998,
+      "exact_match_raw": 0.998,
+      "cer": 0.0004
+     }
+    },
+    "epoch_seconds": 92.1
+   },
+   {
+    "epoch": 9,
+    "step": 2040,
+    "loss": 0.00324,
+    "held_out": {
+     "types": 7,
+     "items": 3500,
+     "exact_match_median": 0.404,
+     "cer_median": 0.2555,
+     "exact_match_micro": 0.5271,
+     "cer_micro": 0.2401
+    },
+    "per_type": {
+     "out/JSH32/Minecaptcha/map": {
+      "n": 500,
+      "exact_match": 0.948,
+      "exact_match_raw": 0.948,
+      "cer": 0.014
+     },
+     "out/jonesdevelopment/sonar/complex": {
+      "n": 500,
+      "exact_match": 0.404,
+      "exact_match_raw": 0.404,
+      "cer": 0.2555
+     },
+     "out/jonesdevelopment/sonar/legacy": {
+      "n": 500,
+      "exact_match": 0.378,
+      "exact_match_raw": 0.378,
+      "cer": 0.3032
+     },
+     "out/jonesdevelopment/sonar/standard": {
+      "n": 500,
+      "exact_match": 0.404,
+      "exact_match_raw": 0.404,
+      "cer": 0.293
+     },
+     "out/laforetbrut/are-you-sure/code": {
+      "n": 500,
+      "exact_match": 0.012,
+      "exact_match_raw": 0.0,
+      "cer": 0.658
+     },
+     "out_ru/BotFilter/map": {
+      "n": 500,
+      "exact_match": 0.552,
+      "exact_match_raw": 0.552,
+      "cer": 0.1557
+     },
+     "out_ru/CaptchaVerifyZ/map": {
+      "n": 500,
+      "exact_match": 0.992,
+      "exact_match_raw": 0.992,
+      "cer": 0.0016
+     }
+    },
+    "epoch_seconds": 97.8
+   },
+   {
+    "epoch": 10,
+    "step": 2244,
+    "loss": 0.00325,
+    "held_out": {
+     "types": 7,
+     "items": 3500,
+     "exact_match_median": 0.426,
+     "cer_median": 0.244,
+     "exact_match_micro": 0.53,
+     "cer_micro": 0.2421
+    },
+    "per_type": {
+     "out/JSH32/Minecaptcha/map": {
+      "n": 500,
+      "exact_match": 0.948,
+      "exact_match_raw": 0.948,
+      "cer": 0.013
+     },
+     "out/jonesdevelopment/sonar/complex": {
+      "n": 500,
+      "exact_match": 0.426,
+      "exact_match_raw": 0.426,
+      "cer": 0.244
+     },
+     "out/jonesdevelopment/sonar/legacy": {
+      "n": 500,
+      "exact_match": 0.362,
+      "exact_match_raw": 0.362,
+      "cer": 0.3067
+     },
+     "out/jonesdevelopment/sonar/standard": {
+      "n": 500,
+      "exact_match": 0.396,
+      "exact_match_raw": 0.396,
+      "cer": 0.297
+     },
+     "out/laforetbrut/are-you-sure/code": {
+      "n": 500,
+      "exact_match": 0.012,
+      "exact_match_raw": 0.0,
+      "cer": 0.6873
+     },
+     "out_ru/BotFilter/map": {
+      "n": 500,
+      "exact_match": 0.574,
+      "exact_match_raw": 0.574,
+      "cer": 0.145
+     },
+     "out_ru/CaptchaVerifyZ/map": {
+      "n": 500,
+      "exact_match": 0.992,
+      "exact_match_raw": 0.992,
+      "cer": 0.0016
+     }
+    },
+    "epoch_seconds": 93.7
+   },
+   {
+    "epoch": 11,
+    "step": 2448,
+    "loss": 0.00172,
+    "held_out": {
+     "types": 7,
+     "items": 3500,
+     "exact_match_median": 0.444,
+     "cer_median": 0.2308,
+     "exact_match_micro": 0.5394,
+     "cer_micro": 0.2182
+    },
+    "per_type": {
+     "out/JSH32/Minecaptcha/map": {
+      "n": 500,
+      "exact_match": 0.952,
+      "exact_match_raw": 0.952,
+      "cer": 0.012
+     },
+     "out/jonesdevelopment/sonar/complex": {
+      "n": 500,
+      "exact_match": 0.444,
+      "exact_match_raw": 0.442,
+      "cer": 0.2308
+     },
+     "out/jonesdevelopment/sonar/legacy": {
+      "n": 500,
+      "exact_match": 0.37,
+      "exact_match_raw": 0.37,
+      "cer": 0.3015
+     },
+     "out/jonesdevelopment/sonar/standard": {
+      "n": 500,
+      "exact_match": 0.422,
+      "exact_match_raw": 0.422,
+      "cer": 0.2677
+     },
+     "out/laforetbrut/are-you-sure/code": {
+      "n": 500,
+      "exact_match": 0.038,
+      "exact_match_raw": 0.0,
+      "cer": 0.56
+     },
+     "out_ru/BotFilter/map": {
+      "n": 500,
+      "exact_match": 0.558,
+      "exact_match_raw": 0.558,
+      "cer": 0.1535
+     },
+     "out_ru/CaptchaVerifyZ/map": {
+      "n": 500,
+      "exact_match": 0.992,
+      "exact_match_raw": 0.992,
+      "cer": 0.0016
+     }
+    },
+    "epoch_seconds": 93.1
+   },
+   {
+    "epoch": 12,
+    "step": 2652,
+    "loss": 0.00242,
+    "held_out": {
+     "types": 7,
+     "items": 3500,
+     "exact_match_median": 0.464,
+     "cer_median": 0.22,
+     "exact_match_micro": 0.5423,
+     "cer_micro": 0.2194
+    },
+    "per_type": {
+     "out/JSH32/Minecaptcha/map": {
+      "n": 500,
+      "exact_match": 0.95,
+      "exact_match_raw": 0.95,
+      "cer": 0.0125
+     },
+     "out/jonesdevelopment/sonar/complex": {
+      "n": 500,
+      "exact_match": 0.464,
+      "exact_match_raw": 0.462,
+      "cer": 0.22
+     },
+     "out/jonesdevelopment/sonar/legacy": {
+      "n": 500,
+      "exact_match": 0.374,
+      "exact_match_raw": 0.374,
+      "cer": 0.3075
+     },
+     "out/jonesdevelopment/sonar/standard": {
+      "n": 500,
+      "exact_match": 0.402,
+      "exact_match_raw": 0.402,
+      "cer": 0.289
+     },
+     "out/laforetbrut/are-you-sure/code": {
+      "n": 500,
+      "exact_match": 0.024,
+      "exact_match_raw": 0.0,
+      "cer": 0.568
+     },
+     "out_ru/BotFilter/map": {
+      "n": 500,
+      "exact_match": 0.588,
+      "exact_match_raw": 0.588,
+      "cer": 0.1375
+     },
+     "out_ru/CaptchaVerifyZ/map": {
+      "n": 500,
+      "exact_match": 0.994,
+      "exact_match_raw": 0.994,
+      "cer": 0.0012
+     }
+    },
+    "epoch_seconds": 122.5
+   },
+   {
+    "epoch": 13,
+    "step": 2856,
+    "loss": 0.00174,
+    "held_out": {
+     "types": 7,
+     "items": 3500,
+     "exact_match_median": 0.442,
+     "cer_median": 0.2323,
+     "exact_match_micro": 0.5334,
+     "cer_micro": 0.2227
+    },
+    "per_type": {
+     "out/JSH32/Minecaptcha/map": {
+      "n": 500,
+      "exact_match": 0.95,
+      "exact_match_raw": 0.95,
+      "cer": 0.0125
+     },
+     "out/jonesdevelopment/sonar/complex": {
+      "n": 500,
+      "exact_match": 0.442,
+      "exact_match_raw": 0.44,
+      "cer": 0.2323
+     },
+     "out/jonesdevelopment/sonar/legacy": {
+      "n": 500,
+      "exact_match": 0.35,
+      "exact_match_raw": 0.35,
+      "cer": 0.317
+     },
+     "out/jonesdevelopment/sonar/standard": {
+      "n": 500,
+      "exact_match": 0.394,
+      "exact_match_raw": 0.394,
+      "cer": 0.2908
+     },
+     "out/laforetbrut/are-you-sure/code": {
+      "n": 500,
+      "exact_match": 0.026,
+      "exact_match_raw": 0.0,
+      "cer": 0.566
+     },
+     "out_ru/BotFilter/map": {
+      "n": 500,
+      "exact_match": 0.576,
+      "exact_match_raw": 0.576,
+      "cer": 0.1394
+     },
+     "out_ru/CaptchaVerifyZ/map": {
+      "n": 500,
+      "exact_match": 0.996,
+      "exact_match_raw": 0.996,
+      "cer": 0.0008
+     }
+    },
+    "epoch_seconds": 216.4
+   },
+   {
+    "epoch": 14,
+    "step": 3060,
+    "loss": 0.00149,
+    "held_out": {
+     "types": 7,
+     "items": 3500,
+     "exact_match_median": 0.436,
+     "cer_median": 0.239,
+     "exact_match_micro": 0.5346,
+     "cer_micro": 0.2232
+    },
+    "per_type": {
+     "out/JSH32/Minecaptcha/map": {
+      "n": 500,
+      "exact_match": 0.952,
+      "exact_match_raw": 0.952,
+      "cer": 0.012
+     },
+     "out/jonesdevelopment/sonar/complex": {
+      "n": 500,
+      "exact_match": 0.436,
+      "exact_match_raw": 0.434,
+      "cer": 0.239
+     },
+     "out/jonesdevelopment/sonar/legacy": {
+      "n": 500,
+      "exact_match": 0.36,
+      "exact_match_raw": 0.36,
+      "cer": 0.3093
+     },
+     "out/jonesdevelopment/sonar/standard": {
+      "n": 500,
+      "exact_match": 0.376,
+      "exact_match_raw": 0.376,
+      "cer": 0.299
+     },
+     "out/laforetbrut/are-you-sure/code": {
+      "n": 500,
+      "exact_match": 0.024,
+      "exact_match_raw": 0.0,
+      "cer": 0.567
+     },
+     "out_ru/BotFilter/map": {
+      "n": 500,
+      "exact_match": 0.602,
+      "exact_match_raw": 0.602,
+      "cer": 0.1345
+     },
+     "out_ru/CaptchaVerifyZ/map": {
+      "n": 500,
+      "exact_match": 0.992,
+      "exact_match_raw": 0.992,
+      "cer": 0.0016
+     }
+    },
+    "epoch_seconds": 81.1
+   },
+   {
+    "epoch": 15,
+    "step": 3264,
+    "loss": 0.00116,
+    "held_out": {
+     "types": 7,
+     "items": 3500,
+     "exact_match_median": 0.462,
+     "cer_median": 0.2158,
+     "exact_match_micro": 0.558,
+     "cer_micro": 0.2087
+    },
+    "per_type": {
+     "out/JSH32/Minecaptcha/map": {
+      "n": 500,
+      "exact_match": 0.958,
+      "exact_match_raw": 0.958,
+      "cer": 0.011
+     },
+     "out/jonesdevelopment/sonar/complex": {
+      "n": 500,
+      "exact_match": 0.458,
+      "exact_match_raw": 0.458,
+      "cer": 0.2158
+     },
+     "out/jonesdevelopment/sonar/legacy": {
+      "n": 500,
+      "exact_match": 0.402,
+      "exact_match_raw": 0.402,
+      "cer": 0.2857
+     },
+     "out/jonesdevelopment/sonar/standard": {
+      "n": 500,
+      "exact_match": 0.462,
+      "exact_match_raw": 0.462,
+      "cer": 0.245
+     },
+     "out/laforetbrut/are-you-sure/code": {
+      "n": 500,
+      "exact_match": 0.03,
+      "exact_match_raw": 0.0,
+      "cer": 0.5667
+     },
+     "out_ru/BotFilter/map": {
+      "n": 500,
+      "exact_match": 0.606,
+      "exact_match_raw": 0.606,
+      "cer": 0.1345
+     },
+     "out_ru/CaptchaVerifyZ/map": {
+      "n": 500,
+      "exact_match": 0.99,
+      "exact_match_raw": 0.99,
+      "cer": 0.002
+     }
+    },
+    "epoch_seconds": 57.5
+   },
+   {
+    "epoch": 16,
+    "step": 3468,
+    "loss": 0.00099,
+    "held_out": {
+     "types": 7,
+     "items": 3500,
+     "exact_match_median": 0.432,
+     "cer_median": 0.2392,
+     "exact_match_micro": 0.5309,
+     "cer_micro": 0.2269
+    },
+    "per_type": {
+     "out/JSH32/Minecaptcha/map": {
+      "n": 500,
+      "exact_match": 0.95,
+      "exact_match_raw": 0.95,
+      "cer": 0.0125
+     },
+     "out/jonesdevelopment/sonar/complex": {
+      "n": 500,
+      "exact_match": 0.432,
+      "exact_match_raw": 0.43,
+      "cer": 0.2392
+     },
+     "out/jonesdevelopment/sonar/legacy": {
+      "n": 500,
+      "exact_match": 0.36,
+      "exact_match_raw": 0.36,
+      "cer": 0.3058
+     },
+     "out/jonesdevelopment/sonar/standard": {
+      "n": 500,
+      "exact_match": 0.378,
+      "exact_match_raw": 0.378,
+      "cer": 0.3048
+     },
+     "out/laforetbrut/are-you-sure/code": {
+      "n": 500,
+      "exact_match": 0.026,
+      "exact_match_raw": 0.0,
+      "cer": 0.58
+     },
+     "out_ru/BotFilter/map": {
+      "n": 500,
+      "exact_match": 0.578,
+      "exact_match_raw": 0.578,
+      "cer": 0.1447
+     },
+     "out_ru/CaptchaVerifyZ/map": {
+      "n": 500,
+      "exact_match": 0.992,
+      "exact_match_raw": 0.992,
+      "cer": 0.0016
+     }
+    },
+    "epoch_seconds": 58.0
+   },
+   {
+    "epoch": 17,
+    "step": 3672,
+    "loss": 0.00159,
+    "held_out": {
+     "types": 7,
+     "items": 3500,
+     "exact_match_median": 0.464,
+     "cer_median": 0.2245,
+     "exact_match_micro": 0.5474,
+     "cer_micro": 0.2177
+    },
+    "per_type": {
+     "out/JSH32/Minecaptcha/map": {
+      "n": 500,
+      "exact_match": 0.948,
+      "exact_match_raw": 0.948,
+      "cer": 0.0135
+     },
+     "out/jonesdevelopment/sonar/complex": {
+      "n": 500,
+      "exact_match": 0.464,
+      "exact_match_raw": 0.462,
+      "cer": 0.2245
+     },
+     "out/jonesdevelopment/sonar/legacy": {
+      "n": 500,
+      "exact_match": 0.372,
+      "exact_match_raw": 0.372,
+      "cer": 0.3018
+     },
+     "out/jonesdevelopment/sonar/standard": {
+      "n": 500,
+      "exact_match": 0.45,
+      "exact_match_raw": 0.45,
+      "cer": 0.2588
+     },
+     "out/laforetbrut/are-you-sure/code": {
+      "n": 500,
+      "exact_match": 0.032,
+      "exact_match_raw": 0.0,
+      "cer": 0.579
+     },
+     "out_ru/BotFilter/map": {
+      "n": 500,
+      "exact_match": 0.574,
+      "exact_match_raw": 0.574,
+      "cer": 0.1446
+     },
+     "out_ru/CaptchaVerifyZ/map": {
+      "n": 500,
+      "exact_match": 0.992,
+      "exact_match_raw": 0.992,
+      "cer": 0.0016
+     }
+    },
+    "epoch_seconds": 51.3
+   },
+   {
+    "epoch": 18,
+    "step": 3876,
+    "loss": 0.00109,
+    "held_out": {
+     "types": 7,
+     "items": 3500,
+     "exact_match_median": 0.408,
+     "cer_median": 0.2568,
+     "exact_match_micro": 0.5371,
+     "cer_micro": 0.2234
+    },
+    "per_type": {
+     "out/JSH32/Minecaptcha/map": {
+      "n": 500,
+      "exact_match": 0.952,
+      "exact_match_raw": 0.952,
+      "cer": 0.012
+     },
+     "out/jonesdevelopment/sonar/complex": {
+      "n": 500,
+      "exact_match": 0.408,
+      "exact_match_raw": 0.406,
+      "cer": 0.2568
+     },
+     "out/jonesdevelopment/sonar/legacy": {
+      "n": 500,
+      "exact_match": 0.374,
+      "exact_match_raw": 0.374,
+      "cer": 0.3012
+     },
+     "out/jonesdevelopment/sonar/standard": {
+      "n": 500,
+      "exact_match": 0.394,
+      "exact_match_raw": 0.394,
+      "cer": 0.294
+     },
+     "out/laforetbrut/are-you-sure/code": {
+      "n": 500,
+      "exact_match": 0.028,
+      "exact_match_raw": 0.0,
+      "cer": 0.5693
+     },
+     "out_ru/BotFilter/map": {
+      "n": 500,
+      "exact_match": 0.608,
+      "exact_match_raw": 0.608,
+      "cer": 0.1297
+     },
+     "out_ru/CaptchaVerifyZ/map": {
+      "n": 500,
+      "exact_match": 0.996,
+      "exact_match_raw": 0.996,
+      "cer": 0.0008
+     }
+    },
+    "epoch_seconds": 84.6
+   },
+   {
+    "epoch": 19,
+    "step": 4080,
+    "loss": 0.00091,
+    "held_out": {
+     "types": 7,
+     "items": 3500,
+     "exact_match_median": 0.36,
+     "cer_median": 0.2933,
+     "exact_match_micro": 0.5151,
+     "cer_micro": 0.2455
+    },
+    "per_type": {
+     "out/JSH32/Minecaptcha/map": {
+      "n": 500,
+      "exact_match": 0.952,
+      "exact_match_raw": 0.952,
+      "cer": 0.012
+     },
+     "out/jonesdevelopment/sonar/complex": {
+      "n": 500,
+      "exact_match": 0.36,
+      "exact_match_raw": 0.356,
+      "cer": 0.2933
+     },
+     "out/jonesdevelopment/sonar/legacy": {
+      "n": 500,
+      "exact_match": 0.358,
+      "exact_match_raw": 0.358,
+      "cer": 0.314
+     },
+     "out/jonesdevelopment/sonar/standard": {
+      "n": 500,
+      "exact_match": 0.314,
+      "exact_match_raw": 0.306,
+      "cer": 0.3547
+     },
+     "out/laforetbrut/are-you-sure/code": {
+      "n": 500,
+      "exact_match": 0.022,
+      "exact_match_raw": 0.0,
+      "cer": 0.614
+     },
+     "out_ru/BotFilter/map": {
+      "n": 500,
+      "exact_match": 0.606,
+      "exact_match_raw": 0.606,
+      "cer": 0.1292
+     },
+     "out_ru/CaptchaVerifyZ/map": {
+      "n": 500,
+      "exact_match": 0.994,
+      "exact_match_raw": 0.994,
+      "cer": 0.0012
+     }
+    },
+    "epoch_seconds": 79.6
+   }
+  ]
+ },
+ "side_by_side_per_type": [
+  {
+   "type": "out/JSH32/Minecaptcha/map",
+   "trocr_zero_step": {
+    "exact_match_pct": 11.6,
+    "cer_pct": 44.35
+   },
+   "trocr_finetuned": {
+    "exact_match_pct": 89.8,
+    "cer_pct": 2.55
+   },
+   "ppocr_v6_zero_step": {
+    "exact_match_pct": 93.8,
+    "cer_pct": 1.55
+   },
+   "ppocr_v6_finetuned": {
+    "exact_match_pct": 95.4,
+    "cer_pct": 1.2
+   }
+  },
+  {
+   "type": "out/jonesdevelopment/sonar/complex",
+   "trocr_zero_step": {
+    "exact_match_pct": 0.0,
+    "cer_pct": 107.42
+   },
+   "trocr_finetuned": {
+    "exact_match_pct": 0.2,
+    "cer_pct": 100.4
+   },
+   "ppocr_v6_zero_step": {
+    "exact_match_pct": 38.8,
+    "cer_pct": 29.08
+   },
+   "ppocr_v6_finetuned": {
+    "exact_match_pct": 44.6,
+    "cer_pct": 22.33
+   }
+  },
+  {
+   "type": "out/jonesdevelopment/sonar/legacy",
+   "trocr_zero_step": {
+    "exact_match_pct": 0.0,
+    "cer_pct": 117.85
+   },
+   "trocr_finetuned": {
+    "exact_match_pct": 0.0,
+    "cer_pct": 127.0
+   },
+   "ppocr_v6_zero_step": {
+    "exact_match_pct": 34.2,
+    "cer_pct": 33.53
+   },
+   "ppocr_v6_finetuned": {
+    "exact_match_pct": 38.0,
+    "cer_pct": 29.9
+   }
+  },
+  {
+   "type": "out/jonesdevelopment/sonar/standard",
+   "trocr_zero_step": {
+    "exact_match_pct": 0.0,
+    "cer_pct": 158.18
+   },
+   "trocr_finetuned": {
+    "exact_match_pct": 0.0,
+    "cer_pct": 136.03
+   },
+   "ppocr_v6_zero_step": {
+    "exact_match_pct": 58.8,
+    "cer_pct": 16.57
+   },
+   "ppocr_v6_finetuned": {
+    "exact_match_pct": 48.0,
+    "cer_pct": 23.8
+   }
+  },
+  {
+   "type": "out/laforetbrut/are-you-sure/code",
+   "trocr_zero_step": {
+    "exact_match_pct": 0.0,
+    "cer_pct": 123.73
+   },
+   "trocr_finetuned": {
+    "exact_match_pct": 0.0,
+    "cer_pct": 110.37
+   },
+   "ppocr_v6_zero_step": {
+    "exact_match_pct": 0.0,
+    "cer_pct": 80.83
+   },
+   "ppocr_v6_finetuned": {
+    "exact_match_pct": 2.4,
+    "cer_pct": 60.03
+   }
+  },
+  {
+   "type": "out_ru/BotFilter/map",
+   "trocr_zero_step": {
+    "exact_match_pct": 5.0,
+    "cer_pct": 68.77
+   },
+   "trocr_finetuned": {
+    "exact_match_pct": 9.0,
+    "cer_pct": 50.3
+   },
+   "ppocr_v6_zero_step": {
+    "exact_match_pct": 73.0,
+    "cer_pct": 8.98
+   },
+   "ppocr_v6_finetuned": {
+    "exact_match_pct": 56.0,
+    "cer_pct": 15.25
+   }
+  },
+  {
+   "type": "out_ru/CaptchaVerifyZ/map",
+   "trocr_zero_step": {
+    "exact_match_pct": 2.0,
+    "cer_pct": 67.48
+   },
+   "trocr_finetuned": {
+    "exact_match_pct": 39.2,
+    "cer_pct": 17.96
+   },
+   "ppocr_v6_zero_step": {
+    "exact_match_pct": 96.6,
+    "cer_pct": 0.68
+   },
+   "ppocr_v6_finetuned": {
+    "exact_match_pct": 99.2,
+    "cer_pct": 0.16
+   }
+  }
+ ],
+ "runtime": {
+  "seconds": 637.4,
+  "minutes": 10.62,
+  "img_per_s": 25.8,
+  "step_ms": 310.3,
+  "epochs_done": 1
+ },
+ "history": [
+  {
+   "epoch": 1,
+   "step": 1613,
+   "loss": 0.67721,
+   "held_out": {
+    "types": 7,
+    "items": 3500,
+    "exact_match_median": 0.0,
+    "cer_median": 1.0893,
+    "exact_match_micro": 0.1274,
+    "cer_micro": 0.8286
+   },
+   "per_type": {
+    "out/JSH32/Minecaptcha/map": {
+     "n": 500,
+     "exact_match": 0.594,
+     "exact_match_raw": 0.594,
+     "cer": 0.13
+    },
+    "out/jonesdevelopment/sonar/complex": {
+     "n": 500,
+     "exact_match": 0.0,
+     "exact_match_raw": 0.0,
+     "cer": 1.0962
+    },
+    "out/jonesdevelopment/sonar/legacy": {
+     "n": 500,
+     "exact_match": 0.0,
+     "exact_match_raw": 0.0,
+     "cer": 1.225
+    },
+    "out/jonesdevelopment/sonar/standard": {
+     "n": 500,
+     "exact_match": 0.0,
+     "exact_match_raw": 0.0,
+     "cer": 1.366
+    },
+    "out/laforetbrut/are-you-sure/code": {
+     "n": 500,
+     "exact_match": 0.0,
+     "exact_match_raw": 0.0,
+     "cer": 1.0893
+    },
+    "out_ru/BotFilter/map": {
+     "n": 500,
+     "exact_match": 0.024,
+     "exact_match_raw": 0.024,
+     "cer": 0.6384
+    },
+    "out_ru/CaptchaVerifyZ/map": {
+     "n": 500,
+     "exact_match": 0.274,
+     "exact_match_raw": 0.274,
+     "cer": 0.2552
+    }
+   },
+   "epoch_seconds": 397.1
+  }
+ ]
+}
