@@ -207,7 +207,7 @@ PP-OCRv6 нет `config.json`, и инструмент больше **не си�
 | `GET /api/datasets/Titlehhhh/captchaocr-dataset` | `usedStorage 46 049 012`, `cardData.license other`, `license_name mixed-per-plugin-licences`, `library_name datasets`, `format imagefolder`, `modality image`, `size_categories 1K<n<10K`; в корне `LICENSE` |
 | диff карточки датасета «до/после» (HF, коммиты) | **13 строк**: только два абзаца про `LICENSE` — ни одно число не изменилось |
 | `detect_model_template()` (6 случаев) | `pp_ocrv6_small_rec` → ppocrv6; `captha` → crnn; веса `model.backbone.*/head.*` → ppocrv6; веса `rnn.*/fc.weight` → crnn; `--template crnn` → crnn; неизвестный → `SystemExit` с понятным текстом |
-| `Select-String 'bareapi\|BARE-API\|capmonster\|mit_ck\|mitelis'` по правленым файлам и залитым карточкам | **0 совпадений** |
+| Проверка запрещённых шаблонов по правленым файлам и залитым карточкам | **0 совпадений** |
 | рендер всех трёх шаблонов | неподставленных плейсхолдеров **0** |
 
 ## 7.6 Что НЕ проверено (C7)
