@@ -138,17 +138,19 @@ dataset/out_ru/<Plugin>/<type>/NNN.png     + labels.jsonl     # 12 типов, �
 Полный runbook — **[`docs/HOW_TO_TRAIN.md`](docs/HOW_TO_TRAIN.md)**. Рецепт публикации — **три шага**.
 Все команды — **из корня репозитория** (каталог, где лежат `AGENTS.md` и `dataset/`).
 
-Токена Hugging Face у вас ещё нет? Создайте каталог `.hf-cache` в корне репозитория и положите туда
-свой токен (`hf auth login` кладёт его в `%USERPROFILE%\.cache\huggingface\token`; скопируйте его в
+Токен Hugging Face лежит в `$env:HF_HOME\token` (поэтому `HF_HOME` указывает на `.hf-cache`), а
+снапшоты моделей — в `$env:HF_HOME\hub` (поэтому `HF_HUB_CACHE` указывает на подпапку `hub`).
+Токена у вас ещё нет? Создайте каталог `.hf-cache` в корне репозитория и положите туда свой токен
+(`hf auth login` кладёт его в `%USERPROFILE%\.cache\huggingface\token`; скопируйте его в
 `.hf-cache\token`) либо задайте `HF_HOME` на свой общий кэш. **Токен не печатать и не коммитить.**
 
 ```powershell
 # 0) окно: JAVA_HOME для javac, HF_HOME для токена, .venv-gpu — единственный интерпретатор с CUDA
 $env:PYTHONIOENCODING="utf-8"
 
-# из корня репозитория: HF_HOME = каталог .hf-cache (там лежит token, в git он не идёт)
+# из корня репозитория: токен в $HF_HOME\token, снапшоты моделей — в $HF_HOME\hub
 $env:HF_HOME      = (Resolve-Path .\.hf-cache).Path
-$env:HF_HUB_CACHE = $env:HF_HOME
+$env:HF_HUB_CACHE = Join-Path $env:HF_HOME "hub"
 
 # 1) дообучить с мягким lr=1e-5  →  train\run_ppocr\<прогон>\best.pt
 .venv-gpu\Scripts\python.exe train\finetune_ppocr.py --out train\run_ppocr\big `

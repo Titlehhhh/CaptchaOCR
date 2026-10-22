@@ -49,7 +49,7 @@
 | Java 21 | нужен **JDK 21** — поставьте его отдельно и задайте `JAVA_HOME` (например `$env:JAVA_HOME = "C:\Program Files\Java\jdk-21"`); путь в документации проекта не фиксирован | **`java`/`javac` НЕ на `PATH`** — зовите `"$env:JAVA_HOME\bin\javac.exe"` |
 | Python с GPU | `.venv-gpu\Scripts\python.exe` (`torch 2.14.1+cu126`) | системный `python` — **CPU-only**, обучать на нём нельзя |
 | GPU | GTX 1080 Ti, 11.8 ГБ | VLM-модели сюда не помещаются |
-| Hugging Face | токен в `.hf-cache\token`, нужен `$env:HF_HOME` = путь к `.hf-cache` | токен не печатать и не коммитить |
+| Hugging Face | токен в `.hf-cache\token` (`$env:HF_HOME` = путь к `.hf-cache`), снапшоты моделей — в `.hf-cache\hub` (`$env:HF_HUB_CACHE` = путь к `.hf-cache\hub`) | токен не печатать и не коммитить |
 | PowerShell | только Windows PowerShell 5.1, бинаря `pwsh` нет | выполнение `.ps1` заблокировано → **`build.ps1` запустить нельзя** |
 
 Полная таблица путей и слоёв окружения — [`docs/LOCAL_ENV.md`](LOCAL_ENV.md).
@@ -57,6 +57,8 @@
 Токена Hugging Face ещё нет? Создайте каталог `.hf-cache` в корне репозитория и положите туда свой
 токен (`hf auth login` кладёт его в `%USERPROFILE%\.cache\huggingface\token`; скопируйте его в
 `.hf-cache\token`) либо задайте `HF_HOME` на свой общий кэш. **Токен не печатать и не коммитить.**
+`HF_HOME` — это каталог `.hf-cache`: токен лежит в `$env:HF_HOME\token`, а снапшоты моделей — в
+`$env:HF_HOME\hub`, поэтому `HF_HUB_CACHE` указывает на подпапку `hub`.
 
 ## Шаг 1. Собрать генераторы (нужно только для пересборки датасета)
 
@@ -163,9 +165,9 @@ python tools\check_band_vs_answer.py dataset\out_ru
 Без перезаливки картинки на диске и на HF разойдутся (см. правило 1 ниже).
 
 ```powershell
-# из корня репозитория: HF_HOME = каталог .hf-cache (там лежит token, в git он не идёт)
+# из корня репозитория: токен в $HF_HOME\token, снапшоты моделей — в $HF_HOME\hub
 $env:HF_HOME      = (Resolve-Path .\.hf-cache).Path
-$env:HF_HUB_CACHE = $env:HF_HOME
+$env:HF_HUB_CACHE = Join-Path $env:HF_HOME "hub"
 
 python tools\upload_dataset.py             # загрузить (батчи по типам, сравнение по sha256)
 python tools\upload_dataset.py --verify    # проверить удалённое дерево
@@ -277,9 +279,9 @@ GradScaler + номер эпохи и шага — это точное прод�
 ## Шаг 7. Экспортировать и опубликовать
 
 ```powershell
-# из корня репозитория: HF_HOME = каталог .hf-cache (там лежит token, в git он не идёт)
+# из корня репозитория: токен в $HF_HOME\token, снапшоты моделей — в $HF_HOME\hub
 $env:HF_HOME      = (Resolve-Path .\.hf-cache).Path
-$env:HF_HUB_CACHE = $env:HF_HOME
+$env:HF_HUB_CACHE = Join-Path $env:HF_HOME "hub"
 
 # экспорт весов в папку Hugging Face
 .venv-gpu\Scripts\python.exe train\export_ppocr_hf.py --ckpt train\run_ppocr\big\soup_best.pt `

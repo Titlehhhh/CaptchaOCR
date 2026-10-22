@@ -54,12 +54,16 @@
 > `.hf-cache\token`) либо задайте `HF_HOME` на свой общий кэш. **Токен не печатать, не копировать
 > в репозиторий и не коммитить.**
 
+`HF_HOME` указывает на каталог `.hf-cache`: токен лежит в `$HF_HOME\token`, а снапшоты моделей — в
+`$HF_HOME\hub`, поэтому `HF_HUB_CACHE` указывает на подпапку `hub` (иначе веса не находятся локально
+и `from_pretrained` пойдёт в сеть).
+
 ```powershell
 $env:PYTHONIOENCODING="utf-8"          # без этого кириллица в логах ломается
 
-# из корня репозитория: HF_HOME = каталог .hf-cache (там лежит token, в git он не идёт)
+# из корня репозитория: токен в $HF_HOME\token, снапшоты моделей — в $HF_HOME\hub
 $env:HF_HOME      = (Resolve-Path .\.hf-cache).Path
-$env:HF_HUB_CACHE = $env:HF_HOME
+$env:HF_HUB_CACHE = Join-Path $env:HF_HOME "hub"
 ```
 
 Проверка, что GPU виден (должно быть `True`):
@@ -354,7 +358,7 @@ resumable checkpoint written: ...\ckpt/final.pt (epoch 7, step 1600)
 
 ```powershell
 $env:HF_HOME      = (Resolve-Path .\.hf-cache).Path
-$env:HF_HUB_CACHE = $env:HF_HOME
+$env:HF_HUB_CACHE = Join-Path $env:HF_HOME "hub"
 
 # ВАРИАНТ A (рекомендуемый): экспортировать интерполяцию --soup-alpha 0.4.
 # Скрипт сам считает theta = alpha*theta_ft + (1-alpha)*theta_base по той же формуле.
@@ -404,7 +408,7 @@ $env:HF_HUB_CACHE = $env:HF_HOME
 
 ```powershell
 $env:HF_HOME      = (Resolve-Path .\.hf-cache).Path
-$env:HF_HUB_CACHE = $env:HF_HOME
+$env:HF_HUB_CACHE = Join-Path $env:HF_HOME "hub"
 hf auth whoami                                   # ✓ Logged in / user: Titlehhhh
 hf upload Titlehhhh/captchaocr-ppocrv6 train\run_ppocr\big\export --repo-type model
 ```
@@ -449,7 +453,7 @@ hf repo-files Titlehhhh/captchaocr-ppocrv6
 | симптом | причина | что делать |
 |---|---|---|
 | `CUDA out of memory` | батч 32 при 48×320 на 11.8 ГБ не влезает (или параллельно идёт другая задача) | `--batch-size 16` (шагов в эпоху станет 408 вместо 204 — расписание LR удлинится вдвое), при необходимости `--batch-size 8` и `--workers 4` |
-| `PermissionError` / нет доступа к `HF_HOME` | не задан `HF_HOME` | `$env:HF_HOME = (Resolve-Path .\.hf-cache).Path` (и `HF_HUB_CACHE = $env:HF_HOME`) — из корня репозитория |
+| `PermissionError` / нет доступа к `HF_HOME` | не задан `HF_HOME` | `$env:HF_HOME = (Resolve-Path .\.hf-cache).Path` и `$env:HF_HUB_CACHE = Join-Path $env:HF_HOME "hub"` — из корня репозитория |
 | `torch.cuda.is_available() == False` | вызван системный `python` | только `.venv-gpu\Scripts\python.exe` |
 | `hf` не авторизован | не задан `HF_HOME` | `$env:HF_HOME=...`, затем `hf auth whoami` |
 | «`build.ps1` не запускается» / «AuthorizationManager check failed» | на этой машине выполнение `.ps1` заблокировано | выполняйте логику инлайн (ниже) |

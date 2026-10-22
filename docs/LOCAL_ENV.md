@@ -24,6 +24,7 @@
 | системный `python` | **CPU-only** — обучать на нём нельзя | эта машина |
 | `.hf-cache\` | локальный кэш Hugging Face этого проекта (`HF_HOME`) | репозиторий (gitignored) |
 | `.hf-cache\token` | **токен аккаунта `Titlehhhh`** — не печатать, не копировать, не коммитить | репозиторий (gitignored) |
+| `.hf-cache\hub\` | **снапшоты моделей** (`hub\models--*`): `HF_HUB_CACHE` должен указывать на `<репозиторий>\.hf-cache\hub`, а токен — лежать в `HF_HOME\token` | репозиторий (gitignored) |
 | `.dsh\` (в корне проекта) | слот харнесса для навыков проекта: `.dsh\skills\` | репозиторий (не создан) |
 | `.agents\skills\` (в корне проекта) | слот навыков агентов проекта: `captcha-dataset`, `captcha-train` | **репозиторий** |
 | `.env` (в корне проекта) | **слой env №1 (проект)** — `JAVA_HOME`, `HF_HOME`, `HF_HUB_CACHE`, `PYTHONIOENCODING` | репозиторий (gitignored) |
