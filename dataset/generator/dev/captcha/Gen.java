@@ -91,6 +91,44 @@ public final class Gen {
     /** plugin/id -> the class that claimed it, used only for duplicate diagnostics. */
     private static final Map<String, String> OWNER = new LinkedHashMap<>();
 
+    /** Thread-safe counter for progress reporting during rendering. */
+    private static final java.util.concurrent.atomic.AtomicInteger RENDERED =
+            new java.util.concurrent.atomic.AtomicInteger(0);
+
+    /** Types excluded from generation because they are not useful for OCR training. */
+    private static final Set<String> EXCLUDE_TYPE_IDS = Set.of(
+            // Minecraft GUI screens / chat scenes / dialogs - readable text, but not a captcha image
+            "archy-x/krypton/menu",                   // GUI menu screen, not a captcha image
+            "feelingalive0/advancedcaptcha/button",   // button-panel GUI, 18-27 chars, different regime
+            "feelingalive0/advancedcaptcha/math",     // math GUI screen, answer must be computed
+            "lagbug/xprotect/equation",               // equation, answer must be computed
+            "lagbug/xprotect/gui",                    // 3-20 char string from a chat scene
+            "lagbug/xprotect/reverse",                // requires string reversal
+            "jsdcool/minecaptcha/text",               // chat-log text, scene not a captcha image
+            "laforetbrut/are-you-sure/code",          // confirmation dialog with a code
+            "mrbysco/captcha/math",                   // answer is the sum of two drawn operands
+            "n1zamu/ncaptcha/anvil",                  // anvil dialog, number drawn as Unicode superscripts
+            "yukun99/captchas/itemslot",              // inventory screen, identify items in slot
+            // Keypress / constant-answer challenges
+            "lagbug/xprotect/drop",                   // constant answer "drop"
+            "lagbug/xprotect/jump",                   // constant answer "jump"
+            "lagbug/xprotect/sneak",                  // constant answer "sneak"
+            "lagbug/xprotect/different",              // constant answer "different"
+            "china2b2t/captcha/wool",                 // constant answer "LIME_WOOL"
+            // The answer is not text: a colour, a slot, an object, a picture
+            "lagbug/xprotect/color",                  // colour name, 11 unique answers
+            "lagbug/xprotect/slot",                   // slot number, 8 unique answers
+            "lagbug/xprotect/picture",                // picture panel, text is only the option list
+            "joey61021/captcha/colorgui",             // colour name, 6 unique answers
+            "z4olliez4/recaptcha/captchasx",          // colour name, 13 unique answers
+            "captchagui/clickblock",                  // slot index
+            "gallerycaptcha/ru-object-swatch",        // no text - colour name
+            "jsdcool/minecaptcha/image",              // unreadable answer by construction
+            // Rotated puzzle frames - the answer needs a solver step, not reading
+            "limbofilter/framed2x2",                  // rotated frames
+            "limbofilter/framed3x3"                   // rotated frames
+    );
+
     static {
         // Discovery instantiates one probe per generator, and generators render through AWT.
         System.setProperty("java.awt.headless", "true");
@@ -414,8 +452,8 @@ public final class Gen {
 
         System.out.println("-".repeat(78));
         System.out.printf("%d captcha types x %d = %d images -> %s%n",
-                TYPES.size(), count, total, out.toAbsolutePath());
-        writeIndex(out, count);
+                types.size(), count, total, out.toAbsolutePath());
+        writeIndex(out, types, count);
 
         double sec = (t1 - t0) / 1e9;
         System.err.printf("[gen] %d images in %.1f s with %d worker(s) -> %.1f images/s%n",
@@ -431,6 +469,11 @@ public final class Gen {
         List<TypeJob> types = new ArrayList<>();
         for (Map.Entry<String, Supplier<Cg>> e : TYPES.entrySet()) {
             String[] parts = e.getKey().split("\\|");
+            String key = (parts[0] + "/" + parts[1]).toLowerCase();
+            if (EXCLUDE_TYPE_IDS.contains(key)) {
+                System.err.printf("[gen] excluded %s — not OCR training data%n", e.getKey());
+                continue;
+            }
             Path dir = out.resolve(parts[0]).resolve(parts[1]);
             Img.mkdirs(dir);
             types.add(new TypeJob(parts[0], parts[1], dir, e.getValue(), count));
@@ -456,9 +499,21 @@ public final class Gen {
                     futures.add(pool.submit(new SampleTask(t, index)));
                 }
             }
+            long totalSamples = (long) types.size() * count;
+            long reportEvery = 5000;
+            RENDERED.set(0);
+            long lastMilestone = 0;
             for (Future<Void> f : futures) {
                 f.get();
+                long n = RENDERED.get();
+                long milestone = n / reportEvery;
+                while (milestone > lastMilestone) {
+                    lastMilestone++;
+                    System.err.printf("[gen] %d / %d images rendered%n",
+                            lastMilestone * reportEvery, totalSamples);
+                }
             }
+            System.err.printf("[gen] all %d images rendered%n", RENDERED.get());
         } finally {
             pool.shutdown();
             pool.awaitTermination(1, TimeUnit.HOURS);
@@ -497,6 +552,7 @@ public final class Gen {
                     roiJson(c.roi()),
                     img.getWidth(), img.getHeight(), esc(c.source()));
             type.nanos += System.nanoTime() - start;
+            RENDERED.incrementAndGet();
             return null;
         }
     }
@@ -525,7 +581,7 @@ public final class Gen {
         return "[" + roi[0] + "," + roi[1] + "," + roi[2] + "," + roi[3] + "]";
     }
 
-    private static void writeIndex(Path out, int count) throws Exception {
+    private static void writeIndex(Path out, List<TypeJob> types, int count) throws Exception {
         StringBuilder sb = new StringBuilder();
         sb.append("<!doctype html><meta charset=utf-8><title>Captcha dataset</title>\n");
         sb.append("<style>");
@@ -543,28 +599,25 @@ public final class Gen {
         sb.append("</style>\n");
 
         sb.append("<h1>Minecraft anti-bot captcha dataset</h1>");
-        sb.append("<div class=s>").append(TYPES.size()).append(" captcha types &times; ").append(count)
+        sb.append("<div class=s>").append(types.size()).append(" captcha types &times; ").append(count)
                 .append(" samples &middot; showing first 16 of each</div><nav>");
-        for (Map.Entry<String, Supplier<Cg>> e : TYPES.entrySet()) {
-            String[] p = e.getKey().split("\\|");
-            sb.append("<a href=#").append(p[0]).append("_").append(p[1]).append(">")
-                    .append(p[0]).append(" / ").append(p[1]).append("</a>");
+        for (TypeJob t : types) {
+            sb.append("<a href=#").append(t.plugin).append("_").append(t.id).append(">")
+                    .append(t.plugin).append(" / ").append(t.id).append("</a>");
         }
         sb.append("</nav>\n");
 
-        for (Map.Entry<String, Supplier<Cg>> e : TYPES.entrySet()) {
-            String[] parts = e.getKey().split("\\|");
-            Path dir = out.resolve(parts[0]).resolve(parts[1]);
-            String anchor = parts[0] + "_" + parts[1];
-            sb.append("<h2 id=").append(anchor).append(">").append(parts[0]).append(" &middot; ")
-                    .append(parts[1]).append("</h2>");
-            sb.append("<div class=s>source: <b>").append(sample(e.getValue()))
+        for (TypeJob t : types) {
+            String anchor = t.plugin + "_" + t.id;
+            sb.append("<h2 id=").append(anchor).append(">").append(t.plugin).append(" &middot; ")
+                    .append(t.id).append("</h2>");
+            sb.append("<div class=s>source: <b>").append(sample(t.factory))
                     .append("</b></div><div class=g>");
             int show = Math.min(count, 16);
             for (int i = 1; i <= show; i++) {
                 sb.append(String.format("<div class=c><img loading=lazy src=\"%s/%s/%03d.png\">"
                         + "<div>%03d &middot; %s</div></div>",
-                        parts[0], parts[1], i, i, esc(sampleAnswer(dir, i))));
+                        t.plugin, t.id, i, i, esc(sampleAnswer(t.dir, i))));
             }
             sb.append("</div>\n");
         }

@@ -34,9 +34,22 @@ git-sha1 для обычных), а не только размер. Датасе
     python tools/upload_dataset.py --dry-run   # план, ничего не грузится
     python tools/upload_dataset.py             # загрузка
     python tools/upload_dataset.py --verify    # проверка удалённого дерева
+    python tools/upload_dataset.py --prune     # загрузка + удаление устаревших файлов
 
-Загрузка идёт батчами (по одному типу капчи = один коммит), с ретраями: падение
-сети не теряет уже залитое, повторный запуск докачивает остаток.
+Загрузка идёт батчами (метки — один батч, дальше по одному типу капчи), а каждый
+батч режется на коммиты не больше ``--batch-files`` файлов (по умолчанию 250):
+десять тысяч PNG одного типа больше не превращаются в один стомегабайтный
+коммит. Ретраи прежние: падение сети не теряет уже залитое, повторный запуск
+докачивает остаток.
+
+Сколько потоков отдаётся одному коммиту, задаёт ``--num-threads`` (по умолчанию
+16, зажимается в 1..64): это же число — размер пула загрузки LFS, поэтому от него
+зависит скорость заливки большого набора.
+
+``--prune`` удаляет из ``data/`` те удалённые файлы, которых больше нет в
+локальном дереве (например, типы, убранные из набора), тоже кусками по
+``--batch-files``. Карточка, ``LICENSE``, сводка и ``.gitattributes`` не
+удаляются никогда, и ничего вне ``data/`` не трогается.
 
 Коды выхода: ``0`` — успех, ``1`` — ошибка, ``2`` — нет авторизации.
 """
@@ -83,6 +96,22 @@ REGENERATION_DATE = "2026-10-22"
 #: Ретраи на один батч (коммит).
 MAX_RETRIES = 4
 RETRY_SLEEP = 8.0
+
+#: Сколько файлов кладётся в ОДИН коммит (по умолчанию); переопределяется
+#: флагом ``--batch-files``. 250 файлов — это единицы мегабайт на коммит.
+DEFAULT_BATCH_FILES = 250
+
+#: Сколько потоков отдаётся одному коммиту (``num_threads`` у
+#: ``HfApi.create_commit``). Это же число — размер пула загрузки LFS, поэтому
+#: именно оно ограничивает скорость заливки больших наборов; по умолчанию хаб
+#: ставит 5. Переопределяется флагом ``--num-threads``.
+DEFAULT_NUM_THREADS = 16
+MIN_NUM_THREADS = 1
+MAX_NUM_THREADS = 64
+
+#: Действующее значение ``--num-threads``: его ставит ``main()``, его читают все
+#: вызовы ``create_commit`` (одна точка правды).
+NUM_THREADS = DEFAULT_NUM_THREADS
 
 
 def log(message: str = "") -> None:
@@ -453,6 +482,22 @@ class Plan:
     def total_bytes(self) -> int:
         return sum(p.stat().st_size for _, items in self.batches for _, p in items)
 
+    def chunk_count(self, batch_files: int) -> int:
+        """Сколько коммитов получится, если резать каждый батч по N файлов."""
+        return sum(chunk_count(len(items), batch_files) for _, items in self.batches)
+
+
+def chunk_count(files: int, batch_files: int) -> int:
+    """Число кусков по ``batch_files`` файлов (0 файлов — 0 коммитов)."""
+    per = max(1, int(batch_files))
+    return -(-files // per)
+
+
+def chunked(items: list, batch_files: int) -> list[list]:
+    """Разрезать список на куски не длиннее ``batch_files``."""
+    per = max(1, int(batch_files))
+    return [items[i:i + per] for i in range(0, len(items), per)]
+
 
 def build_plan(types: list, digests: dict[str, str]) -> tuple[Plan, list[str]]:
     """План: сначала все ``labels.jsonl`` (аудит-тропа), потом PNG по типам.
@@ -484,26 +529,159 @@ def build_plan(types: list, digests: dict[str, str]) -> tuple[Plan, list[str]]:
     return plan, replaced
 
 
-def upload_batch(api, repo_id: str, name: str, items: list[tuple[str, Path]]) -> int:
-    """Залить один батч одним коммитом, с ретраями. Возвращает число файлов."""
-    from huggingface_hub import CommitOperationAdd
+def local_target_paths(types: list) -> set[str]:
+    """Полный набор путей, которые ДОЛЖНЫ быть в репозитории для локального дерева.
 
-    operations = [CommitOperationAdd(path_in_repo=path, path_or_fileobj=local)
-                  for path, local in items]
+    Это все ``labels.jsonl`` и все PNG всех типов — не только изменённые файлы
+    плана, а весь целевой набор: по нему считается устаревшее (stale).
+    """
+    paths: set[str] = set()
+    for t in types:
+        paths.add(f"{DATA_PREFIX}/{t.type_id}/labels.jsonl")
+        for png in t.pngs:
+            paths.add(f"{DATA_PREFIX}/{t.type_id}/{png.name}")
+    return paths
+
+
+def is_protected_path(path_in_repo: str) -> bool:
+    """Файл, который ``--prune`` не удаляет никогда (где бы он ни лежал)."""
+    name = path_in_repo.rsplit("/", 1)[-1]
+    return (name in {"README.md", INVENTORY_NAME, ".gitattributes"}
+            or name.startswith("LICENSE"))
+
+
+def is_remote_folder(entry) -> bool:
+    """Каталог ли это в ``list_repo_tree``.
+
+    В ``huggingface_hub`` >= 1.x у записей нет поля ``type``: каталог приходит
+    объектом ``RepoFolder``, у файла есть ``blob_id``/``size``. Старые версии
+    отдавали ``type == "directory"`` — поддерживаем оба вида.
+    """
+    if type(entry).__name__ == "RepoFolder":
+        return True
+    kind = getattr(entry, "type", None)
+    if isinstance(kind, str) and kind.lower() in ("directory", "dir", "folder"):
+        return True
+    return getattr(entry, "blob_id", None) is None and not hasattr(entry, "size")
+
+
+def remote_files(api, repo_id: str) -> dict[str, int]:
+    """Карта «путь в репозитории -> размер» для всех ФАЙЛОВ удалённого дерева."""
+    files: dict[str, int] = {}
+    try:
+        entries = list(api.list_repo_tree(repo_id=repo_id, repo_type="dataset",
+                                          recursive=True))
+    except Exception as exc:  # noqa: BLE001 — репозитория ещё нет
+        log(f"  (репозиторий недоступен: {type(exc).__name__})")
+        return files
+    for entry in entries:
+        path = getattr(entry, "path", None)
+        if path is None or is_remote_folder(entry):
+            continue
+        files[path] = getattr(entry, "size", 0) or 0
+    return files
+
+
+def is_stale_path(path_in_repo: str, local: set[str]) -> bool:
+    """Путь под ``data/``, которого нет локально и который не защищён."""
+    return (path_in_repo.startswith(DATA_PREFIX + "/")
+            and path_in_repo not in local
+            and not is_protected_path(path_in_repo))
+
+
+def stale_remote_files(remote: dict[str, int], local: set[str]) -> dict[str, int]:
+    """Удалённые файлы под ``data/``, которых нет в локальном целевом наборе."""
+    return {path: size for path, size in remote.items() if is_stale_path(path, local)}
+
+
+def stale_type_ids(stale: dict[str, int], types: list) -> list[str]:
+    """Каталоги типов, которые есть на сервере, но которых нет локально.
+
+    Берутся только листовые каталоги устаревших файлов: промежуточные
+    (``data``, ``data/out``, ``data/out/<owner>``) — не типы и в лог не идут.
+    """
+    known = {f"{DATA_PREFIX}/{t.type_id}" for t in types}
+    directories = {path.rsplit("/", 1)[0] for path in stale}
+    leaves = [directory for directory in directories
+              if directory not in known
+              and not any(other.startswith(directory + "/")
+                          for other in directories)]
+    return sorted(leaves)
+
+
+def type_id_of_dir(directory: str) -> str:
+    """``data/out/x/y`` -> ``out/x/y`` (для читаемого лога)."""
+    prefix = DATA_PREFIX + "/"
+    return directory[len(prefix):] if directory.startswith(prefix) else directory
+
+
+def create_commit_with_retries(api, repo_id: str, operations: list,
+                               label: str) -> None:
+    """``create_commit`` с ретраями; ``label`` — сообщение коммита и имя в логе."""
     last_error: Exception | None = None
     for attempt in range(1, MAX_RETRIES + 1):
         try:
             api.create_commit(repo_id=repo_id, operations=operations,
-                              repo_type="dataset",
-                              commit_message=f"CaptchaOCR dataset: {name}")
-            return len(items)
+                              repo_type="dataset", commit_message=label,
+                              num_threads=NUM_THREADS)
+            return
         except Exception as exc:  # noqa: BLE001 — сеть может упасть в любой момент
             last_error = exc
             wait = RETRY_SLEEP * attempt
-            warn(f"батч «{name}» не залился (попытка {attempt}/{MAX_RETRIES}): "
+            warn(f"коммит «{label}» не залился (попытка {attempt}/{MAX_RETRIES}): "
                  f"{type(exc).__name__}: {exc}; жду {wait:.0f} с")
             time.sleep(wait)
-    raise RuntimeError(f"батч «{name}» не залился после {MAX_RETRIES} попыток: {last_error}")
+    raise RuntimeError(f"коммит «{label}» не залился после {MAX_RETRIES} попыток: "
+                       f"{last_error}")
+
+
+def upload_batch(api, repo_id: str, name: str,
+                 items: list[tuple[str, Path]],
+                 batch_files: int = DEFAULT_BATCH_FILES) -> int:
+    """Залить батч кусками по ``batch_files`` файлов: один кусок = один коммит.
+
+    Возвращает число залитых файлов. В сообщении коммита стоит номер куска
+    (``... (1/40)``), чтобы история не превращалась в стомегабайтные коммиты.
+    """
+    from huggingface_hub import CommitOperationAdd
+
+    chunks = chunked(items, batch_files)
+    total = len(chunks)
+    uploaded = 0
+    for index, chunk in enumerate(chunks, start=1):
+        operations = [CommitOperationAdd(path_in_repo=path, path_or_fileobj=local)
+                      for path, local in chunk]
+        create_commit_with_retries(
+            api, repo_id, operations,
+            f"CaptchaOCR dataset: {name} ({index}/{total})")
+        uploaded += len(chunk)
+        log(f"    commit {index}/{total}: {name} — {len(chunk)} files")
+    return uploaded
+
+
+def prune_remote(api, repo_id: str, stale: dict[str, int],
+                 batch_files: int = DEFAULT_BATCH_FILES) -> tuple[int, int]:
+    """Удалить устаревшие файлы кусками по ``batch_files``: кусок = один коммит.
+
+    Возвращает ``(путей, байт)``. Карточка, сводка, ``LICENSE*`` и
+    ``.gitattributes`` сюда не попадают (их отфильтровал ``stale_remote_files``).
+    """
+    from huggingface_hub import CommitOperationDelete
+
+    paths = sorted(stale)
+    chunks = chunked(paths, batch_files)
+    total = len(chunks)
+    deleted = 0
+    deleted_bytes = 0
+    for index, chunk in enumerate(chunks, start=1):
+        operations = [CommitOperationDelete(path_in_repo=path) for path in chunk]
+        create_commit_with_retries(
+            api, repo_id, operations,
+            f"CaptchaOCR dataset: prune stale files ({index}/{total})")
+        deleted += len(chunk)
+        deleted_bytes += sum(stale[path] for path in chunk)
+        log(f"    commit {index}/{total}: prune — {len(chunk)} files")
+    return deleted, deleted_bytes
 
 
 def upload_metadata(api, repo_id: str, files: dict[str, bytes]) -> None:
@@ -513,7 +691,8 @@ def upload_metadata(api, repo_id: str, files: dict[str, bytes]) -> None:
     operations = [CommitOperationAdd(path_in_repo=path, path_or_fileobj=data)
                   for path, data in files.items()]
     api.create_commit(repo_id=repo_id, operations=operations, repo_type="dataset",
-                      commit_message="CaptchaOCR dataset: card, inventory, license")
+                      commit_message="CaptchaOCR dataset: card, inventory, license",
+                      num_threads=NUM_THREADS)
 
 
 # =====================================================================================
@@ -538,7 +717,7 @@ def verify(api, repo_id: str, types: list) -> int:
         path = getattr(entry, "path", None)
         if path is None:
             continue
-        if getattr(entry, "type", "file") == "directory":
+        if is_remote_folder(entry):
             continue
         remote_paths.add(path)
         size = getattr(entry, "size", 0) or 0
@@ -553,6 +732,8 @@ def verify(api, repo_id: str, types: list) -> int:
     local_labels = len(types)
     local_bytes = sum(t.inventory["bytes"] for t in types) + sum(
         t.labels_path.stat().st_size for t in types)
+    local_paths = local_target_paths(types)
+    stale_count = sum(1 for path in remote_paths if is_stale_path(path, local_paths))
 
     try:
         info = api.repo_info(repo_id=repo_id, repo_type="dataset")
@@ -568,6 +749,7 @@ def verify(api, repo_id: str, types: list) -> int:
     log(f"local PNG:       {local_png}")
     log(f"local labels:    {local_labels}")
     log(f"local bytes:     {local_bytes} ({ph.human_bytes(local_bytes)})")
+    log(f"stale remote paths: {stale_count}")
 
     # История коммитов: публикация — это ДОБАВЛЕНИЕ, история не переписывается.
     log("")
@@ -612,6 +794,15 @@ def verify(api, repo_id: str, types: list) -> int:
 # main
 # =====================================================================================
 
+def clamp_num_threads(value: int) -> int:
+    """Зажать ``--num-threads`` в ``[MIN_NUM_THREADS, MAX_NUM_THREADS]``."""
+    clamped = max(MIN_NUM_THREADS, min(MAX_NUM_THREADS, int(value)))
+    if clamped != int(value):
+        warn(f"--num-threads {value} вне диапазона "
+             f"[{MIN_NUM_THREADS}, {MAX_NUM_THREADS}], использую {clamped}")
+    return clamped
+
+
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Опубликовать датасет CaptchaOCR на HF Hub (существующий репозиторий).")
@@ -623,6 +814,19 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
                         help="напечатать план и выйти, ничего не грузя")
     parser.add_argument("--verify", action="store_true",
                         help="проверить удалённое дерево и выйти")
+    parser.add_argument("--prune", action="store_true",
+                        help="после заливки удалить из data/ файлы, которых больше нет "
+                             "в локальном дереве (устар. типы и лишние PNG)")
+    parser.add_argument("--batch-files", type=int, default=DEFAULT_BATCH_FILES,
+                        metavar="N",
+                        help=f"файлов в одном коммите и в одном куске prune-а "
+                             f"(по умолчанию {DEFAULT_BATCH_FILES})")
+    parser.add_argument("--num-threads", type=int, default=DEFAULT_NUM_THREADS,
+                        metavar="N",
+                        help=f"потоков на один коммит (num_threads у create_commit; "
+                             f"это же размер пула загрузки LFS). Допустимо "
+                             f"{MIN_NUM_THREADS}..{MAX_NUM_THREADS}, по умолчанию "
+                             f"{DEFAULT_NUM_THREADS} (у хаба 5)")
     parser.add_argument("--token", default=None, help="HF-токен (иначе из окружения/кэша)")
     parser.add_argument("--private", action="store_true",
                         help="создать репозиторий приватным (по умолчанию — публичный)")
@@ -630,8 +834,14 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
 
 
 def main(argv: list[str] | None = None) -> int:
+    global NUM_THREADS
+
     args = parse_args(argv)
     data_dir = Path(args.data_dir).resolve()
+    if args.batch_files < 1:
+        warn(f"--batch-files {args.batch_files} < 1, использую 1")
+        args.batch_files = 1
+    NUM_THREADS = clamp_num_threads(args.num_threads)
 
     token = ph.require_token(args.token)
     api = ph.api_for(token)
@@ -674,20 +884,53 @@ def main(argv: list[str] | None = None) -> int:
     log(f"remote files:    {len(digests)}")
     plan, unchanged = build_plan(types, digests)
 
+    local_paths = local_target_paths(types)
+    labels_to_add = sum(1 for _, items in plan.batches for path, _ in items
+                        if path.endswith("labels.jsonl"))
+    png_to_add = plan.total_files() - labels_to_add
+    chunks = plan.chunk_count(args.batch_files)
+
+    stale: dict[str, int] = {}
+    stale_dirs: list[str] = []
+    stale_bytes = 0
+    if args.prune:
+        stale = stale_remote_files(remote_files(api, args.repo_id), local_paths)
+        stale_dirs = stale_type_ids(stale, types)
+        stale_bytes = sum(stale.values())
+
     log("")
     log("=== План загрузки ===")
-    log(f"unchanged (skipped): {len(unchanged)}")
-    log(f"batches:               {len(plan.batches)}")
+    log(f"types:                 {len(types)}")
+    log(f"local target paths:    {len(local_paths)}")
+    log(f"unchanged (skipped):   {len(unchanged)}")
+    log(f"labels to add:         {labels_to_add}")
+    log(f"PNG to add:            {png_to_add}")
     log(f"files to upload:       {plan.total_files()}")
     log(f"bytes to upload:       {plan.total_bytes()} ({ph.human_bytes(plan.total_bytes())})")
+    log(f"batches:               {len(plan.batches)}")
+    log(f"chunks (--batch-files {args.batch_files}): {chunks}")
+    log(f"threads per commit: {NUM_THREADS}")
     for name, items in plan.batches[:6]:
         log(f"  - {name}: {len(items)} files")
     if len(plan.batches) > 6:
         log(f"  ... and {len(plan.batches) - 6} more batches")
 
+    if args.prune:
+        log("")
+        log("=== Prune ===")
+        log(f"stale remote paths:    {len(stale)}")
+        log(f"stale bytes:           {stale_bytes} ({ph.human_bytes(stale_bytes)})")
+        log(f"stale type ids:        {len(stale_dirs)}")
+        log(f"prune chunks (--batch-files {args.batch_files}): "
+            f"{chunk_count(len(stale), args.batch_files)}")
+        for directory in stale_dirs[:50]:
+            log(f"  - {type_id_of_dir(directory)}")
+        if len(stale_dirs) > 50:
+            log(f"  ... and {len(stale_dirs) - 50} more type ids")
+
     if args.dry_run:
         log("")
-        log("DRY RUN: nothing was uploaded.")
+        log("DRY RUN: nothing was uploaded, nothing was deleted.")
         return EXIT_OK
 
     # 2. Карточка, сводка, LICENSE, .gitattributes — одним коммитом.
@@ -712,19 +955,34 @@ def main(argv: list[str] | None = None) -> int:
     upload_metadata(api, args.repo_id, metadata)
     log("  uploaded.")
 
-    # 3. Метки (сначала) и PNG (потом, по типам).
+    # 3. Метки (сначала) и PNG (потом, по типам), кусками по --batch-files.
     log("")
     log("=== Данные ===")
     uploaded = 0
     for index, (name, items) in enumerate(plan.batches, start=1):
-        uploaded += upload_batch(api, args.repo_id, name, items)
+        uploaded += upload_batch(api, args.repo_id, name, items, args.batch_files)
         log(f"  [{index}/{len(plan.batches)}] {name}: {len(items)} files "
             f"(всего {uploaded}/{plan.total_files()})")
 
     log("")
-    log(f"uploaded {uploaded} files in {len(plan.batches)} commits")
+    log(f"uploaded {uploaded} files in {chunks} data commits")
 
-    # 4. Проверка удалённого дерева.
+    # 4. Prune: удалить устаревшие файлы (после добавлений), кусками.
+    if args.prune:
+        log("")
+        log("=== Prune ===")
+        log(f"stale remote paths:    {len(stale)}")
+        log(f"stale bytes:           {stale_bytes} ({ph.human_bytes(stale_bytes)})")
+        log(f"stale type ids:        {len(stale_dirs)}")
+        for directory in stale_dirs[:50]:
+            log(f"  - {type_id_of_dir(directory)}")
+        if len(stale_dirs) > 50:
+            log(f"  ... and {len(stale_dirs) - 50} more type ids")
+        deleted, deleted_bytes = prune_remote(api, args.repo_id, stale, args.batch_files)
+        log(f"  deleted {deleted} files ({ph.human_bytes(deleted_bytes)}) "
+            f"in {chunk_count(len(stale), args.batch_files)} commits")
+
+    # 5. Проверка удалённого дерева.
     log("")
     log("=== Проверка ===")
     return verify(api, args.repo_id, types)

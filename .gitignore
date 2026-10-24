@@ -66,3 +66,7 @@ tmp*/
 pip-*
 torchinductor_*
 *.raw
+
+# Разметка датасета живёт на Hugging Face (внутри parquet), в git не нужна
+dataset/out/**/labels.jsonl
+dataset/out_ru/**/labels.jsonl
