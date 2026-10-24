@@ -73,3 +73,7 @@ dataset/out_ru/**/labels.jsonl
 
 # ќдноразова€ проверочна€ выборка из отдельного прогона генератора
 dataset/eval_fresh/
+
+# ƒанные прогонов и опубликованные веса - на диске и на HF, не в git
+train/runs/
+train/published/

@@ -95,6 +95,10 @@ class A:
     norm = "paddle"
     glyph_scale = "band"
     limit_per_type = None
+    # build_split() in finetune_ppocr.py reads these two flags; the interpolation
+    # measurement keeps the type-level split, so band-less types stay out.
+    train_frames = False
+    holdout_per_type = 0
 
 
 def parse_args(argv=None):
