@@ -74,17 +74,18 @@ def resolve_checkpoint(explicit=None):
     candidates = []
     if explicit:
         candidates.append((explicit, None))
-    candidates.append((_ck("train/run_ppocr/big/best.pt"), "ppocr"))
-    candidates.append((_ck("train/run_ppocr/final/best.pt"), "ppocr"))
-    crnn_big = _latest_glob("train/run/crnn_big/ckpt/step_*.pt")
+    candidates.append((_ck("train/runs/ppocrv6/all20/best.pt"), "ppocr"))
+    candidates.append((_ck("train/runs/ppocrv6/big/soup_best.pt"), "ppocr"))
+    candidates.append((_ck("train/runs/ppocrv6/big/best.pt"), "ppocr"))
+    crnn_big = _latest_glob("train/runs/crnn/crnn_big/ckpt/step_*.pt")
     if crnn_big:
         candidates.append((crnn_big, "crnn"))
-    candidates.append((_ck("train/run/foldA/ckpt/step_0006578.pt"), "crnn"))
 
     for path, kind in candidates:
         if path and os.path.isfile(path):
             if kind is None:
-                kind = "ppocr" if "run_ppocr" in path.replace("\\", "/") else "crnn"
+                flat = path.replace("\\", "/")
+                kind = "ppocr" if ("run_ppocr" in flat or "ppocrv6" in flat) else "crnn"
             return path, kind
     return None, None
 
