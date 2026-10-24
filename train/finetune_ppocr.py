@@ -149,8 +149,9 @@ def build_split(args, vocab):
         if tid in GROUP_C:
             dropped.append((tid, "group C: not an OCR task"))
             continue
-        if st["n_roi"] == 0:
-            dropped.append((tid, "no band (roi = null): not a recognition target"))
+        if st["n_roi"] == 0 and not args.train_frames:
+            dropped.append((tid, "no band (roi = null): not a recognition target "
+                                 "(pass --train-frames to train them as full frames)"))
             continue
         alphabet = st["alphabet"]
         missing = sorted(set(alphabet) - set(vocab.table))
@@ -253,6 +254,14 @@ def main():
                     help="types to evaluate (default: the held-out ones plus the trained ones)")
     ap.add_argument("--no-roi-mode", choices=("frame", "content", "skip"), default="frame",
                     help="how a type without a band is evaluated (the bench used 'frame')")
+    ap.add_argument("--holdout-per-type", type=int, default=0,
+                    help="0 = off. When N > 0, the FIRST N items of every trained type go to the "
+                         "evaluation set and the type still trains on the rest: the evaluation is "
+                         "per unseen SAMPLE, nearly all images train")
+    ap.add_argument("--train-frames", action="store_true",
+                    help="do not drop the types without a band: train them on the whole frame "
+                         "(the same crop build_eval_items(no_roi_mode='frame') uses). Group C is "
+                         "still dropped")
     ap.add_argument("--norm", choices=("paddle", "imagenet"), default="paddle")
     ap.add_argument("--glyph-scale", choices=("band", "glyph"), default="band")
     ap.add_argument("--no-augment", action="store_true")
@@ -338,17 +347,67 @@ def main():
         log(f"   {tid:48s} {why}")
     log("")
 
-    train_items = build_items(train_types, limit_per_type=args.limit_per_type)
+    # Banded types train on the band crop (`build_items`); with `--train-frames` the
+    # types without a band train on the whole frame - the very same crop the
+    # evaluation uses for them (`build_eval_items(..., no_roi_mode="frame")`).
+    frame_types = [(t, d) for t, d in train_types if stats[t]["n_roi"] == 0]
+    banded_types = [(t, d) for t, d in train_types if stats[t]["n_roi"] > 0]
+    train_items = build_items(banded_types, limit_per_type=args.limit_per_type)
+    if frame_types:
+        train_items += build_eval_items(frame_types, limit_per_type=args.limit_per_type,
+                                        no_roi_mode="frame")
+        log(f"--train-frames: {len(frame_types)} band-less types trained as full frames: "
+            + ", ".join(t for t, _ in frame_types))
+
+    # Sample-level hold-out: the first N items of EVERY trained type go to the
+    # evaluation set, the type itself still trains on the rest of its items. The unit
+    # of generalisation is still the sample, not the plugin (see train/AGENTS.md).
+    heldout_items = []
+    heldout_per_type = {}
+    if args.holdout_per_type and args.holdout_per_type > 0:
+        n = args.holdout_per_type
+        by_type = {}
+        for it in train_items:
+            by_type.setdefault(it["type"], []).append(it)
+        kept = []
+        for t, lst in by_type.items():
+            held = lst[:n]
+            kept.extend(lst[n:])
+            heldout_per_type[t] = len(held)
+            # same item shape the eval builder produces (band crop or the frame)
+            heldout_items.extend(dict(it, has_roi=bool(it["roi"])) for it in held)
+        train_items = kept
+        short = {t: k for t, k in heldout_per_type.items() if k < n}
+        log(f"HELD-OUT samples (first {n} per type): {len(heldout_items)} items over "
+            f"{len(heldout_per_type)} types")
+        for t in sorted(heldout_per_type):
+            log(f"   {t:48s} held-out={heldout_per_type[t]:4d} "
+                f"train={len(by_type[t]) - heldout_per_type[t]:4d} "
+                f"of {len(by_type[t])}")
+        if short:
+            log(f"   WARNING: {len(short)} types had fewer than {n} items to hold out: "
+                + ", ".join(sorted(short)))
+
     eval_types = val_types
     if args.eval_types:
         wanted = set(args.eval_types)
         eval_types = [(t, d) for t, d in (val_types + train_types) if t in wanted]
+    # The whole-type held-out set (`--val-types`) plus the held-out samples. The same
+    # type may appear in both train and eval when `--holdout-per-type` is used.
     eval_items = build_eval_items(eval_types, limit_per_type=args.limit_per_type,
-                                  no_roi_mode=args.no_roi_mode)
-    val_items = build_eval_items(val_types, limit_per_type=args.limit_per_type,
-                                 no_roi_mode=args.no_roi_mode)
+                                  no_roi_mode=args.no_roi_mode) + heldout_items
+    eval_sample_types = sorted({it["type"] for it in eval_items})
+    # The "held-out median" is taken over the types present in the eval set.
+    heldout_type_ids = {t for t, _ in eval_types} | set(heldout_per_type)
+    val_items = [it for it in eval_items if it["type"] in heldout_type_ids]
     log(f"train items: {len(train_items)}   eval items: {len(eval_items)}   "
         f"held-out items: {len(val_items)}")
+    log(f"eval covers {len(eval_sample_types)} types "
+        f"({len({t for t, _ in val_types})} from --val-types, "
+        f"{len(heldout_per_type)} with held-out samples): "
+        + ", ".join(eval_sample_types))
+    log(f"held-out aggregate: {len(heldout_type_ids)} types "
+        f"(of which on eval loader: {len(val_items)})")
 
     ds_kw = dict(vocab=vocab, norm=args.norm, glyph_scale=args.glyph_scale)
     train_ds = PPOCRDataset(train_items, augment=not args.no_augment, seed=args.seed, **ds_kw)
@@ -370,7 +429,7 @@ def main():
         per_type = evaluate(model, eval_loader, vocab, device, amp=not args.no_amp)
         zero = {"per_type": per_type,
                 "held_out": aggregate({t: v for t, v in per_type.items()
-                                       if t in {x[0] for x in val_types}}),
+                                       if t in heldout_type_ids}),
                 "all": aggregate(per_type),
                 "seconds": round(time.time() - t0, 1)}
         print_per_type(per_type, "ZERO STEP (pretrained, before any training)")
@@ -488,7 +547,7 @@ def main():
         last = (epoch == args.epochs - 1) or stop or (epoch + 1) % args.eval_every == 0
         if last:
             per_type = evaluate(model, eval_loader, vocab, device, amp=not args.no_amp)
-            val_per = {t: v for t, v in per_type.items() if t in {x[0] for x in val_types}}
+            val_per = {t: v for t, v in per_type.items() if t in heldout_type_ids}
             agg = aggregate(val_per)
             print_per_type(per_type, f"EPOCH {epoch} (held-out types are the {len(val_per)} marked ones)")
             log(f"epoch {epoch}: held-out median exact={agg['exact_match_median']} "
@@ -523,13 +582,13 @@ def main():
         ck = torch.load(best_path, map_location="cpu", weights_only=False)
         model.load_state_dict(ck["model"])
         per_type = evaluate(model, eval_loader, vocab, device, amp=not args.no_amp)
-        val_per = {t: v for t, v in per_type.items() if t in {x[0] for x in val_types}}
+        val_per = {t: v for t, v in per_type.items() if t in heldout_type_ids}
         final = {"per_type": per_type, "held_out": aggregate(val_per),
                  "all": aggregate(per_type), "epoch": ck["epoch"], "step": ck["step"]}
         print_per_type(per_type, f"FINAL (best checkpoint, epoch {ck['epoch']})")
     else:
         per_type = evaluate(model, eval_loader, vocab, device, amp=not args.no_amp)
-        val_per = {t: v for t, v in per_type.items() if t in {x[0] for x in val_types}}
+        val_per = {t: v for t, v in per_type.items() if t in heldout_type_ids}
         final = {"per_type": per_type, "held_out": aggregate(val_per),
                  "all": aggregate(per_type), "epoch": None, "step": None}
         print_per_type(per_type, "FINAL (last epoch, no best checkpoint)")
@@ -541,7 +600,12 @@ def main():
                   "classes": len(vocab), "blank_index": vocab.blank,
                   "head": "pretrained head kept (not replaced)"},
         "split": {"train_types": [t for t, _ in train_types],
+                  "frame_train_types": [t for t, _ in frame_types],
                   "held_out_types": [t for t, _ in val_types],
+                  "holdout_per_type": heldout_per_type,
+                  "held_out_types_total": sorted(heldout_type_ids),
+                  "items": {"train": len(train_items), "eval": len(eval_items),
+                            "held_out": len(val_items)},
                   "dropped": {t: w for t, w in dropped}},
         "zero_step": zero,
         "final": final,
