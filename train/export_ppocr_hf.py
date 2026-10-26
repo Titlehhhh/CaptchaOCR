@@ -157,10 +157,19 @@ def main():
         base_path = fetch(args.model, "model.safetensors")
         base = load_file(base_path)
         n_interp = 0
+        n_skipped = 0
         for k, v in list(sd.items()):
             if k in base and v.is_floating_point() and base[k].is_floating_point():
+                if tuple(base[k].shape) != tuple(v.shape):
+                    # e.g. head.head.* of an --expand-charset checkpoint: the base
+                    # has no counterpart to interpolate towards - keep the ckpt's
+                    n_skipped += 1
+                    continue
                 sd[k] = (a * v.float() + (1.0 - a) * base[k].float()).to(v.dtype).contiguous()
                 n_interp += 1
+        if n_skipped:
+            print(f"soup: {n_skipped} tensors skipped (shape mismatch with the base - "
+                  f"the checkpoint's own values kept, e.g. the expanded head rows)")
         print(f"soup: alpha={a} -> {n_interp} tensors interpolated with {args.model} "
               f"(the non-float buffers are taken from the checkpoint)")
     meta_alpha = a
@@ -176,6 +185,13 @@ def main():
     src = fetch(args.model, "config.json")
     with open(src, "rb") as f:
         config = json.load(f)
+    # an --expand-charset checkpoint carries a bigger head than the base config:
+    # patch head_out_channels so the published config matches the weights
+    head_out = sd.get("head.head.weight")
+    if head_out is not None and head_out.shape[0] != config.get("head_out_channels"):
+        config["head_out_channels"] = int(head_out.shape[0])
+        print(f"config.json: head_out_channels patched to {config['head_out_channels']} "
+              f"(the checkpoint's expanded head)")
     with open(os.path.join(out, "config.json"), "w", encoding="utf-8") as f:
         json.dump(config, f, ensure_ascii=False, indent=2)
         f.write("\n")
@@ -188,6 +204,11 @@ def main():
         proc = json.load(f)
     proc["image_mean"] = list(args.mean)
     proc["image_std"] = list(args.std)
+    # the checkpoint's own dictionary when it carries one (the expanded charset)
+    if ck.get("character_list"):
+        proc["character_list"] = list(ck["character_list"])
+        print(f"preprocessor_config.json: character_list taken from the checkpoint "
+              f"({len(proc['character_list'])} classes, expanded charset)")
     with open(os.path.join(out, "preprocessor_config.json"), "w", encoding="utf-8") as f:
         json.dump(proc, f, ensure_ascii=False, indent=2)
         f.write("\n")
