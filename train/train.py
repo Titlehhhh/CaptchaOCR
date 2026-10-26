@@ -406,7 +406,6 @@ def main():
             lengths = batch["lengths"].to(device)
             with torch.amp.autocast("cuda", enabled=use_amp):
                 logits, t = model(images)
-                # the time axis is the width / 4 the model produced
                 log_probs = logits.log_softmax(dim=-1).permute(1, 0, 2)   # (T, B, C)
                 input_lengths = torch.full((logits.shape[0],), t, dtype=torch.long,
                                           device=device)

@@ -159,11 +159,21 @@ def main(argv=None) -> int:
     ft = {k: v.detach().clone().float() for k, v in ck["model"].items()}
     print(f"base checkpoint: {best}  epoch={ck.get('epoch')} step={ck.get('step')}", flush=True)
 
-    # the model's own dictionary
+    # an --expand-charset checkpoint carries a bigger head than the pretrained
+    # config: grow the model's head to match BEFORE any load_state_dict
+    ft_w = ft.get("head.head.weight")
+    if ft_w is not None and tuple(ft_w.shape) != tuple(model.head.head.weight.shape):
+        import torch.nn as nn
+        old = model.head.head
+        model.head.head = nn.Linear(old.in_features, ft_w.shape[0], bias=True)
+
+    # the model's own dictionary - the checkpoint's own list when it carries one
+    # (an --expand-charset run grew the head, so the pretrained list is too small)
     from huggingface_hub import hf_hub_download
     proc = json.load(open(hf_hub_download(DEFAULT_MODEL, "preprocessor_config.json"),
                           encoding="utf-8"))
-    vocab = Vocab(proc["character_list"])
+    char_list = ck.get("character_list") or proc["character_list"]
+    vocab = Vocab(char_list)
 
     # the split and the evaluation set - exactly as the training run built them
     roots = [os.path.join(ROOT, "dataset", "out"), os.path.join(ROOT, "dataset", "out_ru")]
@@ -188,7 +198,10 @@ def main(argv=None) -> int:
     for a in alphas:
         state = {}
         for k, v in model.state_dict().items():
-            if k in ft and v.is_floating_point():
+            if k in ft and v.is_floating_point() and tuple(base[k].shape) == tuple(ft[k].shape):
+                # interpolate only where the pretrained base has a counterpart;
+                # rows that exist only in the fine-tuned head (e.g. appended
+                # --expand-charset classes) have nothing to blend towards
                 state[k] = (a * ft[k] + (1.0 - a) * base[k]).to(v.dtype)
             else:
                 state[k] = ft[k].to(v.dtype) if k in ft else v
@@ -212,6 +225,7 @@ def main(argv=None) -> int:
     torch.save({"model": best_state, "alpha": best_alpha,
                 "source_checkpoint": best, "source_epoch": ck.get("epoch"),
                 "source_step": ck.get("step"),
+                "character_list": list(char_list),
                 "held_out_median_exact": best_score,
                 "recipe": "theta = alpha * theta_finetuned + (1 - alpha) * theta_pretrained"},
                soup_path)

@@ -58,7 +58,6 @@ def make_sheet(entries, mode, out_path, cols=10, cell_w=150, crop_h=32, label_h=
     f_cell = font(11)
     f_title = font(19)
 
-    # First pass: how tall is every block?
     blocks = []
     for type_id, directory in entries:
         rows = read_labels(directory)

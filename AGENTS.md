@@ -101,6 +101,12 @@ this repository's history: `McUi.drawColored` and `TextBand`. Everything else go
 | `HANDOVER.md` | состояние проекта и все измеренные числа |
 | `reports/HTML/index.html` | **единственный browsable-отчёт** для владельца: все измеренные числа |
 | `reports/README.md` | индекс отчётов; обзор системы — в `reports/archive/2026-10-22-overview/` |
+| `agents/WORKFLOW.md` | как запускать workflow: переопределение провайдера/модели в `agent()`, бесплатные модели OpenRouter (`recursive/flint-v1.0:free` по умолчанию, `thinkingmachines/inkling:free` — fallback), проверенные сниппеты |
+
+**Workflow по максимуму.** Когда владелец просит использовать workflow по максимуму (субагенты
+на бесплатных моделях OpenRouter для него бесплатны, главный агент — нет), запускай субагентов
+инструментом `workflow`, указывая бесплатную модель в `agent(prompt, {provider, model})`;
+проверенный рецепт — [`agents/WORKFLOW.md`](agents/WORKFLOW.md).
 
 ---
 

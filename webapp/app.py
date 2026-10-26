@@ -65,29 +65,22 @@ def _latest_glob(pattern):
     return hits[-1] if hits else None
 
 
+DEFAULT_CHECKPOINT = "train/runs/ppocrv6/universal_v1/best.pt"
+
+
 def resolve_checkpoint(explicit=None):
     """(path, kind) of the checkpoint to serve, or (None, None).
 
+    One pinned default: DEFAULT_CHECKPOINT. Override with --checkpoint.
     `kind` is "ppocr" or "crnn"; it follows from the directory the checkpoint
     lives in, not from the file name.
     """
-    candidates = []
-    if explicit:
-        candidates.append((explicit, None))
-    candidates.append((_ck("train/runs/ppocrv6/all20/best.pt"), "ppocr"))
-    candidates.append((_ck("train/runs/ppocrv6/big/soup_best.pt"), "ppocr"))
-    candidates.append((_ck("train/runs/ppocrv6/big/best.pt"), "ppocr"))
-    crnn_big = _latest_glob("train/runs/crnn/crnn_big/ckpt/step_*.pt")
-    if crnn_big:
-        candidates.append((crnn_big, "crnn"))
-
-    for path, kind in candidates:
-        if path and os.path.isfile(path):
-            if kind is None:
-                flat = path.replace("\\", "/")
-                kind = "ppocr" if ("run_ppocr" in flat or "ppocrv6" in flat) else "crnn"
-            return path, kind
-    return None, None
+    path = explicit or DEFAULT_CHECKPOINT
+    if not path or not os.path.isfile(_ck(path)):
+        return None, None
+    flat = path.replace("\\", "/")
+    kind = "ppocr" if ("ppocrv6" in flat or "run_ppocr" in flat) else "crnn"
+    return _ck(path), kind
 
 
 # --------------------------------------------------------------------------- #
@@ -339,6 +332,33 @@ def geometric_mean(values):
     return float(np.exp(np.mean(np.log(np.clip(values, 1e-6, 1.0)))))
 
 
+def greedy_decode(probs, blank, decode):
+    """Greedy CTC decode of a (T, C) probability tensor -> the prediction dict.
+
+    Shared by the PP-OCRv6 backend and the CRNN backend: argmax per timestep,
+    skip the blanks, keep the first token of a run and its confidence, then map
+    the indices through the backend's own decoder.
+
+    The confidence is the geometric mean of the posteriors of the frames that
+    produced a character - a per-character score the solver can threshold on.
+    """
+    best = probs.argmax(dim=-1)
+    best_p = probs.max(dim=-1).values
+    idxs, confs = [], []
+    prev = -1
+    for t in range(best.shape[0]):
+        k = int(best[t])
+        if k != prev and k != blank:
+            idxs.append(k)
+            confs.append(float(best_p[t]))
+        prev = k
+    text = decode(idxs)
+    per_char = [{"char": c, "confidence": round(p, 4)}
+                for c, p in zip(text, confs)]
+    return {"text": text, "confidence": round(geometric_mean(confs), 4),
+            "per_char": per_char}
+
+
 # --------------------------------------------------------------------------- #
 # the backends
 # --------------------------------------------------------------------------- #
@@ -361,6 +381,7 @@ class PPOCRBackend(Backend):
     def __init__(self, ckpt_path, device):
         super().__init__()
         import torch
+        import torch.nn as nn
         from huggingface_hub import hf_hub_download
         from transformers import PPOCRV6SmallRecForTextRecognition
 
@@ -373,15 +394,25 @@ class PPOCRBackend(Backend):
 
         model = PPOCRV6SmallRecForTextRecognition.from_pretrained(
             self.repo, local_files_only=True)
+        # an --expand-charset checkpoint carries a bigger head and its own
+        # character list: grow the head first, then load, then use its list
+        if ck.get("character_list"):
+            old = model.head.head
+            n = len(ck["character_list"])
+            if n != old.out_features:
+                model.head.head = nn.Linear(old.in_features, n, bias=True)
         model.load_state_dict(ck["model"])
         model.to(device).eval()
         self.model = model
 
-        proc_path = hf_hub_download(self.repo, "preprocessor_config.json",
-                                    local_files_only=True)
-        with open(proc_path, encoding="utf-8") as f:
-            proc = json.load(f)
-        self.character_list = list(proc["character_list"])
+        if ck.get("character_list"):
+            self.character_list = list(ck["character_list"])
+        else:
+            proc_path = hf_hub_download(self.repo, "preprocessor_config.json",
+                                        local_files_only=True)
+            with open(proc_path, encoding="utf-8") as f:
+                proc = json.load(f)
+            self.character_list = list(proc["character_list"])
         self.blank = 0
         self.num_classes = len(self.character_list)
 
@@ -416,21 +447,7 @@ class PPOCRBackend(Backend):
                 enc = self.model.head.encoder(h).last_hidden_state
                 logits = self.model.head.head(enc)
             probs = torch.softmax(logits.float(), dim=-1)[0]
-        best = probs.argmax(dim=-1)
-        best_p = probs.max(dim=-1).values
-        idxs, confs = [], []
-        prev = -1
-        for t in range(best.shape[0]):
-            k = int(best[t])
-            if k != prev and k != self.blank:
-                idxs.append(k)
-                confs.append(float(best_p[t]))
-            prev = k
-        text = self.decode_indices(idxs)
-        per_char = [{"char": c, "confidence": round(p, 4)}
-                    for c, p in zip(text, confs)]
-        return {"text": text, "confidence": round(geometric_mean(confs), 4),
-                "per_char": per_char}
+        return greedy_decode(probs, self.blank, self.decode_indices)
 
 
 class CRNNBackend(Backend):
@@ -472,21 +489,7 @@ class CRNNBackend(Backend):
         with torch.no_grad():
             logits, _t = self.model(px)
         probs = torch.softmax(logits.float(), dim=-1)[0]
-        best = probs.argmax(dim=-1)
-        best_p = probs.max(dim=-1).values
-        idxs, confs = [], []
-        prev = -1
-        for t in range(best.shape[0]):
-            k = int(best[t])
-            if k != prev and k != 0:
-                idxs.append(k)
-                confs.append(float(best_p[t]))
-            prev = k
-        text = self.cs.decode(idxs)
-        per_char = [{"char": c, "confidence": round(p, 4)}
-                    for c, p in zip(text, confs)]
-        return {"text": text, "confidence": round(geometric_mean(confs), 4),
-                "per_char": per_char}
+        return greedy_decode(probs, 0, self.cs.decode)
 
 
 # --------------------------------------------------------------------------- #
@@ -509,9 +512,8 @@ class App:
     def load(self):
         try:
             if not self.checkpoint:
-                raise RuntimeError("no checkpoint found (looked at train/run_ppocr/big/best.pt, "
-                                   "train/run_ppocr/final/best.pt, train/run/crnn_big/ckpt/step_*.pt, "
-                                   "train/run/foldA/ckpt/step_0006578.pt)")
+                raise RuntimeError(f"no checkpoint at {DEFAULT_CHECKPOINT} "
+                                   "(override with --checkpoint)")
             device = self.args.device
             if device == "auto":
                 try:

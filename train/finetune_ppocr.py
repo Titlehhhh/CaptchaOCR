@@ -274,6 +274,11 @@ def main():
                     help="start from the weights of this checkpoint (model only; a fresh "
                          "optimiser and a fresh OneCycleLR schedule are created). Use it to "
                          "continue a finished run with a new, gentler schedule.")
+    ap.add_argument("--expand-charset", action="store_true",
+                    help="expand the CTC dictionary with the characters missing from the "
+                         "pretrained one (the Cyrillic) found in the training labels, and grow "
+                         "the head's output layer accordingly - so the previously dropped Cyrillic "
+                         "types become trainable")
     ap.add_argument("--zero-step", action="store_true", help="only measure the pretrained model")
     ap.add_argument("--eval-only", action="store_true")
     ap.add_argument("--device", default="auto")
@@ -312,11 +317,21 @@ def main():
         f"hidden_size={model.config.hidden_size} head_out_channels={model.config.head_out_channels} "
         f"backbone={model.config.backbone_config.model_type}")
 
+    ckpt_char_list = None
     if args.init_from:
         # start from the weights of another checkpoint (model only); the optimiser and the
         # OneCycleLR schedule are created fresh. The zero step below then measures THAT model.
         init_ck = torch.load(args.init_from, map_location="cpu", weights_only=False)
+        # a checkpoint may carry a larger head than the pretrained config (an --expand-charset
+        # run): grow the model's head to match BEFORE load_state_dict, so the rows land in.
+        init_w = init_ck["model"].get("head.head.weight")
+        if init_w is not None:
+            old_head = model.head.head
+            if init_w.shape[0] != old_head.out_features:
+                grown = nn.Linear(old_head.in_features, init_w.shape[0], bias=True)
+                model.head.head = grown
         model.load_state_dict(init_ck["model"])
+        ckpt_char_list = init_ck.get("character_list")
         log(f"initialised the weights from {args.init_from} "
             f"(epoch={init_ck.get('epoch')} step={init_ck.get('step')})")
 
@@ -325,11 +340,51 @@ def main():
     proc_path = hf_hub_download(args.model, "preprocessor_config.json")
     proc = json.load(open(proc_path, encoding="utf-8"))
     vocab = Vocab(proc["character_list"])
+    if ckpt_char_list is not None:
+        # a checkpoint may carry the dictionary it was trained with (`character_list`)
+        vocab = Vocab(ckpt_char_list)
     log(f"dictionary: {len(vocab)} classes, blank index={vocab.blank}, "
         f"space index={vocab.table.get(' ')}")
     log(f"processor: size={proc.get('size')} pad_size={proc.get('pad_size')} "
         f"max_image_width={proc.get('max_image_width')} "
         f"normalisation={args.norm} glyph_scale={args.glyph_scale} bgr=True")
+
+    # -- charset expansion (`--expand-charset`) ------------------------------- #
+    added_chars = []
+    if args.expand_charset:
+        # every character of the training labels that the dictionary does not know yet
+        missing_chars = set()
+        for _tid, directory in find_types([os.path.join(ROOT, "dataset", "out"),
+                                           os.path.join(ROOT, "dataset", "out_ru")]):
+            for r in read_labels(directory):
+                text = r.get("text") or r.get("answer") or ""
+                missing_chars.update(ch for ch in text if ch not in vocab.table)
+        added_chars = sorted(missing_chars)
+        k_added = len(added_chars)
+        log(f"--expand-charset: {k_added} characters missing from the dictionary: "
+            + " ".join(repr(ch) for ch in added_chars))
+        if k_added:
+            vocab = Vocab.from_extended(vocab.character_list, added_chars)
+            log(f"--expand-charset: dictionary extended to {len(vocab)} classes")
+            # grow the head's output layer: copy the pretrained rows, initialise the new ones
+            old_head = model.head.head
+            new_head = nn.Linear(old_head.in_features, old_head.out_features + k_added, bias=True)
+            with torch.no_grad():
+                new_head.weight.copy_(torch.cat(
+                    [old_head.weight, torch.zeros((k_added, old_head.in_features),
+                                                  dtype=old_head.weight.dtype)], dim=0))
+                new_head.bias.copy_(torch.cat(
+                    [old_head.bias, torch.zeros((k_added,), dtype=old_head.bias.dtype)]))
+                mean_row = new_head.weight[:old_head.out_features].mean(dim=0, keepdim=True)
+                gen = torch.Generator()
+                gen.manual_seed(int(args.seed))
+                noise = torch.randn((k_added, old_head.in_features), generator=gen,
+                                    dtype=old_head.weight.dtype) * 0.02
+                new_head.weight[old_head.out_features:] = mean_row + noise
+                new_head.bias[old_head.out_features:] = 0.0
+            model.head.head = new_head
+            log(f"--expand-charset: head output layer replaced, now {new_head.out_features} classes")
+    save_char_list = bool(args.expand_charset) or ckpt_char_list is not None
 
     # -- split ---------------------------------------------------------------- #
     train_types, val_types, dropped, stats = build_split(args, vocab)
@@ -465,6 +520,9 @@ def main():
                       if (f.startswith("step_") or f == "final.pt") and f.endswith(".pt")])
         if cks:
             ck = torch.load(os.path.join(ckpt_dir, cks[-1]), map_location="cpu", weights_only=False)
+            if ck.get("character_list"):
+                vocab = Vocab(ck["character_list"])
+                log(f"dictionary from checkpoint {cks[-1]} 'character_list': {len(vocab)} classes")
             model.load_state_dict(ck["model"])
             optimizer.load_state_dict(ck["optimizer"])
             sched.load_state_dict(ck["sched"])
@@ -529,10 +587,12 @@ def main():
                     f"lr={sched.get_last_lr()[0]:.2e} {el:.1f}s "
                     f"img/s={sum(img_times)/max(sum(step_times),1e-9):.1f}")
             if global_step % args.save_every == 0:
-                torch.save({"model": model.state_dict(), "optimizer": optimizer.state_dict(),
-                            "sched": sched.state_dict(), "scaler": scaler.state_dict(),
-                            "epoch": epoch, "step": global_step, "args": vars(args)},
-                           os.path.join(ckpt_dir, f"step_{global_step:06d}.pt"))
+                ckpt = {"model": model.state_dict(), "optimizer": optimizer.state_dict(),
+                        "sched": sched.state_dict(), "scaler": scaler.state_dict(),
+                        "epoch": epoch, "step": global_step, "args": vars(args)}
+                if save_char_list:
+                    ckpt["character_list"] = list(vocab.character_list)
+                torch.save(ckpt, os.path.join(ckpt_dir, f"step_{global_step:06d}.pt"))
             if args.max_minutes and (time.time() - t_start) / 60.0 > args.max_minutes:
                 log(f"  time budget reached ({args.max_minutes} min) - stopping")
                 stop = True
@@ -558,8 +618,11 @@ def main():
             score = agg["exact_match_median"] or 0.0
             if score > best["score"]:
                 best = {"score": score, "epoch": epoch, "step": global_step}
-                torch.save({"model": model.state_dict(), "epoch": epoch, "step": global_step,
-                            "args": vars(args)}, os.path.join(out_dir, "best.pt"))
+                best_state = {"model": model.state_dict(), "epoch": epoch, "step": global_step,
+                              "args": vars(args)}
+                if save_char_list:
+                    best_state["character_list"] = list(vocab.character_list)
+                torch.save(best_state, os.path.join(out_dir, "best.pt"))
                 log(f"  new best held-out median exact={score} -> {out_dir}/best.pt")
         if stop:
             break
@@ -571,6 +634,8 @@ def main():
                    "sched": sched.state_dict(), "scaler": scaler.state_dict(),
                    "epoch": last_epoch, "step": global_step,
                    "args": vars(args)}
+    if save_char_list:
+        final_state["character_list"] = list(vocab.character_list)
     torch.save(final_state, os.path.join(ckpt_dir, "final.pt"))
     log(f"resumable checkpoint written: {ckpt_dir}/final.pt (epoch {final_state['epoch']}, "
         f"step {final_state['step']})")
@@ -580,6 +645,9 @@ def main():
     best_path = os.path.join(out_dir, "best.pt")
     if os.path.isfile(best_path):
         ck = torch.load(best_path, map_location="cpu", weights_only=False)
+        if ck.get("character_list"):
+            vocab = Vocab(ck["character_list"])
+            log(f"dictionary from checkpoint {best_path} 'character_list': {len(vocab)} classes")
         model.load_state_dict(ck["model"])
         per_type = evaluate(model, eval_loader, vocab, device, amp=not args.no_amp)
         val_per = {t: v for t, v in per_type.items() if t in heldout_type_ids}

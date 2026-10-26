@@ -37,7 +37,6 @@ def main():
     ap.add_argument("--out", default=None)
     args = ap.parse_args()
 
-    # which run held which type out - read it from the run's own checkpoint args
     held = {}
     ckpts = {}
     for run in args.runs:
@@ -93,7 +92,6 @@ def main():
         print(line)
         table.append(row)
 
-    # the aggregate over the 64 band items
     all_ours = {"type": "__all__", "pred": None, "gold": None}
     ours_rows = []
     for t, o in ours.items():

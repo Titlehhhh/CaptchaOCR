@@ -52,7 +52,6 @@ def main():
     cs = build_encoder(CHARSET)
     types = [(t, d) for t, d, _r in find_types(OUT_DIRS, wanted=SCOPE)]
     items = build_items(types)
-    # the same number of samples per type, in order
     picked = []
     per = {}
     for it in items:

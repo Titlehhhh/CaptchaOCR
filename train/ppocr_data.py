@@ -196,6 +196,17 @@ class Vocab:
             self.table.setdefault(ch, i)
         self.num_classes = len(self.character_list)
 
+    @classmethod
+    def from_extended(cls, character_list, extra_chars=()):
+        """Build a Vocab from an EXTENDED character list.
+
+        `character_list` is the original (pretrained PaddleOCR) dictionary and `extra_chars`
+        the characters missing from it that the training labels need (the Cyrillic ones, for
+        instance). The extras are appended at the END, sorted, so the blank (index 0) and every
+        original character keep their index - the pretrained head rows keep their meaning.
+        """
+        return cls(list(character_list) + sorted(set(extra_chars)))
+
     def __len__(self):
         return self.num_classes
 
