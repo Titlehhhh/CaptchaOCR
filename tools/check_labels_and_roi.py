@@ -26,6 +26,7 @@ Usage:
     python tools/check_labels_and_roi.py dataset/out_ru
 """
 
+import argparse
 import json
 import os
 import sys
@@ -281,6 +282,16 @@ def check(root):
     return 0 if ok else 1
 
 
+def parse_args(argv=None) -> argparse.Namespace:
+    ap = argparse.ArgumentParser(
+        prog="check_labels_and_roi.py",
+        description="Re-derive the labels of a generated dataset and check that every "
+                    "roi() band is inside the canvas and is not a flat colour.")
+    ap.add_argument("root", nargs="?", default=os.path.join(REPO, "dataset", "out_ru"),
+                    help="dataset root (default: <repo>/dataset/out_ru)")
+    return ap.parse_args(argv)
+
+
 if __name__ == "__main__":
-    root = sys.argv[1] if len(sys.argv) > 1 else os.path.join(REPO, "dataset", "out_ru")
-    sys.exit(check(root))
+    args = parse_args()
+    sys.exit(check(args.root))

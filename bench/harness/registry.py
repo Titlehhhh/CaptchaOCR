@@ -1,0 +1,38 @@
+"""The model registry: which repositories the harness can score."""
+
+from . import backends
+
+MODELS = {
+    "grafj-crnn": {"repo": "Graf-J/captcha-crnn-finetuned", "backend": backends.backend_grafj,
+                   "license": "MIT"},
+    "grafj-crnn-base": {"repo": "Graf-J/captcha-crnn-base", "backend": backends.backend_grafj,
+                         "license": "MIT"},
+    "grafj-convtr": {"repo": "Graf-J/captcha-conv-transformer-finetuned",
+                     "backend": backends.backend_grafj, "license": "MIT"},
+    "anuashok-v3": {"repo": "anuashok/ocr-captcha-v3", "backend": backends.backend_trocr,
+                   "license": "Apache-2.0"},
+    "trocr-base-printed": {"repo": "microsoft/trocr-base-printed",
+                           "backend": backends.backend_trocr, "license": "MIT"},
+    "emelnov-mailru": {"repo": "emelnov/ocr-captcha-v4-mailru",
+                       "backend": backends.backend_trocr,
+                       "license": "(tag not set; base TrOCR = MIT)"},
+    "ppocrv5-mobile": {"repo": "PaddlePaddle/PP-OCRv5_mobile_rec_onnx",
+                       "backend": backends.backend_ppocr_onnx, "license": "Apache-2.0"},
+    "ppocrv5-server": {"repo": "PaddlePaddle/PP-OCRv5_server_rec_onnx",
+                       "backend": backends.backend_ppocr_onnx, "license": "Apache-2.0"},
+    "ppocrv5-latin": {"repo": "PaddlePaddle/latin_PP-OCRv5_mobile_rec_onnx",
+                      "backend": backends.backend_ppocr_onnx, "license": "Apache-2.0"},
+    "ppocrv6-medium": {"repo": "PaddlePaddle/PP-OCRv6_medium_rec_onnx",
+                       "backend": backends.backend_ppocr_onnx, "license": "Apache-2.0"},
+    "ppocrv6-small": {"repo": "PaddlePaddle/PP-OCRv6_small_rec_onnx",
+                      "backend": backends.backend_ppocr_onnx, "license": "Apache-2.0"},
+    "ppocrv6-tiny": {"repo": "PaddlePaddle/PP-OCRv6_tiny_rec_onnx",
+                     "backend": backends.backend_ppocr_onnx, "license": "Apache-2.0"},
+    "ppocrv5-cyrillic": {"repo": "PaddlePaddle/cyrillic_PP-OCRv5_mobile_rec_onnx",
+                         "backend": backends.backend_ppocr_onnx, "license": "Apache-2.0"},
+    "doctr-crnn-ru": {"repo": "graycat660/doctr-crnn-vgg16-bn-russian-onnx",
+                      "backend": backends.backend_doctr_onnx, "license": "Apache-2.0"},
+    "txtcaptcha-crnn": {"repo": "jtrecenti/txtcaptcha-crnn",
+                        "backend": backends.backend_txtcaptcha, "license": "MIT"},
+    "easyocr": {"repo": "easyocr", "backend": backends.backend_easyocr, "license": "Apache-2.0"},
+}

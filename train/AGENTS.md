@@ -74,7 +74,34 @@
 только на ней же. Измерение всегда ведётся на конкретной папке — «пересоберём и получим то же
 самое» здесь неверно.
 
-## 5. Известные открытые проблемы (не «чинить» молча)
+## 5. Новые модули `train/` после разбиения (добавлено 27.10.2026)
+
+После разбиения в `train/` появились модули, которых в этом файле не было. Точки входа
+**не изменились** (`finetune_ppocr.py`, `finetune_trocr.py`, `export_ppocr_hf.py`, `train.py`);
+удалённые копии (`train/runs/**/make_report_json.py`, `train/export_hf.py`, `train/soup_eval.py`)
+— их работа теперь в `train/make_report.py`, `train/export_ppocr_hf.py`, `train/soup_eval.py`.
+
+Новые пакеты и файлы:
+
+| пакет / файл | что делает | где используется |
+|---|---|---|
+| `train/hf_export/` | экспорт CRNN: шаблоны (`templates_card.py`, `templates_model.py`, `templates_processor.py`), запись (`writer.py`), трёхсторонняя проверка (`verify.py`), CLI (`cli.py`), общее (`common.py`) | `train/export_ppocr_hf.py` |
+| `train/finetune_common.py` | общее для двух дообучений (`ppocr` и `trocr`) | `finetune_ppocr.py`, `finetune_trocr.py` |
+| `train/ppocr_core.py` | ядро PP-OCRv6 (дообучение) | `ppocr_run.py`, `finetune_ppocr.py` |
+| `train/ppocr_run.py` | запуск прогонов PP-OCRv6 | `train/run_ppocr/**` |
+| `train/ppocr_data.py` | загрузка данных PP-OCRv6 | `ppocr_core.py` |
+| `train/trocr_core.py` | ядро TrOCR (дообучение) | `trocr_run.py`, `finetune_trocr.py` |
+| `train/trocr_run.py` | запуск прогонов TrOCR | `train/run/trocr_big/` |
+| `train/trocr_data.py` | загрузка данных TrOCR | `trocr_core.py` |
+| `train/trocr_report.py` | отчёт по прогону TrOCR | `trocr_run.py` |
+| `train/make_report.py` | сборка отчётов (заменяет `runs/**/make_report_json.py`) | `ppocr_run.py`, `trocr_run.py` |
+| `train/report_builders/` | построители отчётов | `make_report.py` |
+
+**Не трогаем:** `dataset/**` (генераторы и PNG — артефакт), `reports/**/*.json` (измеренные
+результаты), `reports/HTML/**`, `reports/archive/**`, `webapp/**`, `bench/**`, `tools/**`,
+`agents/**`, `docs/**`, `.gitignore`, `README.md`, `HANDOVER.md`.
+
+## 6. Известные открытые проблемы (не «чинить» молча)
 
 - **Model B (кириллица) собирает 34 класса, а план требует 44** (`captcha_crnn.py`: `CYRILLIC` = 33
   буквы). Цифры в метках `LimboFilter/symbols` и `GalleryCaptcha/ru-symbols` **молча выпадают** (35–43 строки
