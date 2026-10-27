@@ -1,7 +1,7 @@
 # Training report — PP-OCRv6 fine-tune including `out_ru/LimboFilter/digits`
 
 - **Date / window:** 2026-10-26, three runs 16:00–19:00 (Asia/Yekaterinburg), GTX 1080 Ti (11.8 GB, sm_61), torch 2.14.1+cu126, transformers 5.19.0
-- **Part 1 (flint subagent, obsolete):** the first session crashed with the named-pipe sandbox denial (§3) and never trained; its verbatim crash log is preserved in `reports/TRAINING_LIMBO_DIGITS_crashlog.md`.
+- **Part 1 (flint subagent, obsolete):** the first session crashed with the named-pipe sandbox denial (§3) and never trained; its verbatim crash log is preserved in `reports/archive/2026-10-27-cleanup/TRAINING_LIMBO_DIGITS_crashlog.md`.
 - **Part 2 (final numbers):** runs `limbo_digits` and `limbo_digits3` by the orchestrator with `--workers 0` (the sandbox workaround).
 
 ## 0. What was achieved (the short version)

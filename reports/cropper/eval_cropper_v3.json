@@ -1,0 +1,957 @@
+{
+ "checkpoint": "train/runs/ppocrv6/universal_v1/best.pt",
+ "seed": 1234,
+ "n_per_type": 40,
+ "demo_sweep": {
+  "types": [
+   "out/Archy-X/Krypton/map",
+   "out/JSH32/Minecaptcha/map",
+   "out/haq/mapcha/map",
+   "out/just-captcha/ProstoCaptcha/map",
+   "out/ringoame196-s-mcPlugin/ReproductionCAPTCHA/map",
+   "out_ru/CaptchaVerifyZ/map",
+   "out_ru/GalleryCaptcha/ru-web",
+   "out_ru/LimboFilter/digits"
+  ],
+  "n": 24,
+  "exact": 23,
+  "misses": [
+   [
+    "out/JSH32/Minecaptcha/map",
+    "001.png",
+    "MMLI",
+    "MMLl"
+   ]
+  ]
+ },
+ "screenshots": [
+  {
+   "file": "1651.png",
+   "gold": "1651",
+   "pred": "1651",
+   "confidence": 0.9811,
+   "exact": true,
+   "method": "keep4:((36, 53, 125),)",
+   "box": [
+    64,
+    7,
+    309,
+    298
+   ],
+   "votes": 3,
+   "candidates": 39,
+   "size": [
+    458,
+    343
+   ],
+   "ms": 735.5
+  },
+  {
+   "file": "2013.png",
+   "gold": "2013",
+   "pred": "2013",
+   "confidence": 0.9999,
+   "exact": true,
+   "method": "keep:((19, 12, 9),)",
+   "box": [
+    6,
+    0,
+    451,
+    346
+   ],
+   "votes": 4,
+   "candidates": 32,
+   "size": [
+    458,
+    346
+   ],
+   "ms": 586.1
+  },
+  {
+   "file": "3620.png",
+   "gold": "3620",
+   "pred": "3620",
+   "confidence": 0.9974,
+   "exact": true,
+   "method": "keep4:((19, 12, 9),)",
+   "box": [
+    0,
+    0,
+    458,
+    344
+   ],
+   "votes": 4,
+   "candidates": 12,
+   "size": [
+    458,
+    344
+   ],
+   "ms": 652.1
+  },
+  {
+   "file": "5932.png",
+   "gold": "5932",
+   "pred": "5932",
+   "confidence": 0.9998,
+   "exact": true,
+   "method": "keep4:((14, 127, 93),)",
+   "box": [
+    53,
+    36,
+    383,
+    252
+   ],
+   "votes": 6,
+   "candidates": 32,
+   "size": [
+    464,
+    330
+   ],
+   "ms": 581.0
+  },
+  {
+   "file": "5968.png",
+   "gold": "5968",
+   "pred": "5968",
+   "confidence": 1.0,
+   "exact": true,
+   "method": "keep:((72, 108, 152),)",
+   "box": [
+    65,
+    57,
+    347,
+    238
+   ],
+   "votes": 3,
+   "candidates": 32,
+   "size": [
+    463,
+    348
+   ],
+   "ms": 614.9
+  },
+  {
+   "file": "7488.png",
+   "gold": "7488",
+   "pred": "7488",
+   "confidence": 1.0,
+   "exact": true,
+   "method": "keep:((45, 45, 180),)",
+   "box": [
+    0,
+    0,
+    461,
+    290
+   ],
+   "votes": 8,
+   "candidates": 28,
+   "size": [
+    461,
+    343
+   ],
+   "ms": 754.2
+  }
+ ],
+ "per_type": {
+  "out/Archy-X/Krypton/map": {
+   "n": 40,
+   "n_roi": 40,
+   "oracle_answer": 40,
+   "cropper_answer": 38,
+   "frame_answer": 39,
+   "oracle_text": 40,
+   "cropper_text": 38,
+   "frame_text": 39,
+   "text_ne_answer": 0,
+   "methods": {
+    "whole-frame": 38,
+    "strip": 2
+   }
+  },
+  "out/InstantlyMoist/Captcha/textcaptcha": {
+   "n": 40,
+   "n_roi": 0,
+   "oracle_answer": 10,
+   "cropper_answer": 16,
+   "frame_answer": 10,
+   "oracle_text": 10,
+   "cropper_text": 16,
+   "frame_text": 10,
+   "text_ne_answer": 0,
+   "methods": {
+    "strip": 24,
+    "keep4": 1,
+    "ink-box": 1,
+    "whole-frame": 5,
+    "crop": 4,
+    "row": 1,
+    "keep": 3,
+    "keep2": 1
+   }
+  },
+  "out/JSH32/Minecaptcha/map": {
+   "n": 40,
+   "n_roi": 40,
+   "oracle_answer": 35,
+   "cropper_answer": 31,
+   "frame_answer": 0,
+   "oracle_text": 35,
+   "cropper_text": 31,
+   "frame_text": 0,
+   "text_ne_answer": 0,
+   "methods": {
+    "row": 35,
+    "strip": 2,
+    "ink-box": 3
+   }
+  },
+  "out/LagBug/XProtect/code": {
+   "n": 40,
+   "n_roi": 0,
+   "oracle_answer": 20,
+   "cropper_answer": 11,
+   "frame_answer": 20,
+   "oracle_text": 20,
+   "cropper_text": 11,
+   "frame_text": 20,
+   "text_ne_answer": 0,
+   "methods": {
+    "strip": 24,
+    "whole-frame": 15,
+    "ink-box": 1
+   }
+  },
+  "out/LagBug/XProtect/map": {
+   "n": 40,
+   "n_roi": 0,
+   "oracle_answer": 20,
+   "cropper_answer": 16,
+   "frame_answer": 20,
+   "oracle_text": 20,
+   "cropper_text": 16,
+   "frame_text": 20,
+   "text_ne_answer": 0,
+   "methods": {
+    "strip": 22,
+    "whole-frame": 18
+   }
+  },
+  "out/haq/mapcha/map": {
+   "n": 40,
+   "n_roi": 40,
+   "oracle_answer": 38,
+   "cropper_answer": 24,
+   "frame_answer": 0,
+   "oracle_text": 38,
+   "cropper_text": 24,
+   "frame_text": 0,
+   "text_ne_answer": 0,
+   "methods": {
+    "strip": 13,
+    "row": 25,
+    "type-heuristic": 2
+   }
+  },
+  "out/irootdev/AnBot/captcha": {
+   "n": 40,
+   "n_roi": 0,
+   "oracle_answer": 40,
+   "cropper_answer": 40,
+   "frame_answer": 40,
+   "oracle_text": 40,
+   "cropper_text": 40,
+   "frame_text": 40,
+   "text_ne_answer": 0,
+   "methods": {
+    "keep": 33,
+    "strip": 3,
+    "whole-frame": 3,
+    "ink-box": 1
+   }
+  },
+  "out/jonesdevelopment/sonar/complex": {
+   "n": 40,
+   "n_roi": 0,
+   "oracle_answer": 23,
+   "cropper_answer": 30,
+   "frame_answer": 23,
+   "oracle_text": 23,
+   "cropper_text": 30,
+   "frame_text": 23,
+   "text_ne_answer": 0,
+   "methods": {
+    "crop": 12,
+    "strip": 15,
+    "keep4": 4,
+    "whole-frame": 6,
+    "keep2": 2,
+    "row": 1
+   }
+  },
+  "out/jonesdevelopment/sonar/legacy": {
+   "n": 40,
+   "n_roi": 0,
+   "oracle_answer": 28,
+   "cropper_answer": 28,
+   "frame_answer": 28,
+   "oracle_text": 28,
+   "cropper_text": 28,
+   "frame_text": 28,
+   "text_ne_answer": 0,
+   "methods": {
+    "whole-frame": 37,
+    "strip": 3
+   }
+  },
+  "out/jonesdevelopment/sonar/standard": {
+   "n": 40,
+   "n_roi": 0,
+   "oracle_answer": 21,
+   "cropper_answer": 24,
+   "frame_answer": 21,
+   "oracle_text": 21,
+   "cropper_text": 24,
+   "frame_text": 21,
+   "text_ne_answer": 0,
+   "methods": {
+    "strip": 19,
+    "ink-box": 21
+   }
+  },
+  "out/just-captcha/ProstoCaptcha/map": {
+   "n": 40,
+   "n_roi": 40,
+   "oracle_answer": 38,
+   "cropper_answer": 37,
+   "frame_answer": 1,
+   "oracle_text": 38,
+   "cropper_text": 37,
+   "frame_text": 1,
+   "text_ne_answer": 0,
+   "methods": {
+    "strip": 35,
+    "row": 2,
+    "crop": 3
+   }
+  },
+  "out/ringoame196-s-mcPlugin/ReproductionCAPTCHA/map": {
+   "n": 40,
+   "n_roi": 40,
+   "oracle_answer": 40,
+   "cropper_answer": 39,
+   "frame_answer": 37,
+   "oracle_text": 40,
+   "cropper_text": 39,
+   "frame_text": 37,
+   "text_ne_answer": 0,
+   "methods": {
+    "strip": 6,
+    "whole-frame": 28,
+    "type-heuristic": 6
+   }
+  },
+  "out_ru/BotFilter/map": {
+   "n": 40,
+   "n_roi": 0,
+   "oracle_answer": 33,
+   "cropper_answer": 34,
+   "frame_answer": 33,
+   "oracle_text": 33,
+   "cropper_text": 34,
+   "frame_text": 33,
+   "text_ne_answer": 0,
+   "methods": {
+    "keep": 7,
+    "crop": 19,
+    "whole-frame": 7,
+    "keep2": 1,
+    "ink-box": 5,
+    "row": 1
+   }
+  },
+  "out_ru/CaptchaVerifyZ/map": {
+   "n": 40,
+   "n_roi": 40,
+   "oracle_answer": 36,
+   "cropper_answer": 37,
+   "frame_answer": 37,
+   "oracle_text": 36,
+   "cropper_text": 37,
+   "frame_text": 37,
+   "text_ne_answer": 0,
+   "methods": {
+    "whole-frame": 11,
+    "keep": 10,
+    "keep4": 2,
+    "crop": 7,
+    "strip": 6,
+    "keep2": 3,
+    "row": 1
+   }
+  },
+  "out_ru/GalleryCaptcha/ru-numberword": {
+   "n": 40,
+   "n_roi": 40,
+   "oracle_answer": 0,
+   "cropper_answer": 0,
+   "frame_answer": 0,
+   "oracle_text": 0,
+   "cropper_text": 0,
+   "frame_text": 0,
+   "text_ne_answer": 40,
+   "methods": {
+    "strip": 22,
+    "row": 11,
+    "ink-box": 3,
+    "crop": 4
+   }
+  },
+  "out_ru/GalleryCaptcha/ru-numberword-caption": {
+   "n": 40,
+   "n_roi": 40,
+   "oracle_answer": 0,
+   "cropper_answer": 0,
+   "frame_answer": 0,
+   "oracle_text": 0,
+   "cropper_text": 0,
+   "frame_text": 0,
+   "text_ne_answer": 40,
+   "methods": {
+    "strip": 14,
+    "row": 14,
+    "crop": 7,
+    "keep4": 2,
+    "ink-box": 1,
+    "whole-frame": 1,
+    "keep2": 1
+   }
+  },
+  "out_ru/GalleryCaptcha/ru-symbols": {
+   "n": 40,
+   "n_roi": 40,
+   "oracle_answer": 34,
+   "cropper_answer": 24,
+   "frame_answer": 6,
+   "oracle_text": 34,
+   "cropper_text": 24,
+   "frame_text": 6,
+   "text_ne_answer": 0,
+   "methods": {
+    "ink-box": 10,
+    "crop": 22,
+    "strip": 2,
+    "keep": 1,
+    "row": 5
+   }
+  },
+  "out_ru/GalleryCaptcha/ru-web": {
+   "n": 40,
+   "n_roi": 40,
+   "oracle_answer": 39,
+   "cropper_answer": 35,
+   "frame_answer": 33,
+   "oracle_text": 39,
+   "cropper_text": 35,
+   "frame_text": 33,
+   "text_ne_answer": 0,
+   "methods": {
+    "row": 3,
+    "whole-frame": 8,
+    "crop": 11,
+    "ink-box": 3,
+    "keep4": 6,
+    "keep": 5,
+    "strip": 2,
+    "keep2": 2
+   }
+  },
+  "out_ru/LimboFilter/digits": {
+   "n": 40,
+   "n_roi": 40,
+   "oracle_answer": 34,
+   "cropper_answer": 39,
+   "frame_answer": 0,
+   "oracle_text": 34,
+   "cropper_text": 39,
+   "frame_text": 0,
+   "text_ne_answer": 0,
+   "methods": {
+    "row": 4,
+    "keep": 32,
+    "keep4": 1,
+    "crop": 2,
+    "keep2": 1
+   }
+  },
+  "out_ru/LimboFilter/map": {
+   "n": 40,
+   "n_roi": 40,
+   "oracle_answer": 0,
+   "cropper_answer": 0,
+   "frame_answer": 0,
+   "oracle_text": 0,
+   "cropper_text": 0,
+   "frame_text": 0,
+   "text_ne_answer": 40,
+   "methods": {
+    "strip": 22,
+    "crop": 7,
+    "row": 4,
+    "keep2": 2,
+    "keep4": 2,
+    "keep": 3
+   }
+  },
+  "out_ru/LimboFilter/symbols": {
+   "n": 40,
+   "n_roi": 40,
+   "oracle_answer": 32,
+   "cropper_answer": 20,
+   "frame_answer": 18,
+   "oracle_text": 32,
+   "cropper_text": 20,
+   "frame_text": 18,
+   "text_ne_answer": 0,
+   "methods": {
+    "strip": 7,
+    "keep": 1,
+    "crop": 21,
+    "whole-frame": 8,
+    "ink-box": 1,
+    "row": 2
+   }
+  }
+ },
+ "answer": {
+  "out": {
+   "types": 12,
+   "n": 480,
+   "oracle": 0.7354166666666667,
+   "cropper": 0.6958333333333333,
+   "frame": 0.4979166666666667,
+   "median_oracle": 0.7875,
+   "median_cropper": 0.725,
+   "median_frame": 0.5125
+  },
+  "out_ru": {
+   "types": 9,
+   "n": 360,
+   "oracle": 0.5777777777777777,
+   "cropper": 0.525,
+   "frame": 0.3527777777777778,
+   "median_oracle": 0.825,
+   "median_cropper": 0.6,
+   "median_frame": 0.15
+  },
+  "all": {
+   "types": 21,
+   "n": 840,
+   "oracle": 0.6678571428571428,
+   "cropper": 0.6226190476190476,
+   "frame": 0.4357142857142857,
+   "median_oracle": 0.825,
+   "median_cropper": 0.7,
+   "median_frame": 0.5
+  }
+ },
+ "text": {
+  "out": {
+   "types": 12,
+   "n": 480,
+   "oracle": 0.7354166666666667,
+   "cropper": 0.6958333333333333,
+   "frame": 0.4979166666666667,
+   "median_oracle": 0.7875,
+   "median_cropper": 0.725,
+   "median_frame": 0.5125
+  },
+  "out_ru": {
+   "types": 9,
+   "n": 360,
+   "oracle": 0.5777777777777777,
+   "cropper": 0.525,
+   "frame": 0.3527777777777778,
+   "median_oracle": 0.825,
+   "median_cropper": 0.6,
+   "median_frame": 0.15
+  },
+  "all": {
+   "types": 21,
+   "n": 840,
+   "oracle": 0.6678571428571428,
+   "cropper": 0.6226190476190476,
+   "frame": 0.4357142857142857,
+   "median_oracle": 0.825,
+   "median_cropper": 0.7,
+   "median_frame": 0.5
+  }
+ },
+ "per_type_learned": {
+  "out/Archy-X/Krypton/map": {
+   "n": 10,
+   "n_roi": 10,
+   "oracle_answer": 10,
+   "cropper_answer": 9,
+   "frame_answer": 10,
+   "oracle_text": 10,
+   "cropper_text": 9,
+   "frame_text": 10,
+   "text_ne_answer": 0,
+   "methods": {
+    "whole-frame": 9,
+    "strip": 1
+   }
+  },
+  "out/InstantlyMoist/Captcha/textcaptcha": {
+   "n": 10,
+   "n_roi": 0,
+   "oracle_answer": 4,
+   "cropper_answer": 5,
+   "frame_answer": 4,
+   "oracle_text": 4,
+   "cropper_text": 5,
+   "frame_text": 4,
+   "text_ne_answer": 0,
+   "methods": {
+    "whole-frame": 3,
+    "strip": 7
+   }
+  },
+  "out/JSH32/Minecaptcha/map": {
+   "n": 10,
+   "n_roi": 10,
+   "oracle_answer": 10,
+   "cropper_answer": 10,
+   "frame_answer": 0,
+   "oracle_text": 10,
+   "cropper_text": 10,
+   "frame_text": 0,
+   "text_ne_answer": 0,
+   "methods": {
+    "strip": 1,
+    "type-heuristic": 6,
+    "row": 3
+   }
+  },
+  "out/LagBug/XProtect/code": {
+   "n": 10,
+   "n_roi": 0,
+   "oracle_answer": 4,
+   "cropper_answer": 4,
+   "frame_answer": 4,
+   "oracle_text": 4,
+   "cropper_text": 4,
+   "frame_text": 4,
+   "text_ne_answer": 0,
+   "methods": {
+    "whole-frame": 6,
+    "strip": 4
+   }
+  },
+  "out/LagBug/XProtect/map": {
+   "n": 10,
+   "n_roi": 0,
+   "oracle_answer": 3,
+   "cropper_answer": 3,
+   "frame_answer": 3,
+   "oracle_text": 3,
+   "cropper_text": 3,
+   "frame_text": 3,
+   "text_ne_answer": 0,
+   "methods": {
+    "strip": 5,
+    "whole-frame": 4,
+    "ink-box": 1
+   }
+  },
+  "out/haq/mapcha/map": {
+   "n": 10,
+   "n_roi": 10,
+   "oracle_answer": 10,
+   "cropper_answer": 10,
+   "frame_answer": 0,
+   "oracle_text": 10,
+   "cropper_text": 10,
+   "frame_text": 0,
+   "text_ne_answer": 0,
+   "methods": {
+    "type-heuristic": 6,
+    "row": 3,
+    "strip": 1
+   }
+  },
+  "out/irootdev/AnBot/captcha": {
+   "n": 10,
+   "n_roi": 0,
+   "oracle_answer": 10,
+   "cropper_answer": 10,
+   "frame_answer": 10,
+   "oracle_text": 10,
+   "cropper_text": 10,
+   "frame_text": 10,
+   "text_ne_answer": 0,
+   "methods": {
+    "keep": 8,
+    "whole-frame": 2
+   }
+  },
+  "out/jonesdevelopment/sonar/complex": {
+   "n": 10,
+   "n_roi": 0,
+   "oracle_answer": 4,
+   "cropper_answer": 7,
+   "frame_answer": 4,
+   "oracle_text": 4,
+   "cropper_text": 7,
+   "frame_text": 4,
+   "text_ne_answer": 0,
+   "methods": {
+    "strip": 8,
+    "whole-frame": 1,
+    "keep4": 1
+   }
+  },
+  "out/jonesdevelopment/sonar/legacy": {
+   "n": 10,
+   "n_roi": 0,
+   "oracle_answer": 8,
+   "cropper_answer": 8,
+   "frame_answer": 8,
+   "oracle_text": 8,
+   "cropper_text": 8,
+   "frame_text": 8,
+   "text_ne_answer": 0,
+   "methods": {
+    "whole-frame": 9,
+    "strip": 1
+   }
+  },
+  "out/jonesdevelopment/sonar/standard": {
+   "n": 10,
+   "n_roi": 0,
+   "oracle_answer": 6,
+   "cropper_answer": 6,
+   "frame_answer": 6,
+   "oracle_text": 6,
+   "cropper_text": 6,
+   "frame_text": 6,
+   "text_ne_answer": 0,
+   "methods": {
+    "ink-box": 7,
+    "strip": 3
+   }
+  },
+  "out/just-captcha/ProstoCaptcha/map": {
+   "n": 10,
+   "n_roi": 10,
+   "oracle_answer": 9,
+   "cropper_answer": 9,
+   "frame_answer": 0,
+   "oracle_text": 9,
+   "cropper_text": 9,
+   "frame_text": 0,
+   "text_ne_answer": 0,
+   "methods": {
+    "type-heuristic": 7,
+    "strip": 3
+   }
+  },
+  "out/ringoame196-s-mcPlugin/ReproductionCAPTCHA/map": {
+   "n": 10,
+   "n_roi": 10,
+   "oracle_answer": 10,
+   "cropper_answer": 10,
+   "frame_answer": 10,
+   "oracle_text": 10,
+   "cropper_text": 10,
+   "frame_text": 10,
+   "text_ne_answer": 0,
+   "methods": {
+    "type-heuristic": 7,
+    "whole-frame": 3
+   }
+  },
+  "out_ru/BotFilter/map": {
+   "n": 10,
+   "n_roi": 0,
+   "oracle_answer": 10,
+   "cropper_answer": 5,
+   "frame_answer": 10,
+   "oracle_text": 10,
+   "cropper_text": 5,
+   "frame_text": 10,
+   "text_ne_answer": 0,
+   "methods": {
+    "keep4": 2,
+    "keep": 3,
+    "crop": 1,
+    "ink-box": 2,
+    "whole-frame": 2
+   }
+  },
+  "out_ru/CaptchaVerifyZ/map": {
+   "n": 10,
+   "n_roi": 10,
+   "oracle_answer": 9,
+   "cropper_answer": 9,
+   "frame_answer": 5,
+   "oracle_text": 9,
+   "cropper_text": 9,
+   "frame_text": 5,
+   "text_ne_answer": 0,
+   "methods": {
+    "type-heuristic": 7,
+    "keep4": 1,
+    "crop": 1,
+    "whole-frame": 1
+   }
+  },
+  "out_ru/GalleryCaptcha/ru-numberword": {
+   "n": 10,
+   "n_roi": 10,
+   "oracle_answer": 0,
+   "cropper_answer": 0,
+   "frame_answer": 0,
+   "oracle_text": 0,
+   "cropper_text": 0,
+   "frame_text": 0,
+   "text_ne_answer": 10,
+   "methods": {
+    "row": 6,
+    "strip": 3,
+    "ink-box": 1
+   }
+  },
+  "out_ru/GalleryCaptcha/ru-numberword-caption": {
+   "n": 10,
+   "n_roi": 10,
+   "oracle_answer": 0,
+   "cropper_answer": 0,
+   "frame_answer": 0,
+   "oracle_text": 0,
+   "cropper_text": 0,
+   "frame_text": 0,
+   "text_ne_answer": 10,
+   "methods": {
+    "keep": 1,
+    "row": 3,
+    "strip": 4,
+    "whole-frame": 1,
+    "type-heuristic": 1
+   }
+  },
+  "out_ru/GalleryCaptcha/ru-symbols": {
+   "n": 10,
+   "n_roi": 10,
+   "oracle_answer": 10,
+   "cropper_answer": 9,
+   "frame_answer": 2,
+   "oracle_text": 10,
+   "cropper_text": 9,
+   "frame_text": 2,
+   "text_ne_answer": 0,
+   "methods": {
+    "type-heuristic": 8,
+    "crop": 2
+   }
+  },
+  "out_ru/GalleryCaptcha/ru-web": {
+   "n": 10,
+   "n_roi": 10,
+   "oracle_answer": 8,
+   "cropper_answer": 8,
+   "frame_answer": 8,
+   "oracle_text": 8,
+   "cropper_text": 8,
+   "frame_text": 8,
+   "text_ne_answer": 0,
+   "methods": {
+    "type-heuristic": 3,
+    "keep": 1,
+    "crop": 3,
+    "strip": 1,
+    "keep2": 2
+   }
+  },
+  "out_ru/LimboFilter/digits": {
+   "n": 10,
+   "n_roi": 10,
+   "oracle_answer": 9,
+   "cropper_answer": 9,
+   "frame_answer": 0,
+   "oracle_text": 9,
+   "cropper_text": 9,
+   "frame_text": 0,
+   "text_ne_answer": 0,
+   "methods": {
+    "keep": 3,
+    "crop": 1,
+    "type-heuristic": 4,
+    "row": 2
+   }
+  },
+  "out_ru/LimboFilter/map": {
+   "n": 10,
+   "n_roi": 10,
+   "oracle_answer": 0,
+   "cropper_answer": 0,
+   "frame_answer": 0,
+   "oracle_text": 0,
+   "cropper_text": 0,
+   "frame_text": 0,
+   "text_ne_answer": 10,
+   "methods": {
+    "strip": 7,
+    "type-heuristic": 1,
+    "row": 2
+   }
+  },
+  "out_ru/LimboFilter/symbols": {
+   "n": 10,
+   "n_roi": 10,
+   "oracle_answer": 9,
+   "cropper_answer": 8,
+   "frame_answer": 3,
+   "oracle_text": 9,
+   "cropper_text": 8,
+   "frame_text": 3,
+   "text_ne_answer": 0,
+   "methods": {
+    "type-heuristic": 7,
+    "crop": 3
+   }
+  }
+ },
+ "answer_learned": {
+  "out": {
+   "types": 12,
+   "n": 120,
+   "oracle": 0.7333333333333333,
+   "cropper": 0.7583333333333333,
+   "frame": 0.49166666666666664,
+   "median_oracle": 0.8500000000000001,
+   "median_cropper": 0.8500000000000001,
+   "median_frame": 0.4
+  },
+  "out_ru": {
+   "types": 9,
+   "n": 90,
+   "oracle": 0.6111111111111112,
+   "cropper": 0.5333333333333333,
+   "frame": 0.3111111111111111,
+   "median_oracle": 0.9,
+   "median_cropper": 0.8,
+   "median_frame": 0.2
+  },
+  "all": {
+   "types": 21,
+   "n": 210,
+   "oracle": 0.680952380952381,
+   "cropper": 0.6619047619047619,
+   "frame": 0.4142857142857143,
+   "median_oracle": 0.9,
+   "median_cropper": 0.8,
+   "median_frame": 0.4
+  }
+ }
+}

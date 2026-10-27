@@ -9,7 +9,7 @@
 ## 1. Коротко
 
 В репозиторий модели **загружены настоящие веса**. До этого там была только карточка
-(2 файла, 0 байт весов — см. `reports/HF_PUBLISH_REPORT.md` §2.2). Сейчас — 8 файлов,
+(2 файла, 0 байт весов — см. `reports/archive/2026-10-27-cleanup/HF_PUBLISH_REPORT.md` §2.2). Сейчас — 8 файлов,
 77 085 348 Б, `model.safetensors` 76 747 448 Б.
 
 Модель **грузится и предсказывает**: `AutoModelForTextRecognition.from_pretrained("Titlehhhh/captchaocr-ppocrv6")`
