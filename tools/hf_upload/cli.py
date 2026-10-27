@@ -11,7 +11,7 @@ import json
 import sys
 from pathlib import Path
 
-from tools.publish_hf.auth import api_for, require_token, whoami_name
+from tools.publish_hf.auth import api_for, resolve_token, whoami_name
 from tools.publish_hf.cards import render_dataset_license
 from tools.publish_hf.dataset import build_inventory
 from tools.publish_hf.upload import ensure_repo
@@ -42,6 +42,33 @@ GITATTRIBUTES_FALLBACK = (
 )
 
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
+
+#: The token of the machine: ``.hf-cache/token`` (git-ignored).
+TOKEN_FILE = REPO_ROOT / ".hf-cache" / "token"
+
+
+def require_token(explicit: str | None) -> str:
+    """The HF token: the flag, the environment, the CLI token - or ``.hf-cache/token``.
+
+    ``tools.publish_hf.auth.require_token`` knows the first three but not the
+    project's own token file, which is where this machine keeps it.
+    """
+    token = resolve_token(explicit)
+    if token:
+        return token
+    try:
+        value = TOKEN_FILE.read_text(encoding="utf-8").strip()
+    except OSError:
+        value = ""
+    if value:
+        return value
+    # no token at all: the instructions of the publishing tool and exit code 2
+    from tools.publish_hf.auth import AUTH_INSTRUCTIONS
+    from tools.publish_hf.constants import EXIT_NO_AUTH
+    log(AUTH_INSTRUCTIONS)
+    log("Токен не найден: ни HF_TOKEN, ни сохранённый токен CLI, ни .hf-cache/token. "
+        "Выход с кодом 2.")
+    raise SystemExit(EXIT_NO_AUTH)
 
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
