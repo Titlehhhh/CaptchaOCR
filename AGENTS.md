@@ -91,7 +91,7 @@ this repository's history: `McUi.drawColored` and `TextBand`. Everything else go
 | файл | что это |
 |---|---|
 | `docs/ONBOARDING.md` | маршрут для человека/нового агента: что за проект, с чего начать, как собрать, обучить, проверить |
-| `agents/INDEX.md` | подробная карта репозитория: 46 типов, контракт датасета, измеренные команды, расхождения |
+| `agents/INDEX.md` | карта репозитория: типы, контракт датасета, измеренные команды, расхождения |
 | `agents/AGENT_LOG.md` | протокол субагента, таблица владения файлами, журнал сессий |
 | `agents/DSH_HARNESS.md` | что DeepSeek Harness читает из репозитория — и что **не** читает |
 | `agents/REPO_CONVENTIONS_RESEARCH.md` | почему репозиторий устроен так, как устроен (практики и наши вердикты) |
@@ -128,9 +128,8 @@ The best measured result: with the **cropper**, 62 % exact match against 44 % fo
 > Сделать открытую модель (или модели) для решения капчи, чтобы потом залить на Hugging Face.
 > Это моя лабораторная работа. Хочу потыкать самые современные модели для этого.
 
-In practice: broaden the dataset to cover the captcha styles that appear in production, try the most
-modern models available (TrOCR, PaddleOCR/PP-OCRv5-v6, VLM OCR, CRNN/CTC, SVTR), and train and
-publish a model (or an ensemble) on Hugging Face that is actually useful on this domain.
+In practice: расширить датасет до продакшн-стилей, попробовать современные модели (TrOCR,
+PP-OCRv5-v6, VLM OCR, CRNN/CTC, SVTR) и выложить на Hugging Face то, что реально работает.
 
 ## 3. Where things are
 
@@ -139,7 +138,7 @@ publish a model (or an ensemble) on Hugging Face that is actually useful on this
 | `dataset/generator/`, `dataset/generator_ru/` | Java-генераторы 23 плагинов | `dataset/generator/AGENTS.md` — как добавить тип, house rules, правило полосы |
 | `dataset/out/`, `dataset/out_ru/` | **сгенерированный** датасет: 21 тип × 10 000 PNG + `labels.jsonl` | **артефакт машины**: **генераторы не засеяны** — шрифты AWT те же, сами сэмплы случайны, пересборка даст другой набор |
 | `dataset/out_ru/*/real_shots/` | 517 эталонных скриншотов — **не публикуются** (чужие скриншоты) | в публичный репозиторий и в датасет на HF они не идут |
-| `train/` | CRNN+CTC (`captcha_crnn.py`), тренажер (`train.py`), PP-OCRv6 (`finetune_ppocr.py`, `soup_eval.py`, `export_ppocr_hf.py`) | `train/AGENTS.md` — как запускать эксперименты, плато CTC, правило полосы |
+| `train/` | CRNN+CTC с нуля, дообучение PP-OCRv6 и TrOCR, экспорт в HF (вход: `train.py`, `finetune_ppocr.py`, `finetune_trocr.py`, `export_ppocr_hf.py`) | `train/AGENTS.md`, `train/README.md` |
 | `bench/` | 6 харнессов для чужих моделей + `bench_models.py` (единый протокол) | результаты в `reports/bench_models/` |
 | `tools/` | чекеры меток и полос, анализ группы типов GalleryCaptcha, отчёты | |
 | `reports/` | измеренные результаты (никогда не править JSON результатов) | индекс — `reports/README.md`, отчёт — `reports/HTML/index.html`, старое — `reports/archive/` |
@@ -162,16 +161,13 @@ dataset/out_ru/<Plugin>/<type>/NNN.png     + labels.jsonl     # 12 типов, �
 ## 4. Commands
 
 ```powershell
-# Пересборка датасета (логика build.ps1 — сам build.ps1 выполнить НЕЛЬЗЯ, см. §7)
+# Пересборка датасета. Логику build.ps1 выполнить НЕЛЬЗЯ (§7); полные команды обоих
+# деревьев — навык captcha-dataset.
 $javac = if ($env:JAVA_HOME) { "$env:JAVA_HOME\bin\javac.exe" } else { "javac" }
 $java  = if ($env:JAVA_HOME) { "$env:JAVA_HOME\bin\java.exe"  } else { "java" }
-$core  = Get-ChildItem -File dataset\generator\dev\captcha\*.java | % FullName   # общие классы: нужны и RU-дереву
-& $javac -encoding UTF-8 -d build\classes    -sourcepath dataset\generator    $core (Get-ChildItem -Recurse -Filter *.java dataset\generator    | % FullName)
-& $javac -encoding UTF-8 -d build\classes_ru -sourcepath dataset\generator_ru $core (Get-ChildItem -Recurse -Filter *.java dataset\generator_ru | % FullName)
-& $java "-Djava.awt.headless=true" -cp build\classes    dev.captcha.Gen      dataset\out    100 --jobs 36
-& $java "-Djava.awt.headless=true" -cp build\classes    dev.captcha.Validate dataset\out
-& $java "-Djava.awt.headless=true" -cp build\classes_ru dev.captcha.Gen      dataset\out_ru 100 --jobs 36
-& $java "-Djava.awt.headless=true" -cp build\classes_ru dev.captcha.Validate dataset\out_ru
+& $javac -encoding UTF-8 -d build\classes -sourcepath dataset\generator (Get-ChildItem -Recurse -Filter *.java dataset\generator | % FullName)
+& $java "-Djava.awt.headless=true" -cp build\classes dev.captcha.Gen dataset\out 100 --jobs 36
+& $java "-Djava.awt.headless=true" -cp build\classes dev.captcha.Validate dataset\out
 python tools\restore_real_shots.py            # вернуть real_shots/ после пересборки
 
 # Проверки меток и полос
@@ -192,10 +188,9 @@ python bench\bench_models.py --help
 
 ## 5. Adding a captcha type
 
-**Полностью — в `dataset/generator/AGENTS.md`**: контракт `dev.captcha.Cg`, house rules (faithful over
-pretty, дефекты апстрима воспроизводятся, `source()` не выдумывается), правило полосы и команды
-проверки. Коротко: новый тип = **один новый java-файл** в `gens/`, больше ничего править не надо —
-`Gen` находит классы рефлексией.
+**Полностью — в `dataset/generator/AGENTS.md`**: контракт `dev.captcha.Cg`, house rules, правило
+полосы, команды проверки. Коротко: новый тип = **один новый java-файл** в `gens/` — `Gen` находит
+классы рефлексией.
 
 ## 6. The state of the project
 
@@ -213,13 +208,11 @@ pretty, дефекты апстрима воспроизводятся, `source(
   **0.8875**, CER 0.0344, micro **0.7797**, CER 0.0755; нулевой шаг: median 0.875, micro 0.6499.
   Прежняя публикация (WiSE-FT α = 0.4, median 0.638 на 7 типах) — в силе как история, её больше нет.
 - **Наш CRNN+CTC с нуля** (7 типов учили, 4 удержали): на невиданных плагинах median **0.372** /
-  CER 0.322, micro **0.381** / 0.410; на своих типах **1.000** — разрыв запоминания 62.8 п.п.
-  (на старом рендере 100/тип было 0.000) — `reports/TRAINING_CRNN_BIG.md`.
-- **TrOCR-small — не лучше**: нулевой шаг median 0.00, после одной эпохи 0.002, в 5 раз медленнее
+  CER 0.322, micro **0.381** / 0.410; на своих типах **1.000** — `reports/TRAINING_CRNN_BIG.md`.
+- **TrOCR-small — не лучше**: нулевой шаг median 0.00, после эпохи 0.002, в 5 раз медленнее
   PP-OCRv6 — `reports/TRAINING_TROCR_BIG.md`.
-- **Два бага генераторов починены 2026-10-22, датасет пересобран**: полоса `Archy-X/Krypton/map`
-  была на 4 px ýже текста — теперь `band()` прибавляет `code.length()-1`; в `text` типа
-  `LagBug/XProtect/reverse` лежала **перевёрнутая** строка — теперь `text()` возвращает нарисованный код.
+- **Два бага генераторов починены 2026-10-22** (полоса `Krypton/map` была на 4 px ýже текста; в
+  `text` типа `LagBug/XProtect/reverse` лежала перевёрнутая строка) — подробно в `HANDOVER.md`.
 - **Не сделано**: per-family репозитории по лицензиям, дообучение на публичном корпусе,
   независимая (не выбранная на held-out) проверка α.
 
@@ -237,9 +230,8 @@ pretty, дефекты апстрима воспроизводятся, `source(
 - **Нет бинаря `pwsh`** — только Windows PowerShell 5.1; не вызывай `pwsh`.
 - **Выполнение `.ps1` заблокировано** («AuthorizationManager check failed»), даже для файла в
   рабочем дереве. `build.ps1` запустить нельзя — выполняй логику инлайн (§4).
-- **Headless-браузер — только с отдельным профилем:** `--user-data-dir="$env:TEMP\edge-<задача>"`.
-  Без этого headless Edge занимает профиль живого браузера и **вышибает его у владельца** (проверено
-  2026-10-22). Если проверка сайта не нужна — не запускай Edge вообще.
+- **Headless-браузер — только с отдельным профилем:** `--user-data-dir="$env:TEMP\edge-<задача>"`,
+  иначе Edge вышибает профиль живого браузера владельца. Если сайт проверять не нужно — не запускай.
 - **`ddgs`** (веб-поиск) падает на кириллице без `$env:PYTHONIOENCODING="utf-8"`; встроенный
   `web_search` отключён, используй навык `web-search`.
 - **GitHub API без токена** — 60 запросов/час, батчь запросы и спи между ними.
@@ -256,6 +248,5 @@ pretty, дефекты апстрима воспроизводятся, `source(
 - **Label every dataset row with where it came from.** `source()` and `labels.jsonl` are the audit trail.
 - **The `reports/` folder holds measured results. Do not edit a result JSON to make a model look better;
   re-run the benchmark instead.**
-- **Материалы сторонних коммерческих сервисов не используются и не публикуются**: ни их картинки,
-  ни страницы, ни ответы API не попадают в датасет и в репозиторий; чужие скриншоты удалены.
-  Обучение строится только на собственных рендерах генераторов.
+- **Материалы сторонних коммерческих сервисов не используются и не публикуются**: их картинки,
+  страницы и ответы API не попадают в датасет и в репозиторий; чужие скриншоты удалены.
