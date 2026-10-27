@@ -143,7 +143,7 @@ the work, not of the ownership.
 | `bench/bench_hf.py` | benchmark agent | done — 10 HF models, 13 types × 8 |
 | `bench/bench_onnx.py` | benchmark agent | done |
 | `bench/bench_others.py` | benchmark agent | done — EasyOCR, Graf-J, Florence |
-| `bench/bench_easyocr.py` | benchmark agent | done |
+| `bench/bench_easyocr.py` (удалён 27.10) | benchmark agent | done |
 | `bench/show_bench.py` | benchmark agent | done |
 | `bench/test_models.py` | benchmark agent | done (ad-hoc) |
 | `train/captcha_crnn.py` | trainer agent | done — the model, the charset, the dataset, the decoding; **modified this session** (the charset check now looks at more than the first 5 rows of a type) |
@@ -158,13 +158,13 @@ the work, not of the ownership.
 | `tools/check_composite_scale.py` | tools agent | done |
 | `tools/audit_sources.py` | tools agent | done |
 | `tools/summarise_roi.py` | tools agent | done |
-| `tools/measure_glyphs.py` | tools agent | done |
-| `tools/count_colors.py` | tools agent | done |
+| `tools/measure_glyphs.py` (удалён 27.10) | tools agent | done |
+| `tools/count_colors.py` (удалён 27.10) | tools agent | done |
 | `tools/restore_real_shots.py` | tools agent | done — **the one script that must be run after a clean rebuild** |
 | `tools/match_site_to_dataset.py` | research/tools agent | done |
 | `tools/cluster_site_captchas.py` | research/tools agent | done |
-| `tools/contact_sheet.py` | tools agent | done |
-| `tools/fix_b64.py`, `tools/generate_pdf_html.py` | tools agent | done — the report builder |
+| `tools/contact_sheet.py` (удалён 27.10) | tools agent | done |
+| `tools/fix_b64.py` (удалён 27.10), `tools/generate_pdf_html.py` (удалён 27.10) | tools agent | done — the report builder |
 | `tools/*.py` (the remaining probes) | research/tools agent | done — one-off site analysis helpers |
 | `tools/sg.ps1` | research/tools agent | done but **not executable on this machine** |
 | `reports/bench_results*.json` | benchmark agent | **measured results — never hand-edited** |

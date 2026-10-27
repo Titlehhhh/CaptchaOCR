@@ -97,5 +97,10 @@ def main():
         print(f"{os.path.basename(path):<28} {colors:>8} {mean:>10.2f} {p95:>9.1f} {dists[-1]:>9.1f}")
 
 
+if "--help" in sys.argv or "-h" in sys.argv:
+    print("check_composite_scale - the scale of the composite GalleryCaptcha canvas.")
+    print("usage: python tools\\check_composite_scale.py <dataset-dir>")
+    sys.exit(0)
+
 if __name__ == "__main__":
     main()

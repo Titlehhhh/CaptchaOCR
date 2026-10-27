@@ -56,3 +56,6 @@ from ppocr_data import (PPOCRDataset, Vocab, build_eval_items, build_items,  # n
 # the evaluation and the metrics - are in `train/ppocr_core.py`; the loop is in
 # `train/ppocr_run.py`. They are imported here under their old names, so that
 # `train/soup_eval.py` and `reports/HTML/make_scoreboard.py` keep working.
+
+if __name__ == "__main__":
+    sys.exit(main())

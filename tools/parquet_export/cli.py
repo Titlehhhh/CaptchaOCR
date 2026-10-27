@@ -11,7 +11,12 @@ import sys
 from dataclasses import dataclass
 from pathlib import Path
 
-from .common import human_bytes, log, warn
+try:
+    from .common import human_bytes, log, warn
+except ImportError:  # run as a plain script
+    import os as _os, sys as _sys
+    _sys.path.insert(0, _os.path.dirname(_os.path.dirname(_os.path.dirname(_os.path.abspath(__file__)))))
+    from tools.parquet_export.common import human_bytes, log, warn
 from .index import DatasetIndex, Sample, TREES, build_index
 from .shards import plan_shards, shard_name, write_shard
 from .hub import (EXIT_ERROR, EXIT_OK, api_for, resolve_token, upload, verify_remote)

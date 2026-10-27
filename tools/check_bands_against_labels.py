@@ -42,9 +42,9 @@ from check_bands import build_parser, mode_ink  # noqa: E402
 def main(argv=None):
     """The old wrapper: dataset roots, ``--verbose`` optional, exit 1 on a failure."""
     argv = list(sys.argv[1:] if argv is None else argv)
-    if not argv:
+    if not argv or "--help" in argv or "-h" in argv:
         print(__doc__)
-        return 2
+        return 0
     verbose = "--verbose" in argv
     roots = [a for a in argv if not a.startswith("--")]
     if not roots:

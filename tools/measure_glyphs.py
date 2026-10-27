@@ -94,5 +94,10 @@ def main():
     stat("advance between two bands (map px)", advance)
 
 
+if "--help" in sys.argv or "-h" in sys.argv:
+    print("measure_glyphs - the height of the glyphs of a type, in pixels.")
+    print("usage: python tools\\measure_glyphs.py <dataset-dir>")
+    sys.exit(0)
+
 if __name__ == "__main__":
     main()

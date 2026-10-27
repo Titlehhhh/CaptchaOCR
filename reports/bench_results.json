@@ -843,5 +843,15 @@
   "accuracy": 0.0769,
   "seconds": 218.8,
   "load_seconds": 218.7
+ },
+ "--help": {
+  "model": "--help",
+  "ok": false,
+  "preds": [],
+  "exact": 0,
+  "n": 0,
+  "cer_sum": 0.0,
+  "error": "RuntimeError: cannot load. last=AutoModelForVision2Seq: AttributeError: module transformers has no attribute AutoModelForVision2Seq",
+  "trace": "Traceback (most recent call last):\n  File \"C:\\Users\\Title\\Projects\\CapthaModel\\bench\\bench_hf.py\", line 174, in main\n    preds, cfg = predict_trocr(mid, [it[\"path\"] for it in items])\n                 ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\Title\\Projects\\CapthaModel\\bench\\bench_hf.py\", line 131, in predict_trocr\n    raise RuntimeError(f\"cannot load. last={last_err}\")\nRuntimeError: cannot load. last=AutoModelForVision2Seq: AttributeError: module transformers has no attribute AutoModelForVision2Seq\n"
  }
 }

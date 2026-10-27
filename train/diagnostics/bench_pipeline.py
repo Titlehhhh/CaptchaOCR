@@ -12,11 +12,11 @@ import time
 
 import torch
 
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from captcha_crnn import (CaptchaDataset, CRNN, build_encoder, build_items, collate, CHARSET,
                           find_types)
 
-REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+REPO = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 OUT_DIRS = [os.path.join(REPO, "dataset", "out"), os.path.join(REPO, "dataset", "out_ru")]
 
 SCOPE = ["Archy-X/Krypton/map", "GalleryCaptcha/ru-web", "CaptchaVerifyZ/map", "JSH32/Minecaptcha/map",

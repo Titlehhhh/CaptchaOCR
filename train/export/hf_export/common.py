@@ -7,10 +7,12 @@ where the repository is, where the training code is and what the characters are.
 import json
 import os
 
-#: `train/hf_export` - this package.
+#: `train/export/hf_export` - this package.
 HERE = os.path.dirname(os.path.abspath(__file__))
 #: `train` - the training code (`captcha_crnn.py`) and the entry script.
-TRAIN_DIR = os.path.dirname(HERE)
+#: The package now lives one level deeper (`train/export/hf_export`), so the
+#: training directory is two levels up.
+TRAIN_DIR = os.path.dirname(os.path.dirname(HERE))
 #: the repository root.
 REPO = os.path.dirname(TRAIN_DIR)
 

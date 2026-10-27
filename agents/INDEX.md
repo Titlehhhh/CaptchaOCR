@@ -55,8 +55,6 @@ Every top-level entry that actually exists in the working tree. `git ls-files` t
 |---|---|---|---|
 | `dataset/` | Java generators + generated trees (21 types, 210 000 PNG on disk). | dataset agent | No structural change; numbers updated |
 | `train/` | CRNN+CTC (`captcha_crnn.py`, `train.py`), fine-tunes (`finetune_ppocr.py`, `finetune_trocr.py` — split from monolith), exporters (`export_ppocr_hf.py`, `export_hf.py`), `README.md`. | trainer agent | `export_hf.py` (1432 lines) and two `finetune_*` split; copies inside `train/runs/**` removed |
-| `bench/` | 6 harness scripts (`bench_models.py` — unified protocol, plus `bench_hf.py`, `bench_onnx.py`, `bench_others.py`, `bench_easyocr.py`, `show_bench.py`, `test_models.py`). | bench agent | Deduplicated web probes |
-| `tools/` | 35+ scripts (checkers, site analysis, report builders). Key: `check_labels_and_roi.py`, `check_band_vs_answer.py`, `check_bands_against_labels.py`, `check_caption_outside_roi.py`, `summarise_roi.py`, `audit_sources.py`, `count_colors.py`, `restore_real_shots.py`, `fetch_dataset.py`, `export_parquet.py`, `upload_dataset.py`. | tools agent | 15+ duplicate web probes deduplicated; `check_bands.py` added |
 | `webapp/` | Browser demo — now **modular**: `app.py` (entry), `backends.py`, `cropper.py`, `pipeline.py`, `dataset.py`, `filepaths.py`, `show_boxes.py`, `eval_cropper.py` (voting rule fixed — `answer_score` now matches application). `README.md` updated. | webapp agent | `app.py` (1016 lines → modules); `eval_cropper.py` fixed |
 | `reports/` | Measured results (JSON — **never edit**), Markdown reports, archive. New: `reports/archive/2026-10-27-cleanup/` (old reports moved via `git mv`). | reports agent | 387 old files archived; `README.md` rewritten as pointer |
 | `research/` | Upstream jars, decompiled sources, references. New subdir: `research/cropper_detector/` (added in this round). | research agent | `cropper_detector/` added |
@@ -114,7 +112,6 @@ Every top-level entry that actually exists in the working tree. `git ls-files` t
 | `bench/bench_hf.py` | 10 HF image-to-text models; `TEXT_TYPES` updated to current 21; `N_PER_TYPE` = 40 (updated). | `reports/bench_results.json` |
 | `bench/bench_onnx.py` | Raw ONNX captcha models. | `reports/bench_results_onnx.json` |
 | `bench/bench_others.py` | EasyOCR, Graf-J CRNN, conv-transformer, Florence. | `reports/bench_results_others.json` |
-| `bench/bench_easyocr.py` | EasyOCR only (`readtext` needs path). | — |
 | `bench/show_bench.py` | Pretty-print results. | — |
 | `bench/test_models.py` | Ad-hoc multi-model tester. | — |
 
@@ -136,7 +133,6 @@ Per-type (oracle / cropper / whole frame / cropper found true band): see full ta
 
 Every script measured to exist (checked with `Test-Path`):
 
-`alpha.py`, `analyze_cells.py`, `analyze_green2.py`, `analyze_grid.py`, `audit_sources.py`, `check_band_vs_answer.py`, `check_bands_against_labels.py`, `check_caption_outside_roi.py`, `check_composite_scale.py`, `check_labels_and_roi.py`, `cluster_site_captchas.py`, `colors.py`, `contact_sheet.py`, `count_colors.py`, `crop_grid.py`, `down150.py`, `export_parquet.py`, `fetch_dataset.py`, `fix_b64.py`, `generate_pdf_html.py`, `glyphs.py`, `jigsaw2.py`, `jigsaw3.py`, `links.py`, `man.py`, `match_site_to_dataset.py`, `measure_glyphs.py`, `png_meta.py`, `restore_real_shots.py`, `seam.py`, `strip_html.py`, `summarise_roi.py`, `tile.py`, `upload_dataset.py`, `urls.py`, `zoom.py`, plus the new `check_bands.py`.
 
 (13 carry a UTF-8 BOM — same list as before; Python reads them fine.)
 

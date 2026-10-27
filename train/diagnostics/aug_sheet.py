@@ -17,10 +17,10 @@ import sys
 
 from PIL import Image, ImageDraw, ImageFont
 
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from captcha_crnn import CaptchaDataset, build_encoder, build_items, find_types, CHARSET
 
-REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+REPO = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 OUT_DIRS = [os.path.join(REPO, "dataset", "out"), os.path.join(REPO, "dataset", "out_ru")]
 
 SCOPE = ["Archy-X/Krypton/map", "GalleryCaptcha/ru-web", "CaptchaVerifyZ/map", "JSH32/Minecaptcha/map",
