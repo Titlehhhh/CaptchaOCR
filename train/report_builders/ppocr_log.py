@@ -1,24 +1,7 @@
-"""The report of the FIRST PP-OCRv6 run, assembled from its log.
-
-    .venv-gpu\\Scripts\\python.exe train\\make_report.py ppocr-log
-
-Everything in the JSON is read out of the run's own log:
-
-*   the stdout log of the run (the per-type blocks are printed to stdout, the run's
-    own `log.txt` only holds the `log()` lines - both are read, the stdout first);
-*   `baseline_per_type.json` - the archived bench measurement of the pretrained
-    model (`reports/bench_models/ppocrv6-medium.json`, the previous render of the
-    dataset).
-
-This is the report of the run that was stopped during epoch 5 of 30 - its
-"status" field says so. The numbers are the ones the run actually measured.
-"""
-
 import json
 import os
 import re
 
-#: the seven held-out types of that run (Variant 1 of `reports/research3/DATASET_AUDIT.md`)
 HELD = [
     "out/JSH32/Minecaptcha/map",
     "out/jonesdevelopment/sonar/complex",
@@ -31,7 +14,6 @@ HELD = [
 
 
 def read_text(path):
-    """Windows PowerShell's Tee-Object writes UTF-16, the script's own log UTF-8."""
     raw = open(path, "rb").read()
     if raw[:2] in (b"\xff\xfe", b"\xfe\xff"):
         return raw.decode("utf-16", errors="replace")
@@ -51,7 +33,6 @@ def parse_agg(block):
 
 
 def parse_types(block):
-    """The per-type lines of one block."""
     out = {}
     for line in block.splitlines():
         mm = re.match(r"\s{2}(\S+)\s+n=\s*(\d+)\s+exact=([\d.]+)\s+cer=([\d.]+)", line)
@@ -63,7 +44,6 @@ def parse_types(block):
 
 
 def build(run_dir, stdout_log, log_path, baseline_path):
-    """The report as a dict; the caller writes it."""
     text = ""
     for p in ((stdout_log,) if os.path.isfile(stdout_log) else (log_path,)):
         if os.path.isfile(p):
@@ -75,7 +55,6 @@ def build(run_dir, stdout_log, log_path, baseline_path):
     zero_types = parse_types(zero_block)
     zero_agg = parse_agg(zero_block)
 
-    # per-epoch held-out evaluations
     evals = []
     for m in re.finditer(r"--- EPOCH (\d+) .*?\n(.*?)(?=\nepoch \d+: held-out)", text, re.S):
         ep = int(m.group(1))
@@ -84,12 +63,10 @@ def build(run_dir, stdout_log, log_path, baseline_path):
             evals.append({"epoch": ep, "per_type": parse_types(m.group(2)), **agg})
     evals.sort(key=lambda e: e["epoch"])
 
-    # the loss timeline
     timeline = []
     for m in re.finditer(r"^epoch (\d+): loss=([\d.]+)\s+([\d.]+)s\s+([\d.]+) img/s", text, re.M):
         timeline.append({"epoch": int(m.group(1)), "loss": float(m.group(2)),
                          "seconds": float(m.group(3)), "img_per_s": float(m.group(4))})
-
     steps = 0
     for m in re.finditer(r"epoch (\d+) step (\d+)/(\d+)", text):
         steps = max(steps, int(m.group(2)))
@@ -193,7 +170,7 @@ def build(run_dir, stdout_log, log_path, baseline_path):
             "per_type": final_held,
             "aggregate": ({k: best_eval[k] for k in ("types", "exact_match_median", "cer_median",
                                                      "exact_match_micro", "cer_micro")}
-                           if best_eval else None),
+                          if best_eval else None),
             "last_evaluation": ({"epoch": last_eval["epoch"],
                                  "exact_match_median": last_eval["exact_match_median"],
                                  "cer_median": last_eval["cer_median"],
@@ -233,7 +210,7 @@ def build(run_dir, stdout_log, log_path, baseline_path):
                     "on the 29 types with a band it is 0.5517",
         },
         "held_out_verdict": {"types_better": better, "types_worse": worse,
-                              "types_unchanged": same},
+                             "types_unchanged": same},
         "notes": [
             "The pretrained head (18 710 classes) is kept, not replaced: replacing it would "
             "destroy the zero-step baseline, which is the only honest reference point.",

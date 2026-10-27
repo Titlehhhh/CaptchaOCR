@@ -1,24 +1,3 @@
-"""Compare a measured baseline with our model on the same items.
-
-    .venv-gpu\\Scripts\\python.exe train\\compare_baselines.py --ckpt train\\run\\foldA\\ckpt\\step_*.pt
-
-The baselines are not re-run: their predictions are already saved in
-`reports/bench_results*.json`, so the same items can be re-scored here.
-
-Two things have to be kept apart, and this script keeps them apart:
-
-* **the input**: `bench/bench_others.py` and `bench/bench_onnx.py` crop by the
-  `roi` band, `bench/bench_hf.py` does NOT (it calls `load_image(path)` without
-  the band, `bench/bench_hf.py:136` called from `:174`). A model measured on the
-  band and a model measured on the whole frame are not comparable;
-* **the item set**: the benchmark test set is 13 types x 8 samples, and 5 of
-  those 13 types have no band at all - for them "cropped" and "uncropped" are
-  the same thing.
-
-The script therefore prints the numbers for the whole test set and for the band
-types alone, for every measured baseline, and then our model on exactly the same
-items.
-"""
 
 import argparse
 import json

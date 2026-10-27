@@ -1,25 +1,4 @@
-"""Build the measured training reports from the artefacts of the runs.
-
-    .venv-gpu\\Scripts\\python.exe train\\make_report.py --help
-
-One entry point for the three reports that the run directories used to build with
-their own copies of the script:
-
-| kind | the report | what it reads |
-|---|---|---|
-| `ppocr-log` | `reports/TRAINING_PPOCR_V6.json` | the log of the first PP-OCRv6 run |
-| `ppocr-result` | `reports/TRAINING_PPOCR_V6_BIG.json` | the `result.json` of the big run |
-| `crnn` | `reports/TRAINING_CRNN_BIG.json` | the `val_report.json` of the CRNN run |
-
-Every number in the reports is read out of a file that a run wrote; nothing is typed
-in by hand. The reports themselves are **measured results**: they are written by the
-command below and are never edited by hand.
-
-The three builders live in `train/report_builders/`. They used to sit as copies
-inside the run directories (`train/runs/**`), which are git-ignored - so the code
-that produced a measured report was invisible to git and had to be looked for on
-disk.
-"""
+""
 
 import argparse
 import json
@@ -37,7 +16,6 @@ from report_builders import ppocr_log, ppocr_result        # noqa: E402
 
 
 def rooted(p):
-    """A path that is relative to the repository root."""
     return p if os.path.isabs(p) else os.path.join(ROOT, p)
 
 
@@ -99,7 +77,7 @@ def main(argv=None) -> int:
         markdown_tables.print_tables(report, soup)
         return 0
 
-    # crnn
+
     run_dir = rooted(args.run_dir or os.path.join("train", "runs", "crnn", "crnn_big"))
     out_path = rooted(args.out or os.path.join("reports", "TRAINING_CRNN_BIG.json"))
     report = crnn_builder.build(run_dir)

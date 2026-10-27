@@ -1,12 +1,3 @@
-"""The model backends: how each ready-made model gets its input and its output.
-
-Every backend has the same signature::
-
-    backend(repo, items, mode, meta) -> (predictions, latencies_ms)
-
-``meta`` is filled in with the weights, the preprocessing and the runtime, and it
-goes into the result JSON - so the numbers of a run say exactly what was measured.
-"""
 
 import json
 import os
@@ -16,18 +7,10 @@ from .config import OLD_HUB
 from .items import load_input
 
 
-# --------------------------------------------------------------------------- #
-# download helper (the pre-existing user cache is read-only, but readable)
-# --------------------------------------------------------------------------- #
-def hf_file(repo: str, filename: str):
-    """Return (path, revision) for a file of a HF repo.
 
-    The user's pre-existing Hugging Face cache (~/.cache/huggingface/hub, or
-    $HF_HUB_CACHE when it is set) is readable but not writable by the
-    sandboxed python process, so it is used as-is when the file is already
-    there; everything else is downloaded into the workspace cache
-    (build/hf_cache).
-    """
+
+
+def hf_file(repo: str, filename: str):
     from huggingface_hub import hf_hub_download
     slug = "models--" + repo.replace("/", "--")
     snapdir = os.path.join(OLD_HUB, slug, "snapshots")
@@ -49,17 +32,10 @@ def repo_revision(repo: str):
         return None
 
 
-# --------------------------------------------------------------------------- #
-# ONNX backends
-# --------------------------------------------------------------------------- #
-def backend_ppocr_onnx(repo, items, mode, meta):
-    """PaddleOCR rec-models in ONNX (PP-OCRv5/v6, cyrillic_PP-OCRv5).
 
-    Preprocessing follows the model's own `inference.yml`:
-    DecodeImage(img_mode=BGR) -> RecResizeImg(image_shape=[3,48,320]).
-    The character dictionary is taken from the same `inference.yml`
-    (`PostProcess.character_dict`); CTCLabelDecode maps index 0 to the blank.
-    """
+
+
+def backend_ppocr_onnx(repo, items, mode, meta):
     import numpy as np
     import onnxruntime as ort
     import yaml
@@ -68,7 +44,7 @@ def backend_ppocr_onnx(repo, items, mode, meta):
     yml_path, _ = hf_file(repo, "inference.yml")
     cfg = yaml.safe_load(open(yml_path, encoding="utf-8"))
     chars = cfg["PostProcess"]["character_dict"]
-    character = ["<blank>"] + list(chars) + [" "]          # CTCLabelDecode
+    character = ["<blank>"] + list(chars) + [" "]
     img_shape = cfg["PreProcess"]["transform_ops"][2]["RecResizeImg"]["image_shape"]
     img_mode = cfg["PreProcess"]["transform_ops"][0]["DecodeImage"]["img_mode"]
     imgC, imgH, imgW = img_shape
@@ -91,7 +67,7 @@ def backend_ppocr_onnx(repo, items, mode, meta):
         pad[:, :, :resize_w] = arr
         x = pad[None]
         t0 = time.perf_counter()
-        logits = sess.run(None, {in_name: x})[0][0]        # (T, C)
+        logits = sess.run(None, {in_name: x})[0][0]
         idx = logits.argmax(-1)
         chars_out, prev = [], None
         for i in idx:
@@ -112,7 +88,6 @@ def backend_ppocr_onnx(repo, items, mode, meta):
 
 
 def backend_doctr_onnx(repo, items, mode, meta):
-    """graycat660/doctr-crnn-vgg16-bn-russian-onnx (docTR CRNN, ru+en, ONNX)."""
     import numpy as np
     import onnxruntime as ort
 
@@ -159,11 +134,10 @@ def backend_doctr_onnx(repo, items, mode, meta):
     return preds, lat
 
 
-# --------------------------------------------------------------------------- #
-# torch / transformers backends
-# --------------------------------------------------------------------------- #
+
+
+
 def backend_grafj(repo, items, mode, meta):
-    """Graf-J captcha CRNN / conv-transformer (custom code, CTC)."""
     import torch
     from transformers import AutoModel, AutoProcessor
 
@@ -205,7 +179,6 @@ def backend_grafj(repo, items, mode, meta):
 
 
 def backend_trocr(repo, items, mode, meta):
-    """TrOCR line (VisionEncoderDecoder) - transformers."""
     import torch
     from transformers import AutoProcessor
 
@@ -225,9 +198,9 @@ def backend_trocr(repo, items, mode, meta):
     if model is None:
         raise RuntimeError(f"cannot load {repo}; last error: {last}")
 
-    # transformers 5.x: the TrOCRProcessor of a *base* (not fine-tuned) model
-    # demands `text`/`text_target` ("You need to specify either `text` or
-    # `text_target`"). For inference only the image processor is needed.
+
+
+
     image_processor = None
     try:
         from transformers import TrOCRImageProcessor
@@ -267,7 +240,6 @@ def backend_trocr(repo, items, mode, meta):
 
 
 def backend_txtcaptcha(repo, items, mode, meta):
-    """jtrecenti/txtcaptcha-crnn (CRNN + BiLSTM + CTC, MIT)."""
     import torch
     from txtcaptcha import from_pretrained
     from txtcaptcha.dataset import decode_indices, transform_image
@@ -283,8 +255,8 @@ def backend_txtcaptcha(repo, items, mode, meta):
             imgs = [load_input(it, mode) for it in chunk]
             t0 = time.perf_counter()
             x = transform_image(imgs, height=32).to(dev)
-            logits = model(x)                      # (T, B, C)
-            idx = logits.argmax(-1).transpose(0, 1)  # (B, T)
+            logits = model(x)
+            idx = logits.argmax(-1).transpose(0, 1)
             for row in idx:
                 preds.append(decode_indices(row.tolist(), model.vocab, collapse=True))
             dt = (time.perf_counter() - t0) * 1000 / len(chunk)
@@ -298,15 +270,14 @@ def backend_txtcaptcha(repo, items, mode, meta):
 
 
 def backend_easyocr(repo, items, mode, meta):
-    """EasyOCR/en - the baseline of the old bench (runs in the system python)."""
     import numpy as np
     import easyocr
     rd = easyocr.Reader(["en"], gpu=False, verbose=False)
     preds, lat = [], []
     for it in items:
         img = load_input(it, mode)
-        # EasyOCR only accepts a numpy array (cv2/BGR convention) - a PIL image
-        # raises "Invalid input type".
+
+
         arr = np.asarray(img, dtype=np.uint8)[:, :, ::-1]
         t0 = time.perf_counter()
         res = rd.readtext(arr, detail=0, paragraph=True)

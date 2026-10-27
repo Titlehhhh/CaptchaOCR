@@ -1,8 +1,3 @@
-"""The item sets of the harness: which types, which samples, band or frame.
-
-An *item* is one picture with everything a scorer needs: the path, the drawn text
-(the gold), the answer, and the band (``roi``) if the type has one.
-"""
 
 import glob
 import json
@@ -14,7 +9,6 @@ from .config import LEGACY_TYPES
 
 
 def read_types():
-    """All captcha types: (type_id, folder, rows)."""
     out = []
     for root, tag in ((OUT, "out"), (OUT_RU, "out_ru")):
         for lj in sorted(glob.glob(os.path.join(root, "**", "labels.jsonl"), recursive=True)):
@@ -31,7 +25,6 @@ def read_types():
 
 
 def _spread(n_rows: int, n_take: int):
-    """Deterministic, evenly spread row indices (0 .. n_rows-1)."""
     if n_take <= 1:
         return [0]
     if n_rows <= n_take:
@@ -40,7 +33,6 @@ def _spread(n_rows: int, n_take: int):
 
 
 def build_items(set_name: str, n_per_type: int):
-    """Build one item set. Every item carries its band, the drawn text and the answer."""
     types = read_types()
     items = []
     if set_name == "full":
@@ -77,7 +69,6 @@ def build_items(set_name: str, n_per_type: int):
 
 
 def load_input(item, mode: str):
-    """The picture the model sees. 'band' = the roi crop, 'frame' = the whole PNG."""
     from PIL import Image
     img = Image.open(item["path"]).convert("RGB")
     if mode == "band" and item["roi"]:

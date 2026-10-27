@@ -1,14 +1,3 @@
-"""How tight is the band? Does it clip the glyph it carries?
-
-    .venv-gpu\\Scripts\\python.exe train\\band_tightness.py
-
-For every sample of every type the band is measured: the ink inside the band is
-found (the pixels that differ from the background), and the margins to the four
-edges of the band are counted. A band that clips its glyph has ink hard against
-an edge on many samples - that is the "the band is wrong" signal, next to the
-contact sheet.
-"""
-
 import argparse
 import os
 import sys
@@ -24,7 +13,6 @@ OUT_DIRS = [os.path.join(REPO, "dataset", "out"), os.path.join(REPO, "dataset", 
 
 
 def ink_mask(img):
-    """The pixels that are not the background: the band is mostly one colour."""
     a = np.asarray(img, dtype=np.float32)
     if a.ndim == 3:
         a = a.mean(axis=2)
@@ -35,7 +23,6 @@ def ink_mask(img):
 
 
 def margins(m):
-    """(left, right, top, bottom) margin in pixels between the ink and the edges."""
     cols = np.where(m.any(axis=0))[0]
     rows = np.where(m.any(axis=1))[0]
     if len(cols) == 0 or len(rows) == 0:
@@ -45,12 +32,6 @@ def margins(m):
 
 
 def outside_ink(img, roi, pad=2):
-    """Is there ink in the `pad` pixels just outside the band?
-
-    That is the signature of a band that CUTS the thing it carries: the glyph
-    continues over the edge of the rectangle. It is read on the whole frame, so
-    the background of the scene is included - which is why it is only a hint.
-    """
     x, y, w, h = roi
     x = max(0, min(x, img.width - 1))
     y = max(0, min(y, img.height - 1))

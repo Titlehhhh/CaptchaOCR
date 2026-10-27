@@ -1,18 +1,3 @@
-"""The report of the BIG PP-OCRv6 run, assembled from the run's own `result.json`.
-
-    .venv-gpu\\Scripts\\python.exe train\\make_report.py ppocr-result
-
-Everything in the JSON is read from a file that the run wrote:
-
-*   `result.json` of the run (the zero step, the history, the final evaluation);
-*   `soup.json` of the run (the weight-interpolation sweep), when it is there;
-*   `log.txt` of the run (the item counts, which the run printed);
-*   `reports/TRAINING_PPOCR_V6.json` - the PREVIOUS run (100 images per type), used
-    only for the "discrepancy" section, copied verbatim.
-
-No number is typed in by hand.
-"""
-
 import json
 import os
 import platform
@@ -24,26 +9,18 @@ TRAIN_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if TRAIN_DIR not in sys.path:
     sys.path.insert(0, TRAIN_DIR)
 
-from finetune_ppocr import aggregate  # noqa: E402  (the single source of truth for the metrics)
+from finetune_ppocr import aggregate  # noqa: E402
 
-#: the 7 held-out types split by whether the type has a band (roi) at all:
-#: the 4 types without a band are read from the whole frame, the 3 with a band
-#: from the band crop - the crop mode is what differs.
+
 BANDED = ["out/JSH32/Minecaptcha/map", "out/laforetbrut/are-you-sure/code",
           "out_ru/CaptchaVerifyZ/map"]
 NON_BANDED = ["out/jonesdevelopment/sonar/complex", "out/jonesdevelopment/sonar/legacy",
               "out/jonesdevelopment/sonar/standard", "out_ru/BotFilter/map"]
 
-#: the number of items the training set of that run had (used for the loss timeline's
-#: images per second)
 TRAIN_ITEMS_OF_RUN = 6499
 
 
-# --------------------------------------------------------------------------- #
-# helpers
-# --------------------------------------------------------------------------- #
 def per_type_slice(d, keys=("n", "exact_match", "cer")):
-    """The `per_type` block in the shape of `reports/TRAINING_PPOCR_V6.json`."""
     out = {}
     for t in sorted(d):
         out[t] = {k: d[t][k] for k in keys}
@@ -55,10 +32,9 @@ def pct(x):
 
 
 def pct_block(per_type, agg):
-    """The same metrics in percent, which is how the report states them."""
     out = {t: {"n": v["n"],
-                "exact_match_pct": pct(v["exact_match"]),
-                "cer_pct": pct(v["cer"])}
+               "exact_match_pct": pct(v["exact_match"]),
+               "cer_pct": pct(v["cer"])}
            for t, v in sorted(per_type.items())}
     out["MEDIAN over types"] = {
         "exact_match_pct": pct(agg["exact_match_median"]),
@@ -72,7 +48,6 @@ def pct_block(per_type, agg):
 
 
 def delta_pct_block(a, b):
-    """Per-type change from A to B, in percentage points."""
     out = {}
     for t in sorted(set(a) | set(b)):
         if t not in a or t not in b:
@@ -104,7 +79,6 @@ def delta_pct_block(a, b):
 
 
 def regroup_dropped(dropped):
-    """`{type: why}` -> the three categories the previous JSON used."""
     cats = {
         "no band (roi = null), excluded from training by the band rule": [],
         "label outside the model dictionary (no Cyrillic in it)": [],
@@ -122,7 +96,6 @@ def regroup_dropped(dropped):
 
 
 def build(run_dir, prev_path):
-    """The report as a dict; the caller writes it."""
     with open(os.path.join(run_dir, "result.json"), encoding="utf-8") as f:
         res = json.load(f)
     with open(prev_path, encoding="utf-8") as f:
@@ -172,9 +145,9 @@ def build(run_dir, prev_path):
             "zero_step": {"per_type": z_sub, "aggregate": z_agg},
             "finetuned": {"per_type": f_sub, "aggregate": f_agg},
             "delta_exact_pp": round(100.0 * ((f_agg["exact_match_median"] or 0)
-                                              - (z_agg["exact_match_median"] or 0)), 2),
+                                               - (z_agg["exact_match_median"] or 0)), 2),
             "delta_micro_exact_pp": round(100.0 * ((f_agg["exact_match_micro"] or 0)
-                                                    - (z_agg["exact_match_micro"] or 0)), 2),
+                                                     - (z_agg["exact_match_micro"] or 0)), 2),
         }
 
     epochs_done = len(hist)
@@ -360,9 +333,6 @@ def build(run_dir, prev_path):
         ],
     }
 
-    # --------------------------------------------------------------------------- #
-    # the weight interpolation (WiSE-FT) sweep, if it was measured
-    # --------------------------------------------------------------------------- #
     if soup:
         sweep = {}
         for a, r in sorted(soup["results"].items(), key=lambda kv: float(kv[0])):
@@ -390,7 +360,6 @@ def build(run_dir, prev_path):
             "beats_zero_step": ((sweep[best_a]["aggregate"]["exact_match_median"] or 0)
                                 > (zero_agg["exact_match_median"] or 0)),
         }
-        # consistency: alpha=0 vs the run's zero step, alpha=1 vs the run's fine-tuned model
         a0 = sweep.get("0.0", {}).get("aggregate")
         a1 = sweep.get("1.0", {}).get("aggregate")
         report["weight_interpolation"]["consistency_checks"] = {
@@ -404,7 +373,6 @@ def build(run_dir, prev_path):
             "run_finetuned_micro_exact": final_agg["exact_match_micro"],
         }
 
-    # the item counts are printed by the run; read them back from the log so nothing is hand-typed
     log = open(os.path.join(run_dir, "log.txt"), encoding="utf-8").read()
     m = re.search(r"train items:\s*(\d+)\s+eval items:\s*(\d+)\s+held-out items:\s*(\d+)", log)
     if m:

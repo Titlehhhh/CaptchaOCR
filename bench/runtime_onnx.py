@@ -1,20 +1,4 @@
-r"""The minimal runtime: ONNX Runtime + Pillow, no PyTorch anywhere.
-
-    python bench/runtime_onnx.py --model bench\models\crnn_fp32.onnx \
-        --config bench\models\config.json \
-        --image dataset\out\Archy-X\Krypton\map\002.png --roi 27 32 21 8
-
-This is the "one folder, no Python" runtime in its Python form: the folder holds
-the model, the config and this file, and the only thing it needs beside them is a
-Python interpreter with `onnxruntime` and `pillow` - no torch, no numpy required
-beyond what Pillow pulls in.
-
-The pipeline is the training pipeline, in the order of `train/captcha_crnn.py`:
-crop the band, grayscale, measure the glyph height, scale the glyph to 32 px,
-normalise to [-1, 1], run the model, decode the CTC greedily.
-
-The C/C++ twin of this file is `bench/runtime_onnx.c` (ONNX Runtime C API + WIC).
-"""
+""
 
 import argparse
 import json
@@ -29,7 +13,6 @@ from PIL import Image
 
 
 def load_band(path, roi):
-    """The band of the picture: the text rectangle, or the whole frame."""
     img = Image.open(path)
     if img.mode != "L":
         img = img.convert("L")
@@ -44,11 +27,6 @@ def load_band(path, roi):
 
 
 def line_height(img):
-    """The height of one line of glyphs inside the band (the trainer's rule).
-
-    The rows of a text line vary a lot across the row, the blank rows between the
-    lines do not; the median length of the "busy" runs is the height of one line.
-    """
     a = np.asarray(img, dtype=np.float32)
     if a.ndim != 2 or a.shape[0] < 3:
         return img.height
@@ -69,7 +47,6 @@ def line_height(img):
 
 
 def preprocess(img, cfg):
-    """The band -> the (1, 1, 32, W) float tensor the model takes."""
     h = cfg["input"]["glyph_height"]
     line = line_height(img)
     scale = h / max(1, line)
@@ -83,7 +60,6 @@ def preprocess(img, cfg):
 
 
 def decode(logits, charset):
-    """The greedy CTC decode: argmax, collapse the repeats, drop the blank."""
     x = logits - logits.max(axis=-1, keepdims=True)
     e = np.exp(x)
     probs = e / e.sum(axis=-1, keepdims=True)

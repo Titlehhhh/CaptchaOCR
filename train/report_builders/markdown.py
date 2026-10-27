@@ -1,9 +1,3 @@
-"""The markdown tables of the PP-OCRv6 report - they are pasted into the .md report.
-
-The JSON is the artefact; these tables are the same numbers in the form the markdown
-report quotes them in.
-"""
-
 from .ppocr_result import pct, per_type_slice
 
 
@@ -24,7 +18,6 @@ def md_table(per_type, agg, title):
 
 
 def print_tables(report, soup=None):
-    """Print the tables of the big PP-OCRv6 run."""
     zero_pt = report["zero_step"]["per_type"]
     zero_agg = report["zero_step"]["aggregate"]
     final_pt = report["after_training"]["per_type"]

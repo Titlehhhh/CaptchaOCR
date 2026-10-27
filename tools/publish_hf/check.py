@@ -2,12 +2,8 @@ from .auth import api_for, require_token
 from .constants import EXIT_ERROR, EXIT_OK, INVENTORY_NAME
 from .utils import human_bytes, log
 
-# =====================================================================================
-# Команда check
-# =====================================================================================
 
 def check_repo(args) -> int:
-    """Проверить, что лежит в репозитории."""
     token = require_token(args.token)
     api = api_for(token)
     repo_type = args.repo_type
@@ -45,7 +41,7 @@ def check_repo(args) -> int:
                                     recursive=True):
         path = getattr(entry, "path", "")
         if getattr(entry, "size", None) is None:
-            continue  # это папка
+            continue
         files += 1
         total += int(entry.size)
         if path == "README.md":
@@ -64,4 +60,3 @@ def check_repo(args) -> int:
     log(f"  PNG:             {pngs} шт.")
     log(f"  {INVENTORY_NAME}: {'есть' if inventory else 'нет'}")
     return EXIT_OK
-

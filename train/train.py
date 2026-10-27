@@ -1,18 +1,3 @@
-"""Train the captcha CRNN on the generated dataset.
-
-    python train/train.py --quick            # a smoke run, minutes
-    python train/train.py --epochs 60        # the real thing
-
-The run is checkpointed as it goes, so it can be stopped at any point and
-resumed later - including from a different machine, as long as the dataset folder
-is the same one the run was started from (the generated pixels depend on the
-machine's font mapping, so the dataset is an artefact, not a function).
-
-Resuming:
-
-    python train/train.py --resume            # picks up the newest checkpoint
-"""
-
 import argparse
 import json
 import os
@@ -31,8 +16,6 @@ from captcha_crnn import (BLANK, CHARSET, CYRILLIC, CaptchaDataset, CRNN, build_
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT_DIRS = [os.path.join(REPO, "dataset", "out"), os.path.join(REPO, "dataset", "out_ru")]
 
-# Types whose answer is not the text in the picture, or is constant, or cannot be
-# recovered at all. They teach a recogniser nothing and leak on any random split.
 EXCLUDE = [
     "LagBug/XProtect/drop",
     "LagBug/XProtect/jump",
@@ -43,24 +26,13 @@ EXCLUDE = [
     "GalleryCaptcha/ru-object-swatch",
     "CaptchaGUI/clickblock",
     "LagBug/XProtect/slot",
-    # The band holds a phrase that is not the answer and cannot be made to be:
-    # "[Tap] button in red" versus the answer "[Tap] in red color", and a row of
-    # sprite cells versus a list of sprite ids.
     "FeelingAlive0/AdvancedCaptcha/button",
     "jSdCool/minecaptcha/image",
-    # The Russian number family spells a whole number out, one word per row, so its
-    # band is a two or three line block whose glyph is only a fifth of the band. A
-    # single-pass recogniser cannot read that: scaling the band to 32 px leaves a 7 px
-    # glyph, and the words of adjacent rows touch each other, so the rows cannot even
-    # be separated by projection. These three types are a solver-side task - read the
-    # block with a per-line cropper, then turn the words into digits with the lexicon.
     "LimboFilter/map",
     "GalleryCaptcha/ru-numberword",
     "GalleryCaptcha/ru-numberword-caption",
 ]
 
-# The types a quick run should use: clean text images, digits and Latin letters,
-# no scene cropping needed. Two of them are held out for validation.
 QUICK_TYPES = [
     "BotFilter/map",
     "GalleryCaptcha/ru-web",
@@ -135,12 +107,6 @@ def set_seed(seed):
 
 
 def split_types(types, val_types, quick):
-    """Split the type list into train and validation.
-
-    The split is by *type*, never by image: the unit of generalisation that
-    matters is a plugin, and a random split leaks because several types have
-    only a handful of distinct answers.
-    """
     val_types = val_types or []
     if quick:
         train_ids = [t for t in QUICK_TYPES if t not in val_types]
@@ -153,14 +119,6 @@ def split_types(types, val_types, quick):
 
 
 def select(types, ids):
-    """The subset of `types` whose id is in `ids` - always as (id, directory) pairs.
-
-    `ids` is `None` for "no filter, take everything" and an explicit list for a
-    selection. An **empty list must select nothing**: the old code mapped it to
-    `keep = None`, i.e. "take everything", so a run whose `--val-types` matched no
-    discovered type silently evaluated the *training* set and wrote it to
-    `val_report.json` as if it were a held-out measurement.
-    """
     keep = None if ids is None else set(ids)
     return [(tid, d) for tid, d, _r in types if keep is None or tid in keep]
 
@@ -181,13 +139,6 @@ def main():
     cs = build_encoder(charset)
     encode, decode, num_classes = cs.encode, cs.decode, cs.num_classes
 
-    # The type list is discovered first, and the `--types` filter is applied here
-    # rather than inside `find_types`. The reason is the `--val-types` contract:
-    # `--types` is a *substring filter on the type id*, so a held-out type that is
-    # not also listed in `--types` is never discovered at all, and the run then
-    # trains on everything and validates on nothing - or, worse, validates on the
-    # training set. Comparing the two lists against the undiscovered set makes
-    # that mistake loud instead of silent.
     all_found = find_types(OUT_DIRS, exclude=EXCLUDE)
     if args.trees != "both":
         want = "out_ru" if args.trees == "out_ru" else "out"
@@ -211,19 +162,6 @@ def main():
               "not a split at all.", file=sys.stderr)
         return 2
 
-    # Two kinds of type are left out of a run by default:
-    #
-    #  - a type with **no text band** is the ill-posed task: the answer is somewhere in
-    #    the picture and the model is invited to learn which line to read;
-    #  - a type whose label does not survive the charset is **poison**: a CTC target
-    #    that is empty teaches the model nothing and costs the run its loss. That
-    #    happens when a type draws in an alphabet the model does not have - the
-    #    Cyrillic families against the Latin charset, for instance. Those types belong
-    #    to the other model.
-    #
-    # A third case is a type that carries a band on *some* of its samples: the ones
-    # without a band would be shown the whole frame, so they are dropped instead of
-    # being trained on.
     kept = []
     dropped_band = []
     dropped_partial_band = []
@@ -239,10 +177,6 @@ def main():
             if len(with_roi) < len(rows):
                 dropped_partial_band.append((t, len(rows) - len(with_roi)))
                 keep_files[t] = {row["file"] for row in with_roi}
-        # The charset check looks at EVERY row, not at the first five. A label with a
-        # character outside the charset is poison: `Charset.encode` drops the unknown
-        # character silently, so the label no longer matches the picture and the
-        # model is taught to read a string that is not there.
         bad = 0
         for row in rows:
             text = row.get("text") or row.get("answer") or ""
@@ -288,9 +222,6 @@ def main():
     loader = torch.utils.data.DataLoader(train_ds, batch_size=args.batch_size, shuffle=True,
                                          collate_fn=collate, num_workers=args.workers,
                                          drop_last=False, persistent_workers=args.workers > 0)
-    # The validation loader decodes the same PNGs as the training one, and with
-    # zero workers it was slower than the training loop itself: the evaluation
-    # of 1000 validation images took longer than 30 training steps.
     val_loader = torch.utils.data.DataLoader(val_ds, batch_size=args.batch_size, shuffle=False,
                                              collate_fn=collate, num_workers=args.workers,
                                              persistent_workers=args.workers > 0) if val_items else None
@@ -352,7 +283,6 @@ def main():
             "args": vars(args),
             "charset": charset,
         }, path)
-        # keep the two newest
         keep = sorted((f for f in os.listdir(ckpt_dir) if f.startswith("step_")),
                       key=lambda f: int(f[5:-3]))
         for f in keep[:-2]:
@@ -406,7 +336,7 @@ def main():
             lengths = batch["lengths"].to(device)
             with torch.amp.autocast("cuda", enabled=use_amp):
                 logits, t = model(images)
-                log_probs = logits.log_softmax(dim=-1).permute(1, 0, 2)   # (T, B, C)
+                log_probs = logits.log_softmax(dim=-1).permute(1, 0, 2)
                 input_lengths = torch.full((logits.shape[0],), t, dtype=torch.long,
                                           device=device)
                 loss = ctc(log_probs, labels, input_lengths, lengths)

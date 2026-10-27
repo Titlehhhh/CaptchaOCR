@@ -1,9 +1,3 @@
-"""Writing the exported repository: the files, the weights and the ONNX graph.
-
-`write_repo()` writes everything except the ONNX graph and the model card;
-`export_onnx()` writes the graph with `torch.onnx.export`.
-"""
-
 import importlib
 import json
 import os
@@ -19,12 +13,6 @@ from .templates_processor import PROCESSING_TEMPLATE
 
 
 def derive_geometry(state: dict) -> dict:
-    """Read the architecture's hyper-parameters out of the checkpoint's state dict.
-
-    The checkpoint does not store `hidden` or `glyph_height` separately - it stores the
-    tensors, and the tensors know their own shape. Deriving them from the shapes is
-    exact, where reading them from a default would be a guess.
-    """
     fc_w = state["fc.weight"]
     num_classes, hidden2 = int(fc_w.shape[0]), int(fc_w.shape[1])
     hidden = hidden2 // 2
@@ -43,7 +31,6 @@ def derive_geometry(state: dict) -> dict:
 
 
 def import_from_dir(directory: str, module_name: str):
-    """Import a module from a directory (the exported `modeling_captcha.py` etc.)."""
     if directory not in sys.path:
         sys.path.insert(0, directory)
     sys.modules.pop(module_name, None)
@@ -51,7 +38,6 @@ def import_from_dir(directory: str, module_name: str):
 
 
 def write_repo(out_dir: str, cfg: dict, state: dict, charset: str) -> None:
-    """Write everything except the weights, the ONNX and the model card."""
     os.makedirs(out_dir, exist_ok=True)
     os.makedirs(os.path.join(out_dir, "onnx"), exist_ok=True)
 
@@ -98,8 +84,6 @@ def write_repo(out_dir: str, cfg: dict, state: dict, charset: str) -> None:
         json.dump(processor_config, f, indent=2, ensure_ascii=False)
         f.write("\n")
 
-    # The 4.x layout, and the fallback for anybody whose `processor_config.json` is
-    # missing. Same attributes, plus the `auto_map` that resolves the class.
     preprocessor_config = dict(processor_config)
     with open(os.path.join(out_dir, "preprocessor_config.json"), "w", encoding="utf-8") as f:
         json.dump(preprocessor_config, f, indent=2, ensure_ascii=False)
@@ -119,8 +103,6 @@ def write_repo(out_dir: str, cfg: dict, state: dict, charset: str) -> None:
     with open(os.path.join(out_dir, "LICENSE"), "w", encoding="utf-8") as f:
         f.write(MIT_LICENSE)
 
-    # The weights. `safetensors` writes exactly the tensors of the state dict, with the
-    # same names the model has, so `from_pretrained` finds every one of them.
     from safetensors.torch import save_file
 
     tensors = {k: v.detach().cpu().contiguous() for k, v in state.items()}
@@ -128,15 +110,6 @@ def write_repo(out_dir: str, cfg: dict, state: dict, charset: str) -> None:
 
 
 def export_onnx(out_dir: str, state: dict, cfg: dict, charset: str) -> str:
-    """Export the ONNX graph with `torch.onnx.export`.
-
-    `optimum` is not used and cannot be: `transformers.onnx` was removed in
-    transformers 5.x and `optimum-onnx` 0.1.0 declares `transformers<4.58.0,>=4.36`.
-
-    The dynamo exporter (the default since torch 2.9) cannot lower `nn.LSTM` in this
-    torch build, so the TorchScript exporter is the fallback. Both are
-    `torch.onnx.export`; the width stays a dynamic axis either way.
-    """
     if TRAIN_DIR not in sys.path:
         sys.path.insert(0, TRAIN_DIR)
     from captcha_crnn import CRNN
@@ -172,7 +145,7 @@ def export_onnx(out_dir: str, state: dict, cfg: dict, charset: str) -> str:
             opset_version=18, dynamo=True,
         )
         return "dynamo"
-    except Exception as exc:  # noqa: BLE001 - the fallback is the point
+    except Exception as exc:  # noqa: BLE001
         errors.append(f"dynamo exporter: {type(exc).__name__}: {exc}")
         log(f"  the dynamo ONNX exporter failed ({type(exc).__name__}); "
             f"falling back to the TorchScript exporter")

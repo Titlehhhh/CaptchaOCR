@@ -1,19 +1,3 @@
-"""Contact sheets of the text bands.
-
-    .venv-gpu\\Scripts\\python.exe train\\roi_sheet.py --mode bands --out reports\\roi_bands_minimal.png \
-        --types "Archy-X/Krypton/map" "JSH32/Minecaptcha/map" ...
-
-Three modes:
-
-* ``bands``  - every sample of every type, cropped by its ``roi`` and scaled the way
-  the trainer scales it (the glyph to 32 px), with the gold text under each cell.
-  This is exactly what the recogniser is shown.
-* ``frames`` - the whole frame with the band rectangle drawn on it, so it can be
-  checked that the rectangle is where the answer is and not somewhere else.
-* ``noband`` - the whole frame for the types that have no band at all, which is
-  what the model would be shown if the band filter were switched off.
-"""
-
 import argparse
 import os
 import sys
@@ -53,7 +37,6 @@ def text_size(draw, s, f):
 
 def make_sheet(entries, mode, out_path, cols=10, cell_w=150, crop_h=32, label_h=16,
                per_type=None, title="", zoom_factor=4):
-    """entries: list of (type_id, directory)."""
     f_type = font(15)
     f_cell = font(11)
     f_title = font(19)
@@ -65,10 +48,8 @@ def make_sheet(entries, mode, out_path, cols=10, cell_w=150, crop_h=32, label_h=
             rows = rows[:per_type]
         blocks.append((type_id, directory, rows))
 
-    # Frame mode: a sample of frames, scaled to a common cell.
     frame_cell_w = 220
     frame_cell_h = 220
-    # Zoom mode: the band crop at 4x, nearest neighbour.
     zoom_w = 300
     zoom_n = 4
     zoom_h = 200
@@ -116,8 +97,6 @@ def make_sheet(entries, mode, out_path, cols=10, cell_w=150, crop_h=32, label_h=
                 scale = 32 / max(1, line)
                 w = max(1, int(round(crop.width * scale)))
                 crop = crop.resize((w, crop_h), Image.BILINEAR)
-                # A crop wider than the cell would be clipped by the sheet and look
-                # like a broken band, so it is scaled down to fit instead.
                 if w > cell_w - 6:
                     f = (cell_w - 6) / w
                     crop = crop.resize((max(1, int(w * f)), max(1, int(crop_h * f))),
@@ -130,7 +109,6 @@ def make_sheet(entries, mode, out_path, cols=10, cell_w=150, crop_h=32, label_h=
                 draw.text((x + 1, yy + crop_h + 1), gold[:22], font=f_cell, fill=GOLD)
             y += ((len(rows) + cols - 1) // cols) * (crop_h + label_h + 6)
         elif mode == "zoom":
-            # The band crop at 4x, nearest neighbour: what the pixels really are.
             ds = CaptchaDataset(
                 [{"path": os.path.join(directory, r["file"]), "roi": r.get("roi"),
                   "text": r.get("text") or ""} for r in rows],

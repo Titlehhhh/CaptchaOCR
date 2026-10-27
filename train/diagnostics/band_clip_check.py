@@ -1,12 +1,3 @@
-"""Does the band cut the glyph it carries?
-
-    .venv-gpu\\Scripts\\python.exe train\\band_clip_check.py --types "haq/mapcha/map"
-
-For a few samples of every type the ink of the band rows is printed as a column
-map, with the band marked. A glyph that is cut in half by the band edge shows up
-as ink columns just outside the marked range that belong to the same character.
-"""
-
 import argparse
 import os
 import sys

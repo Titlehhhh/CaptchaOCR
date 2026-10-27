@@ -1,4 +1,3 @@
-"""The run loop: score one model over the item sets and write the result JSON."""
 
 import json
 import os
@@ -97,11 +96,10 @@ def run_model(key, spec, sets, modes, n_per_type, out_dir):
     return result
 
 
-# --------------------------------------------------------------------------- #
-# contact sheet
-# --------------------------------------------------------------------------- #
+
+
+
 def contact_sheet(path, out_png, mode="band", set_name="full", top=24):
-    """PNG sheet: the band crop, the gold answer and the prediction, worst first."""
     from PIL import Image, ImageDraw
     data = json.load(open(path, encoding="utf-8"))
     block = data["modes"][mode][set_name]

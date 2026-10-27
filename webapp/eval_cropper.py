@@ -1,34 +1,4 @@
 #!/usr/bin/env python
-"""Measure the cropper: the band it finds, and what the model reads with it.
-
-    .venv-gpu\\Scripts\\python.exe webapp\\eval_cropper.py --selftest
-    .venv-gpu\\Scripts\\python.exe webapp\\eval_cropper.py --demo-sweep
-    .venv-gpu\\Scripts\\python.exe webapp\\eval_cropper.py --out reports\\cropper\\eval_cropper.json
-
-Three measurements, all with the same model, the same preprocessing and the
-same **rule of the vote** as the web app (`webapp/backends.py`,
-`webapp/pipeline.py`):
-
-  (A) the owner's six real screenshots (`test/*.png`).  The file name **is**
-      the code inside the picture, so the gold label is the file name.  The
-      cropper runs on the whole frame; the model reads the band it proposes.
-
-  (B) the dataset: a seeded random sample from `dataset/out` and
-      `dataset/out_ru`.  Three inputs are compared on the same samples:
-        * `oracle` - the band of `labels.jsonl` (the ceiling of the model);
-        * `cropper`- the band the cropper finds in the whole frame;
-        * `frame`  - the whole frame (the old `ink_bbox` fallback).
-      The predictions are compared against **both** `answer` and `text`: they
-      differ in 9 of the 46 types (arithmetic, Russian number words, the
-      reversed string), and for those a recogniser that reads `text` cannot
-      match `answer` by construction - that is the solver's step, not the
-      cropper's failure.
-
-  (C) the demo sweep - the 10 demo types x 3 pictures of the web app, read
-      with the band of `labels.jsonl`.  It must stay at 30/30: that is the
-      path that already worked, and the cropper must not break it.
-"""
-
 import argparse
 import glob
 import json
@@ -53,13 +23,10 @@ TEST_DIR = os.path.join(ROOT, "test")
 DATA_ROOTS = [os.path.join(ROOT, "dataset", "out"),
               os.path.join(ROOT, "dataset", "out_ru")]
 
-
 def norm(s):
-    """The comparison form of a string (letters, digits, arithmetic signs)."""
     if s is None:
         return ""
     return "".join(ch for ch in str(s) if ch.isalnum() or ch in "+-*/=")
-
 
 def load_model(device="cuda"):
     path, kind = webapp.resolve_checkpoint()
@@ -69,10 +36,6 @@ def load_model(device="cuda"):
         return webapp.PPOCRBackend(path, device)
     return webapp.CRNNBackend(path, device)
 
-
-# --------------------------------------------------------------------------- #
-# (A) the owner's real screenshots
-# --------------------------------------------------------------------------- #
 def run_screenshots(backend, verbose=True):
     rows = []
     files = sorted(glob.glob(os.path.join(TEST_DIR, "*.png")))
@@ -100,30 +63,13 @@ def run_screenshots(backend, verbose=True):
     print("  screenshots: %d/%d exact" % (n_ok, len(rows)))
     return rows
 
-
-# --------------------------------------------------------------------------- #
-# the vote - the ONE rule, shared with the web app
-# --------------------------------------------------------------------------- #
 def vote(backend, img, cands, strip_conf=0.99):
-    """The vote of the web app: the most confident answer wins; the horizontal
-    strips of the frame are tried as well when the base answer is not
-    confident (the captcha-scale "gundam" of Unlimited OCR 2).
-
-    The rule itself is **not** copied here - it lives in
-    `webapp/pipeline.py::vote_frame` and is called from here, so that the
-    measurer measures the application and not a copy of it.
-    """
     best, meta = pipeline.vote_frame(backend, img, cands, strip_conf=strip_conf)
     if best is None:
         raise RuntimeError("no candidate")
     return best["result"], meta
 
-
-# --------------------------------------------------------------------------- #
-# (B) the dataset
-# --------------------------------------------------------------------------- #
 def read_types():
-    """Every type of the two trees, with its rows."""
     out = []
     for root in DATA_ROOTS:
         if not os.path.isdir(root):
@@ -147,13 +93,8 @@ def read_types():
     out.sort()
     return out
 
-
 def learn_type_bands(ds):
-    """The relative band of every type that has one (the median band of the
-    type, normalised by the frame) - the shared table of the web app
-    (`webapp/pipeline.py::learn_type_bands`)."""
     return pipeline.learn_type_bands(ds)
-
 
 def run_dataset(backend, n_per_type=40, seed=1234, limit_types=None, verbose=True,
                 learned=False):
@@ -178,15 +119,12 @@ def run_dataset(backend, n_per_type=40, seed=1234, limit_types=None, verbose=Tru
             stat["n_roi"] += 1 if r.get("roi") else 0
             if norm(text) != norm(answer):
                 stat["text_ne_answer"] += 1
-            # oracle: the band of labels.jsonl
             if r.get("roi"):
                 o = backend.predict(img, r["roi"])
             else:
-                o = backend.predict(img, None)     # no band -> the whole frame
-            # cropper
+                o = backend.predict(img, None)
             cands = cropper.candidates(img, type_id=type_id, limit=32)
             cres, meta = vote(backend, img, cands)
-            # the old fallback: the whole frame
             f = backend.predict(img, None)
             stat["oracle_answer"] += norm(o["text"]) == norm(answer)
             stat["cropper_answer"] += norm(cres["text"]) == norm(answer)
@@ -204,9 +142,7 @@ def run_dataset(backend, n_per_type=40, seed=1234, limit_types=None, verbose=Tru
                      stat["frame_answer"] / max(1, stat["n"])))
     return per_type
 
-
 def aggregate(per_type, key):
-    """Per tree and overall, against `answer` and against `text`."""
     out = {}
     for tree in ("out", "out_ru"):
         rows = [v for k, v in per_type.items() if k.startswith(tree + "/")]
@@ -235,7 +171,6 @@ def aggregate(per_type, key):
     }
     return out
 
-
 def median(values):
     values = sorted(values)
     if not values:
@@ -243,10 +178,6 @@ def median(values):
     n = len(values)
     return values[n // 2] if n % 2 else 0.5 * (values[n // 2 - 1] + values[n // 2])
 
-
-# --------------------------------------------------------------------------- #
-# (C) the demo sweep - the path that already worked must not break
-# --------------------------------------------------------------------------- #
 def run_demo_sweep(backend, verbose=True):
     ds = webapp.Dataset(DATA_ROOTS)
     types = ds.demo_types(10)
@@ -269,10 +200,6 @@ def run_demo_sweep(backend, verbose=True):
         print("    MISS %s %s gold=%r pred=%r" % m)
     return {"types": types, "n": n, "exact": ok, "misses": misses}
 
-
-# --------------------------------------------------------------------------- #
-# the cropper alone, without the model
-# --------------------------------------------------------------------------- #
 def run_selftest(verbose=True):
     from PIL import Image
     rows = []
@@ -291,7 +218,6 @@ def run_selftest(verbose=True):
                   % (os.path.basename(path), len(cands), cands[0].method,
                      cands[0].box, dt))
     return rows
-
 
 def main():
     ap = argparse.ArgumentParser(description="measure the cropper")
@@ -358,7 +284,5 @@ def main():
         print("written %s" % args.out)
     return 0
 
-
 if __name__ == "__main__":
     sys.exit(main())
-

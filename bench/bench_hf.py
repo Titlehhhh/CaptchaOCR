@@ -1,4 +1,3 @@
-"""Benchmark harness: run HF captcha-OCR models on the generated text captchas."""
 import json, os, sys, time, re, traceback
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -78,14 +77,6 @@ def score(pred, gold):
 
 
 def load_image(path, size=None, roi=None):
-    """Load an image, optionally cropped to its text band.
-
-    29 of the 46 types are *scenes* - a chat log, an inventory window, an anvil
-    dialog - where the answer is one line among several. Handing such an image whole
-    to a recogniser is an ill-posed question, so the band recorded in `labels.jsonl`
-    is cropped off first. The models are then measured on the same input our own
-    recogniser sees, which is the only fair comparison.
-    """
     from PIL import Image
     img = Image.open(path).convert("RGB")
     if roi:
@@ -101,19 +92,17 @@ def load_image(path, size=None, roi=None):
 
 
 def load_band(item, size=None):
-    """`load_image` for a test-set item, using the band it carries."""
     return load_image(item["path"], size=size, roi=item.get("roi"))
 
 
 def predict_trocr(model_id, paths):
-    """Load an image-to-text model via transformers, predict on given paths."""
     import torch
     from transformers import AutoProcessor
 
     proc = None
     model = None
     last_err = None
-    # transformers>=5: AutoModelForImageTextToText; older: TrOCRForCausalLM
+
     for loader_name in ("AutoModelForImageTextToText", "TrOCRForConditionalGeneration",
                         "TrOCRForCausalLM", "AutoModelForVision2Seq"):
         try:
@@ -124,7 +113,7 @@ def predict_trocr(model_id, paths):
             model.eval()
             last_err = None
             break
-        except Exception as e:  # try next loader
+        except Exception as e:
             last_err = f"{loader_name}: {type(e).__name__}: {e}"
             model = None
     if model is None:

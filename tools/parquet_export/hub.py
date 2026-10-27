@@ -1,4 +1,3 @@
-"""The Hugging Face Hub side of the Parquet export: upload, delete, verify."""
 
 import os
 import time
@@ -7,13 +6,10 @@ from pathlib import Path
 from .common import log, warn
 from .index import DatasetIndex
 
-#: Prefix inside the Hub repository where the shards are uploaded.
 DATA_PREFIX = "data"
 
-#: Old loose-PNG locations on the Hub -- the only paths ``--upload`` deletes.
 OLD_TREE_PREFIXES = ("data/out/", "data/out_ru/")
 
-#: Delete protocol (see the task contract).
 DELETE_CHUNK_PATHS = 1000
 DELETE_NUM_THREADS = 24
 UPLOAD_NUM_THREADS = 8
@@ -27,7 +23,6 @@ PROTECTED_NAMES = frozenset({"README.md", "dataset_inventory.json", ".gitattribu
 
 
 def resolve_token(explicit: str | None) -> str | None:
-    """Token from --token, the environment/CLI, or the project's .hf-cache/token."""
     if explicit:
         return explicit.strip()
     for name in ("HF_TOKEN", "HUGGING_FACE_HUB_TOKEN", "HUGGINGFACE_TOKEN"):
@@ -65,14 +60,12 @@ def is_protected_path(path: str) -> bool:
 
 
 def is_old_tree_path(path: str) -> bool:
-    """True for deletable paths under the retired ``data/out`` / ``data/out_ru`` trees."""
     if not path.startswith(OLD_TREE_PREFIXES):
         return False
     return not is_protected_path(path)
 
 
 def is_remote_folder(entry) -> bool:
-    """Directory detection that works with huggingface_hub >= 1.x and older."""
     if type(entry).__name__ == "RepoFolder":
         return True
     kind = getattr(entry, "type", None)
@@ -82,7 +75,6 @@ def is_remote_folder(entry) -> bool:
 
 
 def list_remote_files(api, repo_id: str) -> dict[str, int]:
-    """Map every remote file path to its size (folders are skipped)."""
     entries = api.list_repo_tree(repo_id=repo_id, repo_type="dataset", recursive=True)
     files: dict[str, int] = {}
     for entry in entries:
@@ -141,13 +133,12 @@ def upload_readme(api, repo_id: str, out_dir: Path) -> None:
         raise RuntimeError(f"README not found: {readme}")
     operation = CommitOperationAdd(path_in_repo="README.md", path_or_fileobj=readme)
     create_commit_with_retries(api, repo_id, [operation],
-                               "CaptchaOCR: Parquet dataset card",
-                               UPLOAD_NUM_THREADS, "upload README.md")
+                                "CaptchaOCR: Parquet dataset card",
+                                UPLOAD_NUM_THREADS, "upload README.md")
     log(f"  uploaded README.md ({readme.stat().st_size:,} B)")
 
 
 def delete_old_png_tree(api, repo_id: str, remote_files: dict[str, int]) -> int:
-    """Delete every remote path under data/out and data/out_ru in 1000-path chunks."""
     from huggingface_hub import CommitOperationDelete
 
     old_paths = sorted(path for path in remote_files if is_old_tree_path(path))
@@ -177,7 +168,6 @@ def delete_old_png_tree(api, repo_id: str, remote_files: dict[str, int]) -> int:
 
 
 def verify_remote(api, repo_id: str, out_dir: Path) -> int:
-    """Verify the remote repository against the local shard set."""
     local_shards = sorted((out_dir / DATA_PREFIX).glob("*.parquet"))
     try:
         remote_files = list_remote_files(api, repo_id)
@@ -241,10 +231,8 @@ def upload(api, repo_id: str, out_dir: Path, default_data_dir: Path,
     upload_shards(api, repo_id, shards)
     upload_readme(api, repo_id, out_dir)
 
-    # Re-list right before deleting: only the old PNG tree is touched.
     remote_files = list_remote_files(api, repo_id)
     delete_old_png_tree(api, repo_id, remote_files)
 
-    # Final state (also the body of --verify).
     log("")
     return verify_remote(api, repo_id, out_dir)

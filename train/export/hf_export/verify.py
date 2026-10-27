@@ -1,14 +1,3 @@
-"""The verification of the export: the training code, the exported code, a fresh
-process and the ONNX graph must all agree.
-
-The export is verified, not assumed: the script loads the checkpoint back, runs the
-*training* code and the *exported* code on the same images and compares the decoded
-strings; then it re-loads the repository in a **fresh process** through `AutoModel` /
-`AutoProcessor` and compares again; then it runs the ONNX through `onnxruntime` and
-compares a third time. A silent mismatch is the classic way an export goes wrong, so
-the script fails loudly instead of writing a model card.
-"""
-
 import json
 import os
 import subprocess
@@ -22,11 +11,6 @@ from .writer import import_from_dir
 
 
 def pick_samples(charset: str, n: int, roots: list[str]) -> list[dict]:
-    """Pick a spread of labelled images across the dataset trees.
-
-    A type that has a text band contributes a banded sample (that is the interesting
-    path); a type without one contributes a whole frame.
-    """
     table = {c: i for i, c in enumerate(charset)}
     types = find_types(roots)
     if not types:
@@ -58,15 +42,7 @@ def pick_samples(charset: str, n: int, roots: list[str]) -> list[dict]:
     return samples
 
 
-# =====================================================================================
-# The reference implementation - the training code
-# =====================================================================================
 def training_reference(items: list[dict], state: dict, charset: str, glyph_height: int):
-    """The predictions the *training* code produces for these items.
-
-    This is the ground truth the export is checked against: the same checkpoint, the
-    same dataset class, the same greedy decode.
-    """
     if TRAIN_DIR not in sys.path:
         sys.path.insert(0, TRAIN_DIR)
     from captcha_crnn import CRNN, CaptchaDataset, build_encoder, collate, greedy_decode
@@ -84,7 +60,6 @@ def training_reference(items: list[dict], state: dict, charset: str, glyph_heigh
 
 
 def exported_predictions(out_dir: str, samples: list[dict], model=None, processor=None):
-    """The predictions of the *exported* code, in this process."""
     if model is None or processor is None:
         modeling = import_from_dir(out_dir, "modeling_captcha")
         processing = import_from_dir(out_dir, "processing_captcha")
@@ -101,7 +76,6 @@ def exported_predictions(out_dir: str, samples: list[dict], model=None, processo
 
 
 def fresh_process_predictions(out_dir: str, samples: list[dict], spec_path: str) -> list[list]:
-    """Load the repository in a **fresh process** through AutoModel / AutoProcessor."""
     cmd = [sys.executable, ENTRY_SCRIPT,
            "--_load-check", out_dir, "--_load-check-spec", spec_path]
     proc = subprocess.run(cmd, capture_output=True, text=True, encoding="utf-8",
@@ -113,7 +87,6 @@ def fresh_process_predictions(out_dir: str, samples: list[dict], spec_path: str)
 
 
 def load_check(out_dir: str, spec_path: str) -> int:
-    """The child process of `fresh_process_predictions`: load and predict."""
     from transformers import AutoModel, AutoProcessor
 
     with open(spec_path, encoding="utf-8") as f:
@@ -134,7 +107,6 @@ def load_check(out_dir: str, spec_path: str) -> int:
 
 
 def onnx_predictions(out_dir: str, batch: dict) -> list[list]:
-    """The predictions of the ONNX graph, through onnxruntime."""
     import onnxruntime as ort
 
     path = os.path.join(out_dir, "onnx", "model.onnx")
@@ -161,11 +133,9 @@ def onnx_predictions(out_dir: str, batch: dict) -> list[list]:
 
 def verify(out_dir: str, samples: list[dict], ckpt_state: dict, charset: str,
            cfg: dict, report: dict) -> dict:
-    """The three-way check: the training code, the exported code, a fresh process, ONNX."""
     log("")
     log(f"verifying on {len(samples)} images from the dataset")
 
-    # -- 1. the training code is the reference -----------------------------------
     items = [{"type": s["type"], "path": s["path"], "text": s["text"],
               "answer": s["answer"], "roi": s["roi"], "type_id": s["type"]}
              for s in samples]
@@ -173,7 +143,6 @@ def verify(out_dir: str, samples: list[dict], ckpt_state: dict, charset: str,
     ref = [p[0] for p in ref_preds]
     log(f"  training code : {ref}")
 
-    # -- 2. the exported code, in this process ------------------------------------
     exp_preds = exported_predictions(out_dir, samples)
     exp = [p[0] for p in exp_preds]
     same = sum(1 for a, b in zip(ref, exp) if a == b)
@@ -186,7 +155,6 @@ def verify(out_dir: str, samples: list[dict], ckpt_state: dict, charset: str,
                     f"training={a!r} exported={b!r}")
     report["parity_training_vs_exported"] = f"{same}/{len(ref)}"
 
-    # -- 3. a fresh process, through AutoModel / AutoProcessor --------------------
     spec_path = os.path.join(out_dir, "..", "_load_check_spec.json")
     spec_path = os.path.abspath(spec_path)
     with open(spec_path, "w", encoding="utf-8") as f:
@@ -207,7 +175,6 @@ def verify(out_dir: str, samples: list[dict], ckpt_state: dict, charset: str,
         if os.path.exists(spec_path):
             os.remove(spec_path)
 
-    # -- 4. the ONNX graph --------------------------------------------------------
     try:
         onnx_preds = onnx_predictions(out_dir, batch)
         onnx_texts = [p[0] for p in onnx_preds]

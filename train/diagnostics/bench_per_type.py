@@ -1,14 +1,3 @@
-"""Our model against the measured baselines, per type, on the benchmark's own items.
-
-    .venv-gpu\\Scripts\\python.exe train\\bench_per_type.py --runs train\\run\\foldA train\\run\\foldB ...
-
-The benchmark test set is 13 types x the first 8 samples. For every type the
-model is scored with the checkpoint of the fold in which that type was **held
-out** - so the model has never seen the type it is scored on, which is the only
-honest way to compare it with a zero-shot baseline. The baselines are re-scored
-from their saved predictions, on exactly the same items.
-"""
-
 import argparse
 import json
 import os

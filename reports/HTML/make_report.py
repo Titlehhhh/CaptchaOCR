@@ -1,24 +1,3 @@
-"""Build the contact sheets of the 46 captcha types for `reports/HTML/index.html`.
-
-    .venv-gpu\\Scripts\\python.exe reports\\HTML\\make_report.py
-
-What it produces, all under `reports/HTML/img/`:
-
-*   `sheet_01.png` .. `sheet_03.png` - three contact sheets, 46 types in total,
-    6 sample pictures each, every thumbnail captioned with the type id and the
-    ground truth (`answer` and, where it differs, the drawn `text`);
-*   `types.json` - the same per-type metadata in machine-readable form, so the
-    HTML page can be rebuilt from the data instead of from hand-written text.
-
-Rules that this script obeys:
-
-*   **`dataset/**` is read-only.** Nothing is written outside `reports/HTML/`.
-*   **`real_shots/` never appears.** The reference screenshots are other people's
-    pictures; the guard below refuses any path that contains `real_shots`.
-*   Every type is covered: the script fails loudly if the number of types is not
-    the expected 46, or if a type has fewer than 6 usable samples.
-"""
-
 from __future__ import annotations
 
 import json
@@ -35,21 +14,13 @@ DATASET_ROOTS = [
     (os.path.join(ROOT, "dataset", "out_ru"), "out_ru"),
 ]
 
-#: how many sample pictures per type
 N_SAMPLES = 6
-#: the maximum width of one thumbnail, in pixels (the brief's limit is 320)
 THUMB_W = 240
-#: the maximum height of one thumbnail, in pixels
 THUMB_H = 150
-#: how many types per contact sheet
 TYPES_PER_SHEET = 16
-#: the width of the label column on the left, in pixels
 LABEL_W = 300
-#: the expected number of types - the script refuses to continue otherwise
 EXPECTED_TYPES = 46
 
-# --- the group table, from `agents/INDEX.md` section 4 (A = pure OCR,
-# --- B = OCR + a solver step, C = not an OCR task at all).
 GROUPS = {
     "Archy-X/Krypton/map": "A", "InstantlyMoist/Captcha/textcaptcha": "A",
     "JSH32/Minecaptcha/map": "A", "LagBug/XProtect/code": "A",
@@ -80,7 +51,6 @@ GROUPS = {
     "FeelingAlive0/AdvancedCaptcha/button": "C",
 }
 
-#: the solver step of group B, from `agents/INDEX.md` section 4
 SOLVERS = {
     "LagBug/XProtect/reverse": "развернуть строку",
     "GalleryCaptcha/ru-numberword": "русские слова -> цифры",
@@ -95,7 +65,6 @@ SOLVERS = {
     "Yukun99/Captchas/itemslot": "-",
 }
 
-#: why a group-C type is not an OCR task
 NOT_OCR = {
     "LagBug/XProtect/drop": "константный ответ",
     "LagBug/XProtect/jump": "константный ответ",
@@ -120,20 +89,14 @@ MUTED = (110, 110, 120)
 PAPER = (255, 255, 255)
 GRID = (222, 222, 228)
 
-#: the measured predictions of the published model (`reports/model_scoreboard.json`).
-#: The file is optional: without it the sheets carry only the ground truth.
 SCOREBOARD = os.path.join(ROOT, "reports", "model_scoreboard.json")
 
-
 def _norm(s):
-    """The metric normalisation of `train/finetune_ppocr.py` (letters, digits, +-*/=)."""
     if s is None:
         return ""
     return "".join(ch for ch in str(s) if ch.isalnum() or ch in "+-*/=")
 
-
 def load_predictions():
-    """{(type_id, file): prediction} of the published model, if the file exists."""
     if not os.path.isfile(SCOREBOARD):
         print("no scoreboard yet - the sheets carry only the ground truth")
         return None
@@ -141,17 +104,13 @@ def load_predictions():
         sb = json.load(f)
     out = {}
     for tid, v in (sb.get("types") or {}).items():
-        # the scoreboard keys the types with the tree prefix ("out/..."), the sheets
-        # use the plain type id ("Archy-X/Krypton/map")
         plain = tid.split("/", 1)[1] if "/" in tid else tid
         for ex in v.get("examples") or []:
             out[(plain, ex["file"])] = ex.get("pred", "")
     print(f"predictions of the published model: {len(out)}")
     return out
 
-
 def load_font(size: int, bold: bool = False):
-    """A Unicode-capable TrueType font; the PIL default cannot draw Cyrillic."""
     names = ["arialbd.ttf", "arial.ttf"] if bold else ["arial.ttf", "segoeui.ttf"]
     for name in names:
         path = os.path.join(os.environ.get("WINDIR", r"C:\Windows"), "Fonts", name)
@@ -162,15 +121,12 @@ def load_font(size: int, bold: bool = False):
                 continue
     return ImageFont.load_default()
 
-
 def find_types():
-    """Every captcha type of the two trees, as `(type_id, directory)`."""
     found = []
     for root, tag in DATASET_ROOTS:
         if not os.path.isdir(root):
             continue
         for dirpath, dirs, files in os.walk(root):
-            # the reference screenshots of other people are never used, never shown
             dirs[:] = [d for d in dirs if d != "real_shots"]
             if "real_shots" in dirpath.replace(os.sep, "/").split("/"):
                 continue
@@ -190,7 +146,6 @@ def find_types():
             found.append((type_id, dirpath))
     return sorted(found)
 
-
 def read_labels(directory):
     rows = []
     with open(os.path.join(directory, "labels.jsonl"), encoding="utf-8") as f:
@@ -200,34 +155,26 @@ def read_labels(directory):
                 rows.append(json.loads(line))
     return rows
 
-
 def pick_rows(rows, n):
-    """`n` rows spread evenly over the type (the type has 500 samples today)."""
     if len(rows) <= n:
         return list(rows)
     idx = [int(round(i * (len(rows) - 1) / (n - 1))) for i in range(n)]
     return [rows[i] for i in idx]
 
-
 def fit(img, box_w, box_h):
-    """Scale the picture down into the box, keeping the aspect ratio."""
     scale = min(box_w / img.width, box_h / img.height, 1.0)
     return img.resize((max(1, int(img.width * scale)), max(1, int(img.height * scale))),
                       Image.LANCZOS)
-
 
 def short(text, limit=26):
     text = str(text)
     return text if len(text) <= limit else text[: limit - 1] + "…"
 
-
 def draw_type_block(canvas, draw, x0, y0, type_id, info, samples, fonts, preds=None):
-    """One type: a label column and six captioned thumbnails."""
     f_type, f_small, f_cap, f_badge = fonts
     cell_w = THUMB_W + 16
     img_top = y0
 
-    # -- the label column ----------------------------------------------------- #
     f_id = f_type
     while draw.textlength(type_id, font=f_id) > LABEL_W - 6 and f_id.size > 9:
         f_id = load_font(f_id.size - 1, bold=True)
@@ -242,7 +189,6 @@ def draw_type_block(canvas, draw, x0, y0, type_id, info, samples, fonts, preds=N
     for i, line in enumerate(meta):
         draw.text((x0, y0 + 40 + i * 14), short(line, 34), font=f_small, fill=MUTED)
 
-    # -- the thumbnails -------------------------------------------------------- #
     for i, row in enumerate(samples):
         cx = x0 + LABEL_W + i * cell_w
         path = os.path.join(info["dir"], row["file"])
@@ -250,7 +196,6 @@ def draw_type_block(canvas, draw, x0, y0, type_id, info, samples, fonts, preds=N
             raise RuntimeError(f"refusing to embed a real_shots picture: {path}")
         img = Image.open(path).convert("RGB")
         thumb = fit(img, THUMB_W, THUMB_H)
-        # the band is drawn on the THUMBNAIL, in the thumbnail's own coordinates
         roi = row.get("roi")
         if roi:
             rx, ry, rw, rh = (int(v) for v in roi)
@@ -269,7 +214,6 @@ def draw_type_block(canvas, draw, x0, y0, type_id, info, samples, fonts, preds=N
         if text and text != answer:
             draw.text((cx, cap_y + 14), "нарисовано: " + short(text, 24), font=f_small,
                       fill=(170, 40, 40))
-        # what the published model answered for this very picture
         if preds is not None:
             p = preds.get((type_id, row["file"]))
             if p is not None:
@@ -279,9 +223,7 @@ def draw_type_block(canvas, draw, x0, y0, type_id, info, samples, fonts, preds=N
                           font=f_small, fill=(15, 110, 95) if ok else (170, 40, 40))
     return
 
-
 def collect_meta(types):
-    """Per-type metadata for the HTML page, read from every `labels.jsonl`."""
     meta_out = []
     for type_id, directory in types:
         rows = read_labels(directory)
@@ -301,9 +243,7 @@ def collect_meta(types):
         })
     return meta_out
 
-
 def write_types_table(meta_out, path):
-    """The 46 rows of the type table of `index.html`, as HTML `<tr>` lines."""
     rows = []
     for i, t in enumerate(meta_out, 1):
         parts = t["type"].split("/")
@@ -320,7 +260,6 @@ def write_types_table(meta_out, path):
         f.write("\n".join(rows) + "\n")
     return len(rows)
 
-
 def main() -> int:
     types = find_types()
     print(f"types found: {len(types)}")
@@ -334,8 +273,6 @@ def main() -> int:
 
     os.makedirs(OUT_DIR, exist_ok=True)
 
-    # `--table-only` refreshes the metadata and the type table without touching
-    # the contact sheets (which are already published inside `index.html`).
     if "--table-only" in sys.argv:
         meta_out = collect_meta(types)
         n = write_types_table(meta_out, os.path.join(OUT_DIR, "types_table.html"))
@@ -371,7 +308,6 @@ def main() -> int:
             }
             blocks.append((type_id, info, samples))
 
-        # the sheet's geometry
         cell_w = THUMB_W + 16
         width = LABEL_W + N_SAMPLES * cell_w + 24
         row_h = THUMB_H + (66 if preds else 52)
@@ -415,7 +351,6 @@ def main() -> int:
     band_types = sum(1 for t in meta_out if t["with_band"])
     print(f"types={len(meta_out)}  labelled PNG={total}  types with a band={band_types}")
     return 0
-
 
 if __name__ == "__main__":
     sys.exit(main())

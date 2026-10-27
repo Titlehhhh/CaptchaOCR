@@ -1,10 +1,3 @@
-"""Flat re-export shim for the PP-OCRv6 model core.
-
-The code lives in `train/finetune/ppocr_core.py` (moved from this path);
-`train/finetune_ppocr.py` keeps importing the flat name `ppocr_core`
-and gets the same objects.
-"""
-
 import os
 import sys
 

@@ -1,27 +1,10 @@
 #!/usr/bin/env python
-"""The dataset index (read-only).
-
-Every labelled sample of `dataset/out` and `dataset/out_ru`, indexed by its
-absolute path: the samples of a type, the demo types of the picker, and the
-`labels.jsonl` row of a picture that arrives by path.
-
-The dataset is an **artefact**: this module only reads it.  Nothing here ever
-writes into `dataset/`.
-
-    from dataset import Dataset, DATA_ROOTS
-    ds = Dataset(DATA_ROOTS)
-    row, abs_path = ds.resolve("dataset/out/haq/mapcha/map/001.png")
-"""
-
 import json
 import os
 import urllib.parse
 
 from filepaths import DATA_ROOTS, ROOT
 
-# The types that are not OCR tasks at all (group C).  Copied from
-# `train/finetune_ppocr.py::GROUP_C` (read-only for this app) so the demo
-# picker does not offer a type on which no recogniser can be judged.
 GROUP_C = {
     "out/Archy-X/Krypton/menu",                # answer = a material name, nothing is drawn
     "out/China2B2T/Captcha/wool",              # one constant answer
@@ -41,10 +24,7 @@ GROUP_C = {
     "out_ru/LimboFilter/framed3x3",           # words in rotated frames
 }
 
-
 class Dataset:
-    """Every labelled sample of the dataset, indexed by absolute path."""
-
     def __init__(self, roots=None):
         self.types = []          # [{"id", "tree", "dir", "n", "n_roi"}]
         self.by_path = {}        # abs path -> row
@@ -81,14 +61,6 @@ class Dataset:
         self.types.sort(key=lambda t: t["id"])
 
     def demo_types(self, count=10):
-        """The demo types of the picker.
-
-        A type is a candidate when it has a band (the recogniser was trained on
-        the band, not on the frame), when it is not a group-C type (not an OCR
-        task at all) and when its label is pure ASCII - the PP-OCRv6 dictionary
-        has no Cyrillic at all (`train/ppocr_data.py::Vocab`), so a Cyrillic
-        type can only be shown as a failure that is guaranteed in advance.
-        """
         candidates = []
         for t in self.types:
             if t["id"] in GROUP_C or t["n_roi"] == 0:
@@ -100,8 +72,6 @@ class Dataset:
         return candidates[:count]
 
     def resolve(self, rel_path):
-        """A dataset path -> (row, abs path).  Returns (None, None) if the path
-        is not inside the dataset (or does not exist)."""
         if not rel_path:
             return None, None
         candidate = os.path.abspath(rel_path)
@@ -120,7 +90,6 @@ class Dataset:
 
     @staticmethod
     def sample_json(r, type_id):
-        """The JSON of one dataset sample (the demo and the random picker)."""
         return {
             "file": r["file"],
             "type": type_id,

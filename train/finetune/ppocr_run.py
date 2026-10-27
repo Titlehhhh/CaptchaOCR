@@ -1,11 +1,3 @@
-"""The PP-OCRv6 fine-tune loop.
-
-`train/finetune_ppocr.py` is the entry point; the loop lives here. The model's own
-pieces (the head's logits, the greedy CTC decoding, the split, the evaluation and
-the metrics) are in `train/ppocr_core.py`, and what the two fine-tunes share is in
-`train/finetune_common.py`.
-"""
-
 import argparse
 import json
 import os
@@ -89,7 +81,6 @@ def main():
     log(f"args: {vars(args)}")
     log(f"device: {device}  torch {torch.__version__}")
 
-    # -- model ---------------------------------------------------------------- #
     from transformers import PPOCRV6SmallRecForTextRecognition, __version__ as tfm_version
 
     model = PPOCRV6SmallRecForTextRecognition.from_pretrained(args.model)
@@ -101,11 +92,7 @@ def main():
 
     ckpt_char_list = None
     if args.init_from:
-        # start from the weights of another checkpoint (model only); the optimiser and the
-        # OneCycleLR schedule are created fresh. The zero step below then measures THAT model.
         init_ck = torch.load(args.init_from, map_location="cpu", weights_only=False)
-        # a checkpoint may carry a larger head than the pretrained config (an --expand-charset
-        # run): grow the model's head to match BEFORE load_state_dict, so the rows land in.
         init_w = init_ck["model"].get("head.head.weight")
         if init_w is not None:
             old_head = model.head.head
@@ -117,13 +104,11 @@ def main():
         log(f"initialised the weights from {args.init_from} "
             f"(epoch={init_ck.get('epoch')} step={init_ck.get('step')})")
 
-    # -- the model's own dictionary ------------------------------------------- #
     from huggingface_hub import hf_hub_download
     proc_path = hf_hub_download(args.model, "preprocessor_config.json")
     proc = json.load(open(proc_path, encoding="utf-8"))
     vocab = Vocab(proc["character_list"])
     if ckpt_char_list is not None:
-        # a checkpoint may carry the dictionary it was trained with (`character_list`)
         vocab = Vocab(ckpt_char_list)
     log(f"dictionary: {len(vocab)} classes, blank index={vocab.blank}, "
         f"space index={vocab.table.get(' ')}")
@@ -131,10 +116,8 @@ def main():
         f"max_image_width={proc.get('max_image_width')} "
         f"normalisation={args.norm} glyph_scale={args.glyph_scale} bgr=True")
 
-    # -- charset expansion (`--expand-charset`) ------------------------------- #
     added_chars = []
     if args.expand_charset:
-        # every character of the training labels that the dictionary does not know yet
         missing_chars = set()
         for _tid, directory in find_types([os.path.join(ROOT, "dataset", "out"),
                                            os.path.join(ROOT, "dataset", "out_ru")]):
@@ -148,7 +131,6 @@ def main():
         if k_added:
             vocab = Vocab.from_extended(vocab.character_list, added_chars)
             log(f"--expand-charset: dictionary extended to {len(vocab)} classes")
-            # grow the head's output layer: copy the pretrained rows, initialise the new ones
             old_head = model.head.head
             new_head = nn.Linear(old_head.in_features, old_head.out_features + k_added, bias=True)
             with torch.no_grad():
@@ -168,7 +150,6 @@ def main():
             log(f"--expand-charset: head output layer replaced, now {new_head.out_features} classes")
     save_char_list = bool(args.expand_charset) or ckpt_char_list is not None
 
-    # -- split ---------------------------------------------------------------- #
     train_types, val_types, dropped, stats = build_split(args, vocab)
     if args.include_types:
         train_types = [t for t in train_types if any(p in t[0] for p in args.include_types)]
@@ -184,9 +165,6 @@ def main():
         log(f"   {tid:48s} {why}")
     log("")
 
-    # Banded types train on the band crop (`build_items`); with `--train-frames` the
-    # types without a band train on the whole frame - the very same crop the
-    # evaluation uses for them (`build_eval_items(..., no_roi_mode="frame")`).
     frame_types = [(t, d) for t, d in train_types if stats[t]["n_roi"] == 0]
     banded_types = [(t, d) for t, d in train_types if stats[t]["n_roi"] > 0]
     train_items = build_items(banded_types, limit_per_type=args.limit_per_type)
@@ -196,9 +174,6 @@ def main():
         log(f"--train-frames: {len(frame_types)} band-less types trained as full frames: "
             + ", ".join(t for t, _ in frame_types))
 
-    # Sample-level hold-out: the first N items of EVERY trained type go to the
-    # evaluation set, the type itself still trains on the rest of its items. The unit
-    # of generalisation is still the sample, not the plugin (see train/AGENTS.md).
     heldout_items = []
     heldout_per_type = {}
     if args.holdout_per_type and args.holdout_per_type > 0:
@@ -211,7 +186,6 @@ def main():
             held = lst[:n]
             kept.extend(lst[n:])
             heldout_per_type[t] = len(held)
-            # same item shape the eval builder produces (band crop or the frame)
             heldout_items.extend(dict(it, has_roi=bool(it["roi"])) for it in held)
         train_items = kept
         short = {t: k for t, k in heldout_per_type.items() if k < n}
@@ -229,12 +203,9 @@ def main():
     if args.eval_types:
         wanted = set(args.eval_types)
         eval_types = [(t, d) for t, d in (val_types + train_types) if t in wanted]
-    # The whole-type held-out set (`--val-types`) plus the held-out samples. The same
-    # type may appear in both train and eval when `--holdout-per-type` is used.
     eval_items = build_eval_items(eval_types, limit_per_type=args.limit_per_type,
                                   no_roi_mode=args.no_roi_mode) + heldout_items
     eval_sample_types = sorted({it["type"] for it in eval_items})
-    # The "held-out median" is taken over the types present in the eval set.
     heldout_type_ids = {t for t, _ in eval_types} | set(heldout_per_type)
     val_items = [it for it in eval_items if it["type"] in heldout_type_ids]
     log(f"train items: {len(train_items)}   eval items: {len(eval_items)}   "
@@ -259,7 +230,6 @@ def main():
     model.to(device)
     model.train()
 
-    # -- zero step ------------------------------------------------------------ #
     zero = None
     if not args.eval_only or args.zero_step:
         t0 = time.time()
@@ -279,7 +249,6 @@ def main():
         log("zero step only - stopping.")
         return
 
-    # -- training ------------------------------------------------------------- #
     backbone_params = list(model.model.parameters())
     head_params = list(model.head.parameters())
     optimizer = torch.optim.AdamW(
@@ -336,7 +305,7 @@ def main():
             bs = px.shape[0]
             t0 = time.time()
             with torch.autocast("cuda", dtype=torch.float16,
-                                enabled=not args.no_amp and device.type == "cuda"):
+                                 enabled=not args.no_amp and device.type == "cuda"):
                 logits = forward_logits(model, px)
             logp = F.log_softmax(logits.float(), dim=-1).permute(1, 0, 2)
             t_steps = logp.shape[0]
@@ -352,10 +321,6 @@ def main():
             scale_before = scaler.get_scale()
             scaler.step(optimizer)
             scaler.update()
-            # GradScaler skips the optimizer step when the gradients overflow; the
-            # scheduler must not advance in that case, otherwise the LR schedule
-            # drifts and PyTorch warns about `lr_scheduler.step()` before
-            # `optimizer.step()`.
             if scaler.get_scale() >= scale_before:
                 sched.step()
             global_step += 1
@@ -409,9 +374,6 @@ def main():
         if stop:
             break
 
-    # A complete, resumable state: model + optimiser + scheduler + scaler + step.
-    # Written at the end of every run so that the next session can continue with
-    # `--resume` even if no `--save-every` checkpoint was reached.
     final_state = {"model": model.state_dict(), "optimizer": optimizer.state_dict(),
                    "sched": sched.state_dict(), "scaler": scaler.state_dict(),
                    "epoch": last_epoch, "step": global_step,
@@ -422,7 +384,6 @@ def main():
     log(f"resumable checkpoint written: {ckpt_dir}/final.pt (epoch {final_state['epoch']}, "
         f"step {final_state['step']})")
 
-    # -- final evaluation of the best checkpoint ------------------------------ #
     final = None
     best_path = os.path.join(out_dir, "best.pt")
     if os.path.isfile(best_path):

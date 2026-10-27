@@ -1,10 +1,4 @@
-﻿"""Flat re-export shim for the CRNN+CTC recogniser.
 
-The code lives in `train/crnn/model.py` (moved from this path); external code
-(`webapp/backends.py`, `bench/export_onnx.py`, `train/train.py`,
-`train/eval_ckpt.py`, the `train/diagnostics/` scripts, `train/export/hf_export/`)
-keeps importing the flat name `captcha_crnn` and gets the same objects.
-"""
 
 import os
 import sys

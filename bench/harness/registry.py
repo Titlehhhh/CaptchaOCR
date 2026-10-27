@@ -1,4 +1,3 @@
-"""The model registry: which repositories the harness can score."""
 
 from . import backends
 

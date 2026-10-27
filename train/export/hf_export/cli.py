@@ -1,11 +1,4 @@
-"""Export a trained CRNN+CTC checkpoint into a self-contained Hugging Face repository.
-
-`python train\\export_hf.py --help` is the entry point; this module holds the
-argument parsing and `main()`. The three design decisions of the export (one
-processor without a sub-processor, `torch.onnx.export` instead of `optimum`, and a
-verification instead of an assumption) are explained at the top of
-`train/export_hf.py` and where they are made.
-"""
+""
 
 import argparse
 import json
@@ -22,19 +15,11 @@ from .verify import load_check, pick_samples, verify
 from .writer import derive_geometry, export_onnx, write_repo
 
 
-# =====================================================================================
-# main
-# =====================================================================================
+
+
+
 def make_synthetic_checkpoint(path: str, charset: str, glyph_height: int = 32,
                               hidden: int = 256, step: int = 1) -> str:
-    """Write a checkpoint in the *exact* format `train/train.py` writes.
-
-    The export path has to be provable before a real training run finishes, so this
-    builds a randomly initialised CRNN and stores it the way the training loop stores
-    it: the model state dict, the optimiser and scheduler states, the step, the RNG
-    states, the args and the charset. The exported repository is then a real,
-    loadable model - it simply has no training behind it.
-    """
     if TRAIN_DIR not in sys.path:
         sys.path.insert(0, TRAIN_DIR)
     from captcha_crnn import CRNN, build_encoder
@@ -85,7 +70,7 @@ def parse_args(argv=None):
     p.add_argument("--skip-verify", action="store_true",
                    help="write the repository without verifying it (not recommended)")
     p.add_argument("--report", default=None, help="write the verification report as JSON")
-    # the child process of the fresh-process check
+
     p.add_argument("--_load-check", default=None, help=argparse.SUPPRESS)
     p.add_argument("--_load-check-spec", default=None, help=argparse.SUPPRESS)
     return p.parse_args(argv)

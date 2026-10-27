@@ -1,11 +1,3 @@
-"""Measure the data pipeline and the GPU step separately.
-
-    .venv-gpu\\Scripts\\python.exe train\\bench_pipeline.py
-
-The trainer is bottlenecked by the image decoding, not by the GPU - this script
-says which of the two is the limit, and how much the augmentation costs.
-"""
-
 import os
 import sys
 import time
@@ -33,7 +25,7 @@ def data_rate(augment, workers, n=2000):
     loader = torch.utils.data.DataLoader(ds, batch_size=32, shuffle=True, collate_fn=collate,
                                          num_workers=workers, persistent_workers=workers > 0)
     it = iter(loader)
-    next(it)  # warm up the workers
+    next(it)
     t0 = time.time()
     n_batches = 0
     for _ in range(n // 32):
@@ -63,7 +55,7 @@ def gpu_rate(workers, steps=60):
     images = batch["images"].cuda()
     labels = batch["labels"].cuda()
     lengths = batch["lengths"].cuda()
-    for _ in range(10):  # warm up
+    for _ in range(10):
         with torch.amp.autocast("cuda"):
             logits, t = model(images)
             lp = logits.log_softmax(-1).permute(1, 0, 2)

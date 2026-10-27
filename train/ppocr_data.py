@@ -1,11 +1,3 @@
-﻿"""Flat re-export shim for the PP-OCRv6 dataset + charset helpers.
-
-The code lives in `train/finetune/ppocr_data.py` (moved from this path);
-external code (`webapp/pipeline.py`, `reports/HTML/make_scoreboard.py`,
-`train/soup_eval.py`) keeps importing the flat name `ppocr_data` and gets the
-same objects.
-"""
-
 import os
 import sys
 

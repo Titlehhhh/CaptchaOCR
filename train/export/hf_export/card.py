@@ -1,11 +1,3 @@
-"""The model card of the exported repository, and the provenance table behind it.
-
-The card is written from the measured numbers of the run: the checkpoint's own
-architecture, the parameters, and the `val_report.json` of the training run when one
-is supplied. The provenance table (which plugin every dataset type came from, under
-which licence, in which mode) is the audit trail of the training data.
-"""
-
 import os
 import sys
 
@@ -14,12 +6,7 @@ import torch
 from .templates_card import MODEL_CARD_TEMPLATE
 
 
-# =====================================================================================
-# The dataset's provenance - one row per captcha type
-# =====================================================================================
-
-#: plugin key -> (upstream, upstream licence, mode)
-PLUGINS: dict[str, tuple[str, str, str]] = {
+PLUGINS = {
     "LagBug/XProtect": ("LagBug/XProtect", "MIT", "faithful"),
     "jonesdevelopment/sonar": ("jonesdevelopment/sonar", "GPL-3.0", "clean-room"),
     "Archy-X/Krypton": ("Archy-X/Krypton", "no licence (all rights reserved)", "clean-room"),
@@ -50,8 +37,7 @@ PLUGINS: dict[str, tuple[str, str, str]] = {
     "GalleryCaptcha": ("GalleryCaptcha catalogue", "proprietary (no licence)", "reconstructed"),
 }
 
-#: plugin key -> the captcha types it contributes
-PLUGIN_TYPES: dict[str, list[str]] = {
+PLUGIN_TYPES = {
     "LagBug/XProtect": ["code", "color", "different", "drop", "equation", "gui", "jump",
                         "map", "picture", "reverse", "slot", "sneak"],
     "jonesdevelopment/sonar": ["standard", "complex", "legacy"],
@@ -79,8 +65,7 @@ PLUGIN_TYPES: dict[str, list[str]] = {
                        "ru-object-swatch"],
 }
 
-#: the type ids, as they appear in `labels.jsonl` and in the dataset tree
-TYPE_IDS: list[str] = (
+TYPE_IDS = (
     [f"{p}/{t}" for p, ts in PLUGIN_TYPES.items() for t in ts
      if p not in ("Elytrium/LimboFilter", "Leymooo/BungeeCord", "Mateitaa1/CaptchaVerifyZ",
                    "Supl1n/CaptchaGUI", "GalleryCaptcha")]
@@ -91,7 +76,6 @@ TYPE_IDS: list[str] = (
        "GalleryCaptcha/ru-object-swatch"]
 )
 
-#: the types that are *not* a recogniser target (the exclusion list of `train/train.py`)
 NOT_OCR_TYPES = {
     "LagBug/XProtect/drop", "LagBug/XProtect/jump", "LagBug/XProtect/sneak",
     "LagBug/XProtect/different", "LagBug/XProtect/slot", "LagBug/XProtect/color",
@@ -109,7 +93,6 @@ NOT_OCR_TYPES = {
 
 
 def plugin_of(type_id: str) -> str:
-    """The plugin key a dataset type id belongs to."""
     if type_id.startswith("GalleryCaptcha/"):
         return "GalleryCaptcha"
     if type_id.startswith("LimboFilter/"):
@@ -126,11 +109,7 @@ def plugin_of(type_id: str) -> str:
     return type_id
 
 
-# =====================================================================================
-# The model card
-# =====================================================================================
 def training_data_section() -> str:
-    """The per-type provenance table of the training data."""
     lines = [
         "Every image was rendered by this project's own generators, which re-implement the",
         "captchas that open-source Minecraft anti-bot plugins draw. The dataset is **46 types",
@@ -176,7 +155,6 @@ def training_data_section() -> str:
 
 
 def evaluation_section(val_report: dict | None, cfg: dict, n_params: int) -> str:
-    """The measured numbers, from `val_report.json` when there is one."""
     lines = [
         f"The model has **{n_params:,} parameters** and **{cfg['num_classes']} classes**"
         f" ({cfg['num_classes'] - 1} characters plus the blank).",
@@ -223,7 +201,7 @@ def write_model_card(out_dir: str, cfg: dict, charset: str, n_params: int,
         import onnxruntime
 
         onnx_version = onnxruntime.__version__
-    except ImportError:  # pragma: no cover
+    except ImportError:  # noqa: BLE001
         onnx_version = "not installed"
 
     card = MODEL_CARD_TEMPLATE.format(

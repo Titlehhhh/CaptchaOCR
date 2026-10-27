@@ -1,12 +1,3 @@
-"""Summarise the text bands of a dataset: how tight are they?
-
-    python tools/summarise_roi.py dataset/out_ru [typeSubstring ...]
-
-Prints, per type, how many samples have a band at all, how many of those cover the
-whole picture (an ill-posed "read the string somewhere in here" task) and the median
-size of the band.
-"""
-
 import json
 import os
 import sys

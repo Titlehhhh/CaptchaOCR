@@ -1,11 +1,3 @@
-"""The model-specific parts of the PP-OCRv6 fine-tune.
-
-The head's logits (without the softmax the public `forward` applies), the greedy CTC
-decoding, the split, the evaluation and the metrics. `train/finetune_ppocr.py` is
-the entry point and re-exports these names, so that `train/soup_eval.py` and
-`reports/HTML/make_scoreboard.py` keep importing them from there.
-"""
-
 import os
 
 import torch
@@ -21,18 +13,12 @@ DEFAULT_MODEL = "PaddlePaddle/PP-OCRv6_medium_rec_safetensors"
 
 
 def forward_logits(model, pixel_values):
-    """The head logits, without the softmax the public `forward` applies.
-
-    Verified: `model(x).last_hidden_state == softmax(head.head(head.encoder(model(x))))`
-    with a max absolute difference of 0.
-    """
     h = model.model(pixel_values).last_hidden_state
     enc = model.head.encoder(h).last_hidden_state
     return model.head.head(enc)
 
 
 def greedy_decode(logp, vocab):
-    """Greedy CTC decode of a (B, T, C) log-probability tensor."""
     best = logp.argmax(dim=-1)
     out = []
     for b in range(best.shape[0]):
@@ -47,16 +33,7 @@ def greedy_decode(logp, vocab):
     return out
 
 
-# --------------------------------------------------------------------------- #
-# the split
-# --------------------------------------------------------------------------- #
 def build_split(args, vocab):
-    """Decide, per type, whether it is trained on, evaluated, or dropped - and why.
-
-    The skeleton (the held-out types, the excluded types, group C) is the one of
-    `train/finetune_common.py`; the rule that is specific to this model is "the
-    label has to be expressible in the model's own dictionary".
-    """
     roots = [os.path.join(ROOT, "dataset", "out"), os.path.join(ROOT, "dataset", "out_ru")]
     types, stats = finetune_common.discover_types(roots)
 
@@ -73,12 +50,8 @@ def build_split(args, vocab):
     return finetune_common.build_split(types, stats, args, GROUP_C, keep_type)
 
 
-# --------------------------------------------------------------------------- #
-# evaluation
-# --------------------------------------------------------------------------- #
 @torch.no_grad()
 def evaluate(model, loader, vocab, device, amp=True):
-    """Per type: exact match and CER (both on the normalised strings)."""
     model.eval()
     per_type = {}
     for batch in loader:
@@ -96,10 +69,8 @@ def evaluate(model, loader, vocab, device, amp=True):
 
 
 def aggregate(per_type):
-    """The aggregate is the MEDIAN over types, not the mean."""
     return finetune_common.aggregate(per_type, cer_micro_over="all")
 
 
 def print_per_type(per_type, title):
-    """Print the per-type table and the aggregate; return the aggregate."""
     return finetune_common.print_per_type(per_type, title, aggregate, precision=3)

@@ -1,16 +1,8 @@
-"""The metrics of the harness: Unicode-aware exact match and CER."""
 
 import statistics
 
 
 def norm(s) -> str:
-    """Unicode-aware normalisation of an OCR string.
-
-    Keeps letters and digits of *any* script plus the arithmetic operators, and
-    drops everything else (spaces, punctuation, artefacts).  The old harness
-    used ``re.sub(r"[^A-Za-z0-9+\\-*]", "", s)``, which silently emptied every
-    Cyrillic sample; that is why the old numbers only cover ASCII types.
-    """
     if s is None:
         return ""
     out = []
@@ -44,7 +36,6 @@ def cer(pred, gold) -> float | None:
 
 
 def aggregate(items, preds):
-    """Per-type and overall exact-match / CER, split by 'has a band'."""
     per_type = {}
     for it, pr in zip(items, preds):
         t = it["type"]

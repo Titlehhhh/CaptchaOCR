@@ -1,10 +1,3 @@
-"""Flat re-export shim for the PP-OCRv6 run loop.
-
-The code lives in `train/finetune/ppocr_run.py` (moved from this path);
-`train/finetune_ppocr.py` keeps importing the flat name `ppocr_run`
-and gets the same objects.
-"""
-
 import os
 import sys
 

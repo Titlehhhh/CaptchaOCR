@@ -1,3 +1,4 @@
+
 import json
 import os
 import shutil
@@ -10,21 +11,13 @@ from .constants import REPO_ROOT
 from .upload import ensure_repo, remote_file_sizes
 from .utils import human_bytes, log, warn
 
-# =====================================================================================
-# Модель
-# =====================================================================================
-
-#: Файлы чекпоинта, которые копируются в репозиторий модели как есть.
-#: Список явный: результаты замера (`val_report.json`) в репозиторий модели не попадают.
 MODEL_EXTRA_PATTERNS = ("*.py", "onnx/*", "vocab.json", "processor_config.json",
                         "tokenizer_config.json", "special_tokens_map.json",
                         "added_tokens.json", "generation_config.json",
                         "LICENSE", "LICENSE.txt", "LICENSE.md")
 
 
-
 def load_checkpoint_state(path: Path) -> tuple[dict, dict]:
-    """Прочитать чекпоинт: вернуть (state_dict, прочие поля верхнего уровня)."""
     import torch
 
     obj = torch.load(path, map_location="cpu", weights_only=False)
@@ -36,7 +29,6 @@ def load_checkpoint_state(path: Path) -> tuple[dict, dict]:
                 state = obj[key]
                 break
         if state is None:
-            # возможно, это и есть state_dict: все значения — тензоры
             if obj and all(hasattr(v, "shape") for v in obj.values()):
                 state = obj
             else:
@@ -52,7 +44,6 @@ def load_checkpoint_state(path: Path) -> tuple[dict, dict]:
 
 
 def derive_geometry(state: dict) -> dict:
-    """Вывести параметры архитектуры из форм тензоров (это измерение, не догадка)."""
     out: dict = {}
     fc = state.get("fc.weight")
     if fc is not None and getattr(fc, "ndim", 0) == 2:
@@ -66,7 +57,6 @@ def derive_geometry(state: dict) -> dict:
 
 
 def write_safetensors(state: dict, path: Path) -> None:
-    """Сохранить state_dict в формате safetensors."""
     from safetensors.torch import save_file
 
     tensors = {k: v.detach().cpu().contiguous() for k, v in state.items()
@@ -76,7 +66,6 @@ def write_safetensors(state: dict, path: Path) -> None:
 
 def preprocessor_config(height: int, width: int, mean: float, std: float,
                         charset: str, extra: dict) -> dict:
-    """Описание препроцессора: размер входа, mean/std, charset."""
     cfg = {
         "image_processor_type": "CaptchaProcessor",
         "do_resize": True,
@@ -93,7 +82,6 @@ def preprocessor_config(height: int, width: int, mean: float, std: float,
 
 
 def model_card_values(args, info: dict) -> dict[str, str]:
-    """Значения для подстановки в шаблон карточки модели."""
     values = {
         "REPO_ID": args.repo_id,
         "CHECKPOINT": info.get("checkpoint", "не указан"),
@@ -113,15 +101,11 @@ def model_card_values(args, info: dict) -> dict[str, str]:
         "RESULTS_WARNING": info.get("results_warning", ""),
         "PENDING": "<!-- ЗАПОЛНИТЬ ВРУЧНУЮ -->",
     }
-    # Значения, специфичные для выбранного шаблона (PP-OCRv6 и т. п.).
     values.update(info.get("card_values") or {})
     return values
 
 
-
 def collect_model(args) -> tuple[dict, list[tuple[str, Path]], dict]:
-    """Собрать файлы модели. Возвращает (info, список (путь в репозитории, локальный
-    файл), временный каталог)."""
     ckpt = Path(args.checkpoint)
     if not ckpt.exists():
         raise SystemExit(f"Чекпоинт не найден: {ckpt}")
@@ -168,7 +152,6 @@ def collect_model(args) -> tuple[dict, list[tuple[str, Path]], dict]:
             files.append(("model.safetensors", weights))
             info["weights_source"] = str(best.relative_to(ckpt))
 
-    # config.json: из чекпоинта, иначе — синтезировать из форм тензоров.
     config_path = ckpt_dir / "config.json"
     if config_path.is_file():
         try:
@@ -188,9 +171,6 @@ def collect_model(args) -> tuple[dict, list[tuple[str, Path]], dict]:
         looks_ppocrv6 = ("backbone." in " ".join(keys)
                          or any(k.startswith("head.") for k in keys))
         if looks_ppocrv6:
-            # У PP-OCRv6 config.json копируется из базового репозитория (так делает
-            # train/run_ppocr/export_hf.py). Синтезировать «наш» config.json здесь
-            # нельзя: архитектура была бы описана неверно.
             config = {}
             info["config_source"] = ("НЕ СОЗДАН: у чекпоинта нет config.json, а веса "
                                      "похожи на PP-OCRv6 — скопируйте config.json "
@@ -217,7 +197,6 @@ def collect_model(args) -> tuple[dict, list[tuple[str, Path]], dict]:
     config_bytes = json.dumps(config, ensure_ascii=False, indent=2).encode("utf-8") \
         if config else b""
 
-    # preprocessor_config.json: из чекпоинта, иначе — по флагам.
     pre_path = ckpt_dir / "preprocessor_config.json"
     if pre_path.is_file():
         pre_bytes = pre_path.read_bytes()
@@ -243,7 +222,6 @@ def collect_model(args) -> tuple[dict, list[tuple[str, Path]], dict]:
         info["image_std"] = args.std
         info["preprocessor_source"] = "собран по флагам --image-height/--image-width/--mean/--std"
 
-    # character_list.txt: из чекпоинта, иначе — из charset.
     char_path = ckpt_dir / "character_list.txt"
     if char_path.is_file():
         char_bytes = char_path.read_bytes()
@@ -257,7 +235,6 @@ def collect_model(args) -> tuple[dict, list[tuple[str, Path]], dict]:
         char_bytes = b""
         info["character_list_source"] = "не найден (модель, возможно, его не использует)"
 
-    # Прочие файлы экспорта (код модели, vocab.json, LICENSE, onnx/...).
     extra_files: list[tuple[str, Path]] = []
     if ckpt_dir.is_dir():
         for item in sorted(ckpt_dir.rglob("*")):
@@ -279,7 +256,6 @@ def collect_model(args) -> tuple[dict, list[tuple[str, Path]], dict]:
 
 
 def upload_model(args, meta: dict, files: list[tuple[str, Path]], card: str) -> int:
-    """Залить модель в репозиторий."""
     token = require_token(args.token)
     api = api_for(token)
     user = whoami_name(api)
@@ -330,5 +306,3 @@ def upload_model(args, meta: dict, files: list[tuple[str, Path]], card: str) -> 
     api.create_commit(repo_id=args.repo_id, operations=operations, repo_type="model",
                       commit_message="CaptchaOCR model export")
     return len(plan)
-
-

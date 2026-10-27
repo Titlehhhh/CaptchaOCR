@@ -1,28 +1,3 @@
-"""Build the Kinpaku gallery page `reports/HTML/index.html` from measured data.
-
-    .venv-gpu\\Scripts\\python.exe reports\\HTML\\make_gallery.py
-
-Inputs (all read-only):
-
-* `reports/model_scoreboard.json`  - the per-type measurement of the published model
-  (`reports/HTML/make_scoreboard.py`). Every number on the page comes from there.
-* `reports/HTML/img/types.json`   - the per-type metadata (`reports/HTML/make_report.py`).
-* `reports/bench_models/*.json`    - the 12 foreign models, one protocol.
-* `reports/TRAINING_CRNN_BIG.json`, `reports/TRAINING_PPOCR_V6_BIG.json` - our two models.
-
-Outputs:
-
-* `reports/HTML/index.html`        - the page (Kinpaku, Russian, self-contained markup);
-* `reports/HTML/img/t/<type>/<file>.png` - the individual thumbnails of the gallery.
-
-Rules:
-
-* `dataset/**` is read-only; the pictures are copied into the gallery folder, never moved.
-* The reference screenshots (`real_shots/`) never appear: the copy refuses any path that
-  contains them.
-* No number is typed by hand - everything is read from the measured files.
-"""
-
 from __future__ import annotations
 
 import glob
@@ -46,17 +21,12 @@ OUT_HTML = os.path.join(HERE, "index.html")
 HF_DATASET = "https://huggingface.co/datasets/Titlehhhh/captchaocr-dataset"
 HF_MODEL = "https://huggingface.co/Titlehhhh/captchaocr-ppocrv6"
 
-#: the fonts of the Kinpaku style. Albert Sans / Alumni Sans are NOT installed on this
-#: machine (checked: C:\\Windows\\Fonts), so the closest installed families are used and
-#: the fact is stated on the page itself.
 FONT_STACK = {
     "ui": '"Segoe UI", "Helvetica Neue", Arial, system-ui, sans-serif',
     "display": '"Bahnschrift Light", "Segoe UI Light", "Segoe UI", "Helvetica Neue", Arial, sans-serif',
     "mono": '"Cascadia Mono", Consolas, ui-monospace, "SFMono-Regular", Menlo, monospace',
 }
 
-#: The lightbox. Plain JavaScript, no dependencies, no CDN: the page stays self-contained.
-#: `__DATA__` is replaced with the measured samples of every type.
 LIGHTBOX_JS = """
 <script>
 (function () {
@@ -160,30 +130,23 @@ LIGHTBOX_HTML = """
 </div>
 """
 
-
 def e(text) -> str:
     return html.escape(str(text if text is not None else ""))
 
-
 def slug(type_id: str) -> str:
     return type_id.replace("/", "__")
-
 
 def load_json(path):
     with open(path, encoding="utf-8") as f:
         return json.load(f)
 
-
 def micro_band(frame: dict) -> float:
-    """The micro accuracy over the types that have a band (the bench's headline number)."""
     n = sum(v["n"] for v in frame.values())
     if not n:
         return 0.0
     return sum(v["acc"] * v["n"] for v in frame.values()) / n
 
-
 def models_table():
-    """The 12 foreign models + our two, read from the measured files."""
     rows = []
     for path in sorted(glob.glob(os.path.join(BENCH_DIR, "*.json"))):
         name = os.path.basename(path)
@@ -222,7 +185,6 @@ def models_table():
             "ours": False,
         })
 
-    # -- our two models ------------------------------------------------------ #
     crnn = load_json(os.path.join(ROOT, "reports", "TRAINING_CRNN_BIG.json"))
     h = crnn["held_out"]
     t = crnn["training_types"]
@@ -257,22 +219,17 @@ def models_table():
     })
     return rows
 
-
 def pct(x):
     if x is None:
         return "—"
     return f"{100 * x:.1f}%"
 
-
 def full_id(t) -> str:
-    """The type id with the tree prefix - the same key the scoreboard uses."""
     tree = t.get("tree") or "out"
     tid = t["type"]
     return tid if tid.startswith(tree + "/") else f"{tree}/{tid}"
 
-
 def copy_thumbnails(types_meta, scoreboard):
-    """Copy the six gallery samples of every type into the gallery folder."""
     os.makedirs(THUMB_DIR, exist_ok=True)
     copied = 0
     for t in types_meta:
@@ -291,7 +248,6 @@ def copy_thumbnails(types_meta, scoreboard):
             copied += 1
     return copied
 
-
 def build():
     types_meta = load_json(TYPES_JSON)
     scoreboard = load_json(SCOREBOARD)
@@ -303,7 +259,6 @@ def build():
     n_copied = copy_thumbnails(types_meta, scoreboard)
     print(f"thumbnails copied: {n_copied}")
 
-    # -- the scoreboard table ------------------------------------------------ #
     rows = []
     for t in types_meta:
         tid = full_id(t)
@@ -322,7 +277,6 @@ def build():
             f'<td><a class="more" href="{e(hf)}" target="_blank" rel="noopener">все 500 →</a></td>'
             '</tr>')
 
-    # -- the gallery blocks --------------------------------------------------- #
     blocks = []
     lightbox_types = []
     for ti, t in enumerate(types_meta):
@@ -366,7 +320,6 @@ def build():
             f'<div class="shots">{"".join(samples)}</div>'
             '</article>')
 
-    # -- the models table ----------------------------------------------------- #
     mrows = []
     for m in sorted(models_table(), key=lambda r: (r["ours"], -(r["band"] or -1))):
         link = (f'<a href="https://huggingface.co/{e(m["repo"])}" target="_blank" rel="noopener">'
@@ -380,7 +333,6 @@ def build():
             f'<td class="note">{e(m["note"])}</td>'
             '</tr>')
 
-    # -- the lightbox ---------------------------------------------------------- #
     lightbox_js = LIGHTBOX_JS.replace(
         "__DATA__", json.dumps(lightbox_types, ensure_ascii=False))
     lightbox_html = LIGHTBOX_HTML
@@ -633,7 +585,6 @@ footer{{border-top:1px solid var(--rule);margin-top:var(--section-pad);padding:2
         f.write(head)
     print(f"wrote {OUT_HTML} ({os.path.getsize(OUT_HTML)} bytes)")
     return 0
-
 
 if __name__ == "__main__":
     sys.exit(build())

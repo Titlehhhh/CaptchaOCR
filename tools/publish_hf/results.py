@@ -6,12 +6,8 @@ from pathlib import Path
 from .constants import BENCH_JSON, MODEL_CARD_TEMPLATES, REPO_ROOT, TRAINING_REPORT_JSON
 from .utils import warn
 
-# =====================================================================================
-# Карточка PP-OCRv6: числа берутся из отчёта об обучении, а не пишутся руками
-# =====================================================================================
 
 def load_json_file(path: Path) -> dict | None:
-    """Прочитать JSON-файл. Нет файла или битый JSON — ``None`` (числа не выдумываются)."""
     try:
         with open(path, encoding="utf-8") as handle:
             data = json.load(handle)
@@ -22,7 +18,6 @@ def load_json_file(path: Path) -> dict | None:
 
 
 def num(value, digits: int = 4) -> str:
-    """Число для карточки: float округляется, ``None`` превращается в прочерк."""
     if value is None:
         return "—"
     if isinstance(value, float):
@@ -31,14 +26,12 @@ def num(value, digits: int = 4) -> str:
 
 
 def grouped_int(value) -> str:
-    """Целое с пробелами-разделителями: 19134326 → ``19 134 326``."""
     if not isinstance(value, int):
         return str(value)
     return f"{value:,}".replace(",", " ")
 
 
 def zero_step_table(report: dict) -> str:
-    """Таблица «нулевой шаг» (базовая модель до дообучения) по удержанным типам."""
     zero = report.get("zero_step") or {}
     per_type = zero.get("per_type") or {}
     agg = zero.get("aggregate") or {}
@@ -56,7 +49,6 @@ def zero_step_table(report: dict) -> str:
 
 
 def train_run_block(report: dict, source: str) -> str:
-    """Блок «что отработало»: команда, эпохи, шаги, лосс, скорость, чекпоинт."""
     run = report.get("training_run") or {}
     command = str(run.get("command") or "—")
     epochs = run.get("epochs_completed")
@@ -86,7 +78,6 @@ def train_run_block(report: dict, source: str) -> str:
 
 
 def bench_values(report: dict) -> dict[str, str]:
-    """Числа архивного бенчмарка базовой модели (полоса / кадр)."""
     modes = report.get("modes") or {}
     band = ((modes.get("band") or {}).get("full") or {}).get("metrics") or {}
     frame = ((modes.get("frame") or {}).get("full") or {}).get("metrics") or {}
@@ -102,12 +93,6 @@ def bench_values(report: dict) -> dict[str, str]:
 
 
 def ppocrv6_card_values(args, info: dict, dataset_totals: dict | None) -> dict[str, str]:
-    """Значения для шаблона карточки PP-OCRv6.
-
-    Все числа — из ``reports/TRAINING_PPOCR_V6.json`` и
-    ``reports/bench_models/ppocrv6-medium.json``. Если файла нет, плейсхолдер
-    остаётся плейсхолдером и инструмент предупреждает: ничего не выдумывается.
-    """
     dataset_repo = args.dataset_repo or "Titlehhhh/captchaocr-dataset"
     values: dict[str, str] = {
         "REPO_ID": args.repo_id,
@@ -187,12 +172,6 @@ def ppocrv6_card_values(args, info: dict, dataset_totals: dict | None) -> dict[s
 
 
 def detect_model_template(args, info: dict) -> tuple[str, str]:
-    """Выбрать шаблон карточки модели.
-
-    Порядок: явный ``--template`` → ``model_type`` из ``config.json`` → вид ключей
-    весов. Если тип определить не удалось, инструмент **останавливается**: молча
-    выбрать шаблон CRNN значило бы затереть хорошую карточку PP-OCRv6.
-    """
     choice = getattr(args, "template", "auto") or "auto"
     if choice != "auto":
         if choice not in MODEL_CARD_TEMPLATES:
@@ -222,18 +201,12 @@ def detect_model_template(args, info: dict) -> tuple[str, str]:
 
 
 def _round(value) -> str:
-    """Число в карточке: округлить до 4 знаков, если это float."""
     if isinstance(value, float):
         return f"{round(value, 4)}"
     return str(value)
 
 
 def extract_results(path: Path | None) -> tuple[str, str]:
-    """Достать честные метрики из файла результатов.
-
-    Возвращает (блок markdown, предупреждение). Если файла нет или в нём нет
-    знакомых ключей — возвращается явный плейсхолдер, а не выдуманные числа.
-    """
     placeholder = (
         "**Метрики не указаны.** Файл результатов не передан (`--results`) или в нём "
         "нет знакомых полей. Числа ниже **не выдуманы** — их нужно вписать вручную "
@@ -281,5 +254,3 @@ def extract_results(path: Path | None) -> tuple[str, str]:
         lines.append(f"| типов в отчёте | {len(per_type)} |")
     block = "\n".join(lines) + f"\n\nИсточник: `{path.name}` (файл передан через `--results`)."
     return block, ""
-
-

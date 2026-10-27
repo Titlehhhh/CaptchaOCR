@@ -1,56 +1,5 @@
-"""Export a fine-tuned PP-OCRv6 checkpoint into a self-contained Hugging Face folder.
-
-**This is the tracked version of `train/run_ppocr/export_hf.py`.** The whole
-`train/run_ppocr/` directory is ignored by `.gitignore` (line 14), so the script that
-produced the published weights of `Titlehhhh/captchaocr-ppocrv6` was invisible to git.
-This copy lives next to the other tracked scripts of `train/` and is the one to use
-from a fresh clone. The original file is kept as it is - the two are the same tool.
-
-    .venv-gpu\\Scripts\\python.exe train\\export_ppocr_hf.py \\
-        --ckpt train\\run_ppocr\\big\\best.pt \\
-        --out  train\\run_ppocr\\big\\export_soup
-
-By default it exports the **weight interpolation** (WiSE-FT, "model soup") of the
-fine-tuned checkpoint with the pretrained base model:
-
-    theta(alpha) = alpha * theta_finetuned + (1 - alpha) * theta_pretrained
-
-with ``alpha = 0.4`` - the value that was measured as the best one on the held-out
-captcha types (see ``reports/TRAINING_PPOCR_V6_BIG.md``). ``--soup-alpha 1.0`` exports
-the checkpoint unchanged, ``--soup-alpha 0.0`` exports the pretrained base model.
-The formula is the same as in ``train/run_ppocr/big/soup_eval.py``, so an exported soup
-is the model that was measured there.
-
-What goes into the folder:
-
-* ``model.safetensors`` - the weights (the architecture is unchanged, so the base
-  repository's ``config.json`` stays valid);
-* ``config.json`` - **copied from the base repository**
-  (``PaddlePaddle/PP-OCRv6_medium_rec_safetensors``), not synthesised: the fine-tune
-  changes no hyper-parameter of the architecture. The upstream ``model_type`` is
-  ``pp_ocrv6_small_rec`` for the medium model - that is an upstream metadata quirk
-  and it is the class that actually loads these weights;
-* ``preprocessor_config.json`` - copied from the base repository as well: the input
-  geometry (48 x 320), the padding and the ``character_list`` are the model's own.
-  **One field is patched**: the normalisation. ``PPOCRV6SmallRecImageProcessor``
-  falls back to the ImageNet statistics (mean 0.485/0.456/0.406, std
-  0.229/0.224/0.225) when the file does not say otherwise, but the fine-tune was
-  trained with the PaddleOCR normalisation ``(x / 255 - 0.5) / 0.5`` (``--norm
-  paddle``, the default of ``train/finetune_ppocr.py``). Without this patch the
-  exported weights would be fed pixels they have never seen, so the normalisation
-  is written out explicitly;
-* ``processor_config.json`` - tells ``AutoProcessor`` which class to build
-  (``PPOCRV6SmallRecImageProcessor``);
-* ``character_list.txt`` - the same dictionary as a text file, one character per
-  line, index 0 = ``blank`` (18 709 characters + the blank);
-* ``finetune_meta.json`` - the provenance of this export (checkpoint, epoch, step,
-  alpha).
-
-The base files are taken from the hub; when the network is not reachable the local
-``huggingface_hub`` cache is used instead, so the export works offline.
-"""
-
 import argparse
+
 import json
 import os
 
@@ -60,17 +9,13 @@ from safetensors.torch import load_file, save_file
 
 BASE_REPO = "PaddlePaddle/PP-OCRv6_medium_rec_safetensors"
 
-# The image processor of `transformers` falls back to the ImageNet statistics; the
-# fine-tune was done with the PaddleOCR ones (see the module docstring).
 PADDLE_MEAN = (0.5, 0.5, 0.5)
 PADDLE_STD = (0.5, 0.5, 0.5)
 
-# The alpha that was measured as the best one on the held-out captcha types.
 DEFAULT_SOUP_ALPHA = 0.4
 
 
 def find_repo_root(start: str) -> str:
-    """The repository root: the nearest ancestor that holds `train/` and `dataset/`."""
     d = os.path.abspath(start)
     while True:
         if os.path.isdir(os.path.join(d, "train")) and os.path.isdir(os.path.join(d, "dataset")):
@@ -85,7 +30,6 @@ def find_repo_root(start: str) -> str:
 
 
 def _from_cache(repo_id: str, filename: str):
-    """A file of ``repo_id`` from the local ``huggingface_hub`` cache, or None."""
     try:
         from huggingface_hub.constants import HF_HUB_CACHE
     except Exception:  # pragma: no cover - very old huggingface_hub
@@ -102,10 +46,9 @@ def _from_cache(repo_id: str, filename: str):
 
 
 def fetch(repo_id: str, filename: str) -> str:
-    """A file of ``repo_id``: from the hub, or from the local cache when offline."""
     try:
         return hf_hub_download(repo_id, filename)
-    except Exception as exc:  # network down / not cached
+    except Exception as exc:
         cached = _from_cache(repo_id, filename)
         if cached is None:
             raise SystemExit(
@@ -145,7 +88,6 @@ def main():
     out = os.path.abspath(args.out or os.path.join(os.path.dirname(ckpt), "export_hf"))
     os.makedirs(out, exist_ok=True)
 
-    # -- the weights --------------------------------------------------------- #
     ck = torch.load(ckpt, map_location="cpu", weights_only=False)
     if not isinstance(ck, dict) or "model" not in ck:
         raise SystemExit(f"{ckpt}: no 'model' key - is it a fine-tune checkpoint?")
@@ -161,8 +103,6 @@ def main():
         for k, v in list(sd.items()):
             if k in base and v.is_floating_point() and base[k].is_floating_point():
                 if tuple(base[k].shape) != tuple(v.shape):
-                    # e.g. head.head.* of an --expand-charset checkpoint: the base
-                    # has no counterpart to interpolate towards - keep the ckpt's
                     n_skipped += 1
                     continue
                 sd[k] = (a * v.float() + (1.0 - a) * base[k].float()).to(v.dtype).contiguous()
@@ -181,12 +121,9 @@ def main():
     print(f"model.safetensors: {n_tensors} tensors ({n_float} float), "
           f"{n_params} float parameters")
 
-    # -- the architecture ---------------------------------------------------- #
     src = fetch(args.model, "config.json")
     with open(src, "rb") as f:
         config = json.load(f)
-    # an --expand-charset checkpoint carries a bigger head than the base config:
-    # patch head_out_channels so the published config matches the weights
     head_out = sd.get("head.head.weight")
     if head_out is not None and head_out.shape[0] != config.get("head_out_channels"):
         config["head_out_channels"] = int(head_out.shape[0])
@@ -198,13 +135,11 @@ def main():
     print(f"config.json: copied from {args.model} (model_type={config.get('model_type')}, "
           f"head_out_channels={config.get('head_out_channels')})")
 
-    # -- the processor ------------------------------------------------------- #
     src = fetch(args.model, "preprocessor_config.json")
     with open(src, encoding="utf-8") as f:
         proc = json.load(f)
     proc["image_mean"] = list(args.mean)
     proc["image_std"] = list(args.std)
-    # the checkpoint's own dictionary when it carries one (the expanded charset)
     if ck.get("character_list"):
         proc["character_list"] = list(ck["character_list"])
         print(f"preprocessor_config.json: character_list taken from the checkpoint "
@@ -225,14 +160,12 @@ def main():
         f.write("\n")
     print("processor_config.json:", json.dumps(processor_config))
 
-    # -- the dictionary ------------------------------------------------------ #
     cl = proc["character_list"]
     with open(os.path.join(out, "character_list.txt"), "w", encoding="utf-8") as f:
         f.write("\n".join(cl) + "\n")
     print(f"character_list.txt: {len(cl)} entries, index 0 = {cl[0]!r}, "
           f"last = {cl[-1]!r} (index {len(cl)-1})")
 
-    # -- the provenance ------------------------------------------------------ #
     meta = {
         "base_model": args.model,
         "checkpoint": ckpt,

@@ -1,4 +1,3 @@
-"""Benchmark harness #2: EasyOCR, custom-code CRNN/Transformer, Florence, ONNX."""
 import json, os, sys, time, traceback
 
 from bench_hf import build_testset, norm, score, load_image, load_band
@@ -58,11 +57,11 @@ def run_custom_transformers(model_id, items, extra=None):
     import torch
     from transformers import AutoProcessor
     proc = AutoProcessor.from_pretrained(model_id, trust_remote_code=True)
-    # Graf-J's captcha models (and other custom architectures) are registered for the
-    # plain AutoModel, not for AutoModelForImageTextToText - their own model card says
-    # "AutoModel.from_pretrained(...)". Without the AutoModel fallback they fail with
-    # "Unrecognized configuration class ... for this kind of AutoModel", which is a
-    # harness problem, not a broken checkpoint.
+
+
+
+
+
     model = None
     last_err = None
     for loader_name in ("AutoModel", "AutoModelForImageTextToText"):
@@ -79,10 +78,10 @@ def run_custom_transformers(model_id, items, extra=None):
     if model is None:
         raise RuntimeError(f"cannot load {model_id}; last error: {last_err}")
     outs = []
-    # Two families of model are in the wild. A text-generation model has `generate` and a
-    # standard processor that takes `return_tensors="pt"`. A CTC captcha model (Graf-J
-    # and friends) has no `generate`, its processor takes only the image and returns a
-    # plain {"pixel_values": tensor} dict, and it decodes with its own batch_decode.
+
+
+
+
     is_ctc = not hasattr(model, "generate")
     outs = []
     with torch.no_grad():

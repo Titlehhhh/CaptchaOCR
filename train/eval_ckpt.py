@@ -1,19 +1,4 @@
-"""Evaluate a trained checkpoint on whole types, with an optional band correction.
 
-    .venv-gpu\\Scripts\\python.exe train\\eval_ckpt.py --ckpt train\\run\\foldA\\ckpt\\step_*.pt \
-        --types "CaptchaVerifyZ/map" "haq/mapcha/map" --out reports\\eval_foldA.json
-
-What it adds over the trainer's own validation:
-
-* it can evaluate **any** checkpoint on **any** type, including the types the run
-  was not trained on;
-* it can widen the band by N pixels (`--band-pad N`), which is how the broken band
-  of `Archy-X/Krypton/map` is measured: the generator draws the glyphs with a one
-  pixel gap between them and the band forgot to count those gaps, so the last
-  character falls outside the rectangle;
-* it can reproduce the benchmark's test set exactly (13 types x the first 8
-  samples), so our model and the measured baselines are scored on the same items.
-"""
 
 import argparse
 import json
@@ -29,8 +14,6 @@ from captcha_crnn import (CHARSET, CaptchaDataset, CRNN, build_encoder, build_it
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT_DIRS = [os.path.join(REPO, "dataset", "out"), os.path.join(REPO, "dataset", "out_ru")]
 
-# The test set of the benchmark harnesses: bench/bench_hf.py::TEXT_TYPES, the
-# first 8 samples of each, scored against `answer`.
 BENCH_TYPES = [
     "Archy-X/Krypton/map",
     "InstantlyMoist/Captcha/textcaptcha",
@@ -49,7 +32,6 @@ BENCH_TYPES = [
 
 
 def widen(roi, n):
-    """The band, widened by n pixels on the right (and on the left for symmetry)."""
     if not roi:
         return roi
     x, y, w, h = roi

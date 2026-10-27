@@ -1,21 +1,4 @@
-r"""Export the trained CRNN to ONNX, quantise it to int8, and measure both.
-
-    .venv-gpu\Scripts\python.exe bench\export_onnx.py export   --ckpt train\run\main\ckpt\step_0005700.pt
-    .venv-gpu\Scripts\python.exe bench\export_onnx.py quantize --fp32 bench\models\crnn_fp32.onnx
-    .venv-gpu\Scripts\python.exe bench\export_onnx.py eval     --model bench\models\crnn_fp32.onnx --out reports\bench_models\T2_eval_fp32.json
-    .venv-gpu\Scripts\python.exe bench\export_onnx.py speed    --out reports\bench_models\T2_speed.json
-
-The model is the CRNN+CTC of `train/captcha_crnn.py` (4 623 615 parameters, 63 classes).
-The input is a text band scaled to a 32 px glyph height with a floating width
-(`(B, 1, 32, W)`, `T = W/4` time steps), the output is the CTC logits `(B, T, 63)`.
-
-The evaluation protocol is the one of `reports/TRAINING_MINIMAL_LATIN.md`: the same
-band crop, the same glyph scaling, the same greedy CTC decode, exact match + CER per
-type. The types are the ten of the main run (`train/run/main`): six the model was
-trained on and four it never saw. Both numbers are reported, because the trained
-types are memorised (1.000) and the held-out types are not (0.000) - the runtime
-changes neither.
-"""
+""
 
 import argparse
 import json
@@ -34,7 +17,7 @@ from captcha_crnn import (CHARSET, CaptchaDataset, CRNN, build_encoder, build_it
 
 OUT_DIRS = [os.path.join(REPO, "dataset", "out"), os.path.join(REPO, "dataset", "out_ru")]
 
-#: The ten types of the main run (`reports/TRAINING_MINIMAL_LATIN.md` section 4).
+
 TRAINED_TYPES = [
     "Archy-X/Krypton/map",
     "GalleryCaptcha/ru-web",
@@ -51,7 +34,7 @@ HELD_OUT_TYPES = [
 ]
 ALL_TYPES = TRAINED_TYPES + HELD_OUT_TYPES
 
-#: The model metadata a runtime needs: the alphabet, the geometry and the normalisation.
+
 CONFIG = {
     "name": "captha-crnn-ctc",
     "charset": CHARSET,
@@ -79,15 +62,9 @@ CONFIG = {
 }
 
 
-# --------------------------------------------------------------------------- helpers
+
 
 def build_eval_items(types, limit_per_type=None):
-    """The evaluation set: the bands of the given types, exactly as the trainer reads them.
-
-    A type that carries a band on most of its samples but not on all loses the
-    band-less samples here too - showing the whole frame to a band recogniser is
-    the ill-posed task, and the trainer drops those rows as well.
-    """
     found = find_types(OUT_DIRS, wanted=list(types))
     by_id = {t: d for t, d, _r in found}
     ordered = [(t, by_id[t]) for t in types if t in by_id]
@@ -118,7 +95,6 @@ def load_checkpoint(ckpt_path, device="cpu"):
 
 
 def make_batches(items, cs, batch_size=64, workers=4):
-    """The evaluation batches: the trainer's own dataset, collate and order."""
     import torch
     ds = CaptchaDataset(items, cs.encode, augment=False)
     loader = torch.utils.data.DataLoader(ds, batch_size=batch_size, shuffle=False,
@@ -130,10 +106,6 @@ def make_batches(items, cs, batch_size=64, workers=4):
 
 
 def greedy_decode_np(logits, charset=CHARSET):
-    """The greedy CTC decode of `captcha_crnn.greedy_decode`, in numpy.
-
-    `logits` is (B, T, C); returns a list of (text, confidence).
-    """
     x = logits - logits.max(axis=-1, keepdims=True)
     e = np.exp(x)
     probs = e / e.sum(axis=-1, keepdims=True)
@@ -156,7 +128,6 @@ def greedy_decode_np(logits, charset=CHARSET):
 
 
 def summarise(per_type):
-    """Turn the raw per-type counters into the report's numbers."""
     out = {}
     for typ, d in per_type.items():
         out[typ] = {"n": d["n"], "exact": d["exact"],
@@ -179,7 +150,6 @@ def summarise(per_type):
 
 
 def group_median(per_type, types):
-    """The median over a named group of types (the trained ones / the held-out ones)."""
     sel = [per_type[t] for t in types if t in per_type]
     if not sel:
         return None
@@ -193,7 +163,7 @@ def group_median(per_type, types):
             "median_type_cer": statistics.median(cers)}
 
 
-# --------------------------------------------------------------------------- export
+
 
 def cmd_export(args):
     import torch
@@ -205,7 +175,6 @@ def cmd_export(args):
     print(f"parameters {sum(p.numel() for p in model.parameters()):,}  classes {cs.num_classes}")
 
     class LogitsOnly(nn.Module):
-        """`CRNN.forward` returns (logits, time steps); the ONNX graph needs one output."""
 
         def __init__(self, base):
             super().__init__()
@@ -232,7 +201,7 @@ def cmd_export(args):
     print("input :", [(i.name, i.shape) for i in sess.get_inputs()])
     print("output:", [(o.name, o.shape) for o in sess.get_outputs()])
 
-    # the parity check: random tensors at the widths the brief asks for, plus a batch
+
     rng = np.random.default_rng(7)
     checks = []
     for width in (60, 128, 400):
@@ -276,7 +245,7 @@ def cmd_export(args):
     return 0
 
 
-# --------------------------------------------------------------------------- quantisation
+
 
 def cmd_quantize(args):
     from onnxruntime.quantization import (QuantType, quantize_dynamic, quantize_static)
@@ -285,8 +254,8 @@ def cmd_quantize(args):
     os.makedirs(os.path.dirname(os.path.abspath(args.out_dir)), exist_ok=True)
     results = []
 
-    # -- dynamic: the weights become int8, the activations stay float and are
-    #    quantised on the fly.
+
+
     if "dynamic" in args.variants:
         dyn = os.path.join(args.out_dir, "crnn_int8_dynamic.onnx")
         t0 = time.time()
@@ -295,7 +264,7 @@ def cmd_quantize(args):
                         "bytes": os.path.getsize(dyn), "seconds": round(time.time() - t0, 1)})
         print(f"dynamic int8 -> {dyn}  {os.path.getsize(dyn):,} bytes  {time.time()-t0:.1f}s")
 
-    # -- static: the activation ranges are measured on our own bands.
+
     pre = os.path.join(args.out_dir, "crnn_fp32_preproc.onnx")
     if any(v.startswith("static") for v in args.variants):
         quant_pre_process(args.fp32, pre, skip_symbolic_shape=False)
@@ -331,7 +300,7 @@ def cmd_quantize(args):
                             "seconds": round(time.time() - t0, 1)})
             print(f"static int8 [{name}] -> {static}  {os.path.getsize(static):,} bytes  "
                   f"{time.time()-t0:.1f}s")
-        except Exception as e:  # a failed variant is a fact, not a crash
+        except Exception as e:
             results.append({"variant": name, "file": None, "error": f"{type(e).__name__}: {e}"})
             print(f"static int8 [{name}] FAILED: {type(e).__name__}: {e}")
 
@@ -344,7 +313,6 @@ def cmd_quantize(args):
 
 
 def make_calibration_reader(args, calib_per_type=None):
-    """The calibration set: bands of our own pictures (the trained types)."""
     from onnxruntime.quantization import CalibrationDataReader
     import numpy as np
     from captcha_crnn import CaptchaDataset, collate
@@ -365,9 +333,9 @@ def make_calibration_reader(args, calib_per_type=None):
     x = np.zeros((len(pieces), 1, 32, width), dtype=np.float32)
     for i, p in enumerate(pieces):
         x[i, :, :, :p.shape[3]] = p
-    # the calibration reader hands the data over one item at a time, and the static
-    # quantiser concatenates them - so all the items have to share one width. The
-    # width axis of the model is dynamic, so padding to the widest band is legal.
+
+
+
     print(f"calibration set: {x.shape[0]} bands, width {x.shape[3]}, "
           f"from {len(args.calib_types or TRAINED_TYPES)} types")
 
@@ -386,7 +354,7 @@ def make_calibration_reader(args, calib_per_type=None):
     return Reader(x)
 
 
-# --------------------------------------------------------------------------- evaluation
+
 
 def cmd_eval(args):
     import torch
@@ -454,7 +422,6 @@ def cmd_eval(args):
 
 
 def cmd_eval_torch(args):
-    """The same protocol with PyTorch - the reference the ONNX numbers are compared to."""
     import torch
     from captcha_crnn import greedy_decode
 
@@ -505,14 +472,9 @@ def cmd_eval_torch(args):
     return 0
 
 
-# --------------------------------------------------------------------------- speed
+
 
 def make_batches_for_speed(arrays, bs):
-    """Group the bands into batches of `bs`, padded to the width of their batch.
-
-    The padding is what the trainer does too (the collate pads to the widest band
-    of the batch), so a batched number includes the cost of the padding.
-    """
     out = []
     for off in range(0, len(arrays), bs):
         group = arrays[off:off + bs]
@@ -533,7 +495,7 @@ def cmd_speed(args):
     cs = build_encoder(CHARSET)
     items = build_eval_items(args.types, limit_per_type=args.limit_per_type)
     batches = make_batches(items, cs, batch_size=args.batch_size)
-    # the speed set: the tensors as the runtime sees them, one band per image
+
     arrays = []
     for b in batches:
         arr = b["images"].numpy().astype(np.float32)
@@ -545,7 +507,7 @@ def cmd_speed(args):
 
     results = []
 
-    # -- PyTorch on the GPU
+
     if torch.cuda.is_available():
         model, _cs, _st = load_checkpoint(args.ckpt, device="cuda")
         for bs in (1, 32):
@@ -573,7 +535,7 @@ def cmd_speed(args):
         del model
         torch.cuda.empty_cache()
 
-    # -- PyTorch on the CPU
+
     torch.set_num_threads(args.torch_threads)
     model, _cs, _st = load_checkpoint(args.ckpt, device="cpu")
     for bs in (1,):
@@ -598,7 +560,7 @@ def cmd_speed(args):
         print(f"  pytorch cpu fp32 batch {bs}: {results[-1]['img_per_s']} img/s")
     del model
 
-    # -- ONNX Runtime on the CPU, every model and every thread count
+
     for model_path in args.models:
         for threads in args.ort_threads:
             so = ort.SessionOptions()
@@ -640,7 +602,7 @@ def cmd_speed(args):
     return 0
 
 
-# --------------------------------------------------------------------------- cli
+
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__)

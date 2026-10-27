@@ -1,26 +1,4 @@
 #!/usr/bin/env python3
-"""Download the full CaptchaOCR dataset from Hugging Face.
-
-The dataset images do not live in git (see docs/adr/0004-dataset-lives-on-huggingface.md).
-This script pulls the whole thing back into the working tree.
-
-    python tools/fetch_dataset.py                        # everything -> dataset/full
-    python tools/fetch_dataset.py --dry-run              # print the plan, touch no network
-    python tools/fetch_dataset.py --types "haq/mapcha/map" "GalleryCaptcha/ru-numberword"
-
-Useful flags:
-
-    --repo-id    HF dataset repo (default: Titlehhhh/captchaocr-dataset)
-    --dest       where to put the files (default: dataset/full)
-    --types      download only these captcha types
-    --revision   git revision of the dataset repo (default: main)
-    --cache-dir  hub cache (default: HF_HUB_CACHE / HF_HOME, else the standard hub
-                 cache if it is writable, else .hf-cache/ next to this repository)
-    --dry-run    print the plan and exit; never opens a socket
-
-The type list is read from the labels.jsonl files that stay in git, so the script
-knows what the dataset is made of without downloading anything.
-"""
 
 import argparse
 import os
@@ -33,11 +11,7 @@ LOCAL_CACHE = os.path.join(REPO_ROOT, ".hf-cache")
 DATASET_TREES = ("out", "out_ru")
 
 
-# --------------------------------------------------------------------------------------
-# local dataset layout (the labels stay in git, so this always works)
-# --------------------------------------------------------------------------------------
 def find_types():
-    """Return [{tree, plugin, captcha, dir, files, bytes, rows}] for every captcha type."""
     types = []
     for tree in DATASET_TREES:
         base = os.path.join(REPO_ROOT, "dataset", tree)
@@ -89,12 +63,10 @@ def find_types():
 
 
 def type_key(t):
-    """The name a user would type: 'owner/repo/type' or 'Plugin/type'."""
     return (t["plugin"] + "/" + t["captcha"]).strip("/")
 
 
 def match_types(types, wanted):
-    """Resolve --types arguments against the known types. Returns (selected, unknown)."""
     selected = []
     unknown = []
     for w in wanted:
@@ -118,7 +90,6 @@ def match_types(types, wanted):
 
 
 def patterns_for(types):
-    """allow_patterns for the selected types (layout-agnostic on purpose)."""
     pats = []
     for t in types:
         rel = t["dir"]
@@ -130,7 +101,6 @@ def patterns_for(types):
 
 
 def resolve_cache_dir(explicit):
-    """Where the hub cache goes. Returns (path, why)."""
     if explicit:
         return os.path.abspath(explicit), "--cache-dir"
     env = os.environ.get("HF_HUB_CACHE")
@@ -149,9 +119,6 @@ def human(n):
     return "%.2f MB" % (n / 1048576.0)
 
 
-# --------------------------------------------------------------------------------------
-# plan
-# --------------------------------------------------------------------------------------
 def print_plan(args, types, selected, unknown, cache_dir, cache_why):
     dest = os.path.abspath(args.dest)
     print("CaptchaOCR dataset fetch - plan")
@@ -181,9 +148,6 @@ def print_plan(args, types, selected, unknown, cache_dir, cache_why):
     print("  dry run: nothing was downloaded, no network request was made.")
 
 
-# --------------------------------------------------------------------------------------
-# real download
-# --------------------------------------------------------------------------------------
 def do_download(args, types, selected, unknown, cache_dir):
     try:
         from huggingface_hub import snapshot_download
@@ -223,7 +187,6 @@ def do_download(args, types, selected, unknown, cache_dir):
 
 
 def merge_tree(src, dst):
-    """Move everything from src into dst, merging directories, overwriting files."""
     moved = 0
     for name in os.listdir(src):
         s = os.path.join(src, name)
@@ -238,7 +201,7 @@ def merge_tree(src, dst):
         else:
             if os.path.exists(d):
                 if os.path.getsize(d) == os.path.getsize(s):
-                    os.remove(s)  # identical file - keep the one already there
+                    os.remove(s)
                     continue
                 os.remove(d)
             shutil.move(s, d)
@@ -247,8 +210,6 @@ def merge_tree(src, dst):
 
 
 def flatten_data_dir(dest):
-    """The dataset repo stores the trees under data/; lift them up to dest/out and
-    dest/out_ru so the training code can use them unchanged."""
     src = os.path.join(dest, "data")
     if not os.path.isdir(src):
         return []
@@ -271,7 +232,6 @@ def flatten_data_dir(dest):
 
 
 def report(dest):
-    """Summarise what landed on disk."""
     total_files = 0
     total_bytes = 0
     per_tree = {}
@@ -300,7 +260,6 @@ def report(dest):
     print("  total    %5d files, %8s" % (total_files, human(total_bytes)))
 
 
-# --------------------------------------------------------------------------------------
 def main(argv=None):
     ap = argparse.ArgumentParser(
         prog="fetch_dataset.py",

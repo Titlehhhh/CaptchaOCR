@@ -1,13 +1,3 @@
-"""Count the distinct colours of every sample of a dataset, per type.
-
-    python tools/count_colors.py dataset/out_ru [typeSubstring ...]
-
-The reference composites of the reconstructed number-word families were measured at
-1372..23291 distinct colours and 2582..12308; a palette-quantised render would sit at a
-handful, so the count is the cheapest check that a composite really is a rescaled
-picture and not a palette image.
-"""
-
 import os
 import sys
 

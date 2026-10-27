@@ -1,17 +1,14 @@
-"""The shards: the plan of the Parquet files and the writer."""
 
 from pathlib import Path
 
 from .index import Sample
 
-#: Rows written per row group / per in-memory batch.
 ROW_GROUP_SIZE = 2048
 
 PNG_MAGIC = b"\x89PNG\r\n\x1a\n"
 
 
 def plan_shards(samples: list[Sample], target_bytes: int) -> list[list[Sample]]:
-    """Greedily pack samples, in order, into shards of about ``target_bytes``."""
     target = max(1, int(target_bytes))
     shards: list[list[Sample]] = []
     current: list[Sample] = []
@@ -54,7 +51,6 @@ def parquet_schema():
 
 
 def build_table(samples: list[Sample]):
-    """Build one Arrow table from a batch of samples (no inference surprises)."""
     import pyarrow as pa
 
     schema = parquet_schema()
@@ -83,7 +79,6 @@ def build_table(samples: list[Sample]):
 
 
 def write_shard(path: Path, samples: list[Sample]) -> int:
-    """Write one Parquet shard and return its byte size on disk."""
     import pyarrow.parquet as pq
 
     with pq.ParquetWriter(
@@ -99,7 +94,6 @@ def write_shard(path: Path, samples: list[Sample]) -> int:
 
 
 def shard_rows(shards: list[tuple[Path, int]]) -> list[int]:
-    """Read the row counts back from the written shards (cheap footer reads)."""
     import pyarrow.parquet as pq
 
     return [pq.ParquetFile(path).metadata.num_rows for path, _ in shards]

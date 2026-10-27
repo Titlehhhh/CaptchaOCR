@@ -1,9 +1,3 @@
-"""The command line of the unified harness.
-
-    .venv-gpu\\Scripts\\python.exe bench\\bench_models.py --models grafj-crnn,ppocrv5
-    python bench\\bench_models.py --models easyocr          # system python (CPU)
-    .venv-gpu\\Scripts\\python.exe bench\\bench_models.py --contact-sheet <slug>
-"""
 
 import argparse
 import os

@@ -1,10 +1,3 @@
-"""The command line of the Parquet export.
-
-    python tools/export_parquet.py --dry-run        # print the plan, write nothing
-    python tools/export_parquet.py --out build/parquet
-    python tools/export_parquet.py --out build/parquet --upload
-    python tools/export_parquet.py --out build/parquet --verify
-"""
 
 import argparse
 import sys
@@ -13,7 +6,7 @@ from pathlib import Path
 
 try:
     from .common import human_bytes, log, warn
-except ImportError:  # run as a plain script
+except ImportError:
     import os as _os, sys as _sys
     _sys.path.insert(0, _os.path.dirname(_os.path.dirname(_os.path.dirname(_os.path.abspath(__file__)))))
     from tools.parquet_export.common import human_bytes, log, warn
@@ -27,10 +20,8 @@ DEFAULT_DATA_DIR = REPO_ROOT / "dataset"
 DEFAULT_OUT_DIR = REPO_ROOT / "build" / "parquet"
 DEFAULT_REPO_ID = "Titlehhhh/captchaocr-dataset"
 
-#: Default target size of one Parquet shard (250 MiB).
 DEFAULT_TARGET_MB = 250
 
-#: Prefix inside the Hub repository where the shards are uploaded.
 DATA_PREFIX = "data"
 
 EXIT_NO_AUTH = 2
@@ -84,7 +75,6 @@ def print_plan(index: DatasetIndex, shards: list[list[Sample]], target_bytes: in
 
 def export(data_dir: Path, out_dir: Path, target_bytes: int,
            quiet: bool = False) -> ExportResult:
-    """Build the index, write the shards and the README.  Returns the result."""
     index = build_index(data_dir)
     if not index.samples:
         raise RuntimeError(f"no samples found under {data_dir}")
@@ -97,7 +87,6 @@ def export(data_dir: Path, out_dir: Path, target_bytes: int,
     data_out = out_dir / DATA_PREFIX
     data_out.mkdir(parents=True, exist_ok=True)
 
-    # Scratch output only: remove shards from a previous export in this directory.
     for old in sorted(data_out.glob("*.parquet")):
         old.unlink()
         if not quiet:

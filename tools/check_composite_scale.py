@@ -1,24 +1,8 @@
-"""Check that a gallery composite really is a rescaled Minecraft map.
-
-    python tools/check_composite_scale.py dataset/out_ru/GalleryCaptcha/ru-numberword
-
-A composite is the plugin's 128x128 map, scaled up to 250x150 and then captioned. Two
-things follow from that, and both are checked here:
-
-* the picture carries **colours outside the map palette** - the bilinear rescale blends
-  two neighbouring palette slots - so a sample has thousands of distinct colours and not
-  the 144 of the palette. A palette-quantised render would be wrong.
-* the picture is still a **map**: every pixel is close to some palette slot, because it
-  is a blend of two of them. The distance to the nearest palette slot is therefore
-  small, and a picture that was *not* a rescaled map would not have that property.
-"""
-
 import os
 import sys
 
 from PIL import Image
 
-# the Minecraft map palette (the same 144 slots as MapPalette.java)
 PALETTE = [
     0x597D27, 0x6D9930, 0x7FB238, 0x435E1D,
     0xAEA473, 0xD5C98C, 0xF7E9A3, 0x827B56,
@@ -56,7 +40,7 @@ PALETTE = [
     0x5B3C22, 0x6F4A2A, 0x815631, 0x442D19,
     0x4F0100, 0x600100, 0x700200, 0x3B0100,
 ]
-PALETTE.append(0x000000)  # the four black slots of the map palette
+PALETTE.append(0x000000)
 
 
 def nearest_distance(p):

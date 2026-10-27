@@ -1,52 +1,4 @@
-"""Weight interpolation between the pretrained PP-OCRv6 and the fine-tuned one (WiSE-FT).
-
-    .venv-gpu\\Scripts\\python.exe train\\soup_eval.py
-
-    theta(alpha) = alpha * theta_finetuned + (1 - alpha) * theta_pretrained
-
-`alpha = 0` is the pretrained model, `alpha = 1` is the fine-tuned one. Every alpha
-is measured with the **same** pipeline the training run used: the same 7 held-out
-types, the same 3500 images, the same crop, the same normalisation, the same
-greedy CTC decoding and the same metrics (exact match on the normalised `text`,
-CER, median over the 7 types, micro over the 3500 images).
-
-The functions are imported from `train/finetune_ppocr.py` so that the pipeline
-cannot drift away from the one the run used.
-
-**Why this script exists.** The measurement it performs is the third step of the
-publishing recipe: fine-tune with a gentle learning rate, **interpolate the
-weights back towards the pretrained base**, and only then export. The pure
-fine-tune is measurably *worse* than the untouched base (48.00 % vs 58.80 %
-median exact match on the held-out types); the interpolation at alpha = 0.4 is
-better than the base on **all seven** held-out types at once (63.80 % median,
-61.23 % micro). See `reports/TRAINING_PPOCR_V6_BIG.md` §5-6.
-
-**Paths.** Nothing here is hard-coded: the repository root is found by walking
-up from this file until a directory with both `train/` and `dataset/` is found,
-and every other path is relative to that root or to the run directory. The
-defaults point at the run that produced the published numbers
-(`train/run_ppocr/big`); override them with the flags below.
-
-**Outputs** (in the run directory by default):
-
-*   `soup.json` - the measurement of every alpha: the per-type metrics and the
-    aggregates;
-*   `soup_best.pt` - the weights of the winning alpha, ready to be exported
-    (`train/run_ppocr/export_hf.py --ckpt ... --out ... --soup-alpha ...`).
-
-Flags (all optional; running the script with no flags reproduces the published
-measurement):
-
-    --ckpt PATH         the fine-tuned checkpoint        (default: <run>/best.pt)
-    --run-dir PATH      the run directory                 (default: train/run_ppocr/big)
-    --out PATH          where to write soup.json          (default: <run>/soup.json)
-    --soup-ckpt PATH    where to write soup_best.pt       (default: <run>/soup_best.pt)
-    --alphas LIST       comma-separated alphas to measure (default: 0,0.25,0.4,0.5,0.6,0.75,1)
-    --batch-size N      evaluation batch size             (default: 32)
-    --workers N         dataloader workers                (default: 6)
-    --device NAME       auto | cuda | cpu                 (default: auto)
-    --limit-per-type N  limit the evaluation set (smoke tests only; default: all)
-"""
+""
 
 import argparse
 import json
@@ -59,7 +11,6 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 
 
 def find_root(start, levels=6):
-    """The repository root: the closest ancestor that holds both `train/` and `dataset/`."""
     d = os.path.abspath(start)
     for _ in range(levels):
         if os.path.isdir(os.path.join(d, "train")) and os.path.isdir(os.path.join(d, "dataset")):
@@ -68,7 +19,7 @@ def find_root(start, levels=6):
         if parent == d:
             break
         d = parent
-    # fallback: <root>/train/soup_eval.py -> <root>
+
     return os.path.dirname(HERE)
 
 
@@ -87,7 +38,6 @@ DEFAULT_RUN_DIR = os.path.join(ROOT, "train", "run_ppocr", "big")
 
 
 class A:
-    """The arguments the run used (see the run's log.txt)."""
     val_types = list(DEFAULT_VAL_TYPES)
     exclude_types = []
     include_types = None
@@ -95,8 +45,8 @@ class A:
     norm = "paddle"
     glyph_scale = "band"
     limit_per_type = None
-    # build_split() in finetune_ppocr.py reads these two flags; the interpolation
-    # measurement keeps the type-level split, so band-less types stay out.
+
+
     train_frames = False
     holdout_per_type = 0
 
@@ -159,23 +109,23 @@ def main(argv=None) -> int:
     ft = {k: v.detach().clone().float() for k, v in ck["model"].items()}
     print(f"base checkpoint: {best}  epoch={ck.get('epoch')} step={ck.get('step')}", flush=True)
 
-    # an --expand-charset checkpoint carries a bigger head than the pretrained
-    # config: grow the model's head to match BEFORE any load_state_dict
+
+
     ft_w = ft.get("head.head.weight")
     if ft_w is not None and tuple(ft_w.shape) != tuple(model.head.head.weight.shape):
         import torch.nn as nn
         old = model.head.head
         model.head.head = nn.Linear(old.in_features, ft_w.shape[0], bias=True)
 
-    # the model's own dictionary - the checkpoint's own list when it carries one
-    # (an --expand-charset run grew the head, so the pretrained list is too small)
+
+
     from huggingface_hub import hf_hub_download
     proc = json.load(open(hf_hub_download(DEFAULT_MODEL, "preprocessor_config.json"),
                           encoding="utf-8"))
     char_list = ck.get("character_list") or proc["character_list"]
     vocab = Vocab(char_list)
 
-    # the split and the evaluation set - exactly as the training run built them
+
     roots = [os.path.join(ROOT, "dataset", "out"), os.path.join(ROOT, "dataset", "out_ru")]
     types = find_types(roots)
     stats = {s["type"]: s for s in type_stats(types)}
@@ -199,9 +149,9 @@ def main(argv=None) -> int:
         state = {}
         for k, v in model.state_dict().items():
             if k in ft and v.is_floating_point() and tuple(base[k].shape) == tuple(ft[k].shape):
-                # interpolate only where the pretrained base has a counterpart;
-                # rows that exist only in the fine-tuned head (e.g. appended
-                # --expand-charset classes) have nothing to blend towards
+
+
+
                 state[k] = (a * ft[k] + (1.0 - a) * base[k]).to(v.dtype)
             else:
                 state[k] = ft[k].to(v.dtype) if k in ft else v
@@ -221,7 +171,7 @@ def main(argv=None) -> int:
             print(f"    {t:45s} n={v['n']:4d} exact={v['exact_match']:.3f} cer={v['cer']:.3f}",
                   flush=True)
 
-    # the winning interpolation, saved as a checkpoint for the export step
+
     torch.save({"model": best_state, "alpha": best_alpha,
                 "source_checkpoint": best, "source_epoch": ck.get("epoch"),
                 "source_step": ck.get("step"),

@@ -1,28 +1,3 @@
-"""Publish the CaptchaOCR gallery into the Hugging Face **dataset** card.
-
-    .venv-gpu\\Scripts\\python.exe tools\\publish_gallery.py --dry-run   # print the plan
-    .venv-gpu\\Scripts\\python.exe tools\\publish_gallery.py             # upload
-    .venv-gpu\\Scripts\\python.exe tools\\publish_gallery.py --verify    # check the card
-
-What it does:
-
-* uploads the three contact sheets to `gallery/sheet_01.png` .. `sheet_03.png` of the
-  repository `Titlehhhh/captchaocr-dataset` (the **dataset**, never the model repository);
-* rewrites **only** the block between the markers `<!-- captchaocr-gallery:begin -->` and
-  `<!-- captchaocr-gallery:end -->` of the card `README.md`. If the markers are not there yet,
-  the block is appended at the end - the existing text, the licence frontmatter and the honest
-  statements of the card are never touched;
-* the block holds the three sheets (markdown), the **46-row table** (type · n · exact match ·
-  CER · a link to the folder of the type with its 500 pictures on the Hub) and the table of
-  the models.
-
-Everything is measured: the numbers come from `reports/model_scoreboard.json` (the published
-model on all 46 types) and from `reports/bench_models/*.json` (the 12 foreign models, one
-protocol) plus the two training reports of our own models. Nothing is typed by hand.
-
-The script is re-runnable: the uploaded block is replaced, not appended twice.
-"""
-
 from __future__ import annotations
 
 import argparse
@@ -64,7 +39,6 @@ def micro_band(frame):
 
 
 def models_rows():
-    """The 12 foreign models + our two, read from the measured files."""
     rows = []
     for path in sorted(glob.glob(os.path.join(BENCH_DIR, "*.json"))):
         name = os.path.basename(path)
@@ -120,7 +94,6 @@ def models_rows():
 
 
 def build_block(sb, types_meta):
-    """The markdown block that replaces the marked section of the card."""
     agg = sb["all_46"]
     held = sb["held_out_7_reproduced"]
     pub = sb["published_reference"]
@@ -185,7 +158,6 @@ def main() -> int:
         path = hf_hub_download(args.repo, "README.md", repo_type=REPO_TYPE)
         text = open(path, encoding="utf-8").read()
         sheets = text.count("gallery/sheet")
-        # the rows of OUR scoreboard table: the n=500 cell and the link to the folder
         rows = sum(1 for line in text.splitlines()
                    if "| 500 |" in line and "/tree/main/data/" in line)
         print(f"card: {path}")
@@ -212,7 +184,6 @@ def main() -> int:
         print("VERIFY:", "OK" if ok else "FAILED")
         return 0 if ok else 1
 
-    # -- the data -------------------------------------------------------------- #
     sb = load_json(SCOREBOARD)
     types_meta = load_json(TYPES_JSON)
     for t in types_meta:
@@ -276,7 +247,6 @@ def main() -> int:
 
 
 def _write_temp(text: str) -> str:
-    """A temporary file with the new card (the upload API wants a path or a file object)."""
     import tempfile
     fd, path = tempfile.mkstemp(suffix=".md")
     with os.fdopen(fd, "w", encoding="utf-8") as f:

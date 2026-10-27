@@ -1,9 +1,3 @@
-"""The dataset card of the Hugging Face repository - and the numbers in it.
-
-Every number of the card is computed from ``labels.jsonl`` at upload time; nothing is
-typed by hand.  The template is a plain string with ``{PLACEHOLDER}`` markers and the
-helpers of ``tools.publish_hf.cards`` fill them in.
-"""
 
 from tools.publish_hf.cards import (agpl_note, dataset_card_values,
                                     licence_summary_block, no_licence_note,
@@ -216,7 +210,6 @@ types without walking the pictures.
 
 def build_card(inventory: dict, repo_id: str, real_shots: int, real_shots_files: int,
                labels_bytes: int) -> str:
-    """Собрать карточку репозитория (все числа — из ``labels.jsonl``)."""
     values = dataset_card_values(inventory, repo_id)
     values.update({
         "LICENCE_SUMMARY": licence_summary_block(inventory),

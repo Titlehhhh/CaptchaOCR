@@ -1,4 +1,3 @@
-"""Benchmark harness #3: raw ONNX captcha models (captCHAD, phpwind)."""
 import json, os, sys, time, traceback
 
 import numpy as np

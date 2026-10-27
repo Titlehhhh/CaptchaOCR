@@ -1,10 +1,3 @@
-"""The command line of the dataset uploader.
-
-    python tools/upload_dataset.py --dry-run   # план, ничего не грузится
-    python tools/upload_dataset.py             # загрузка
-    python tools/upload_dataset.py --verify    # проверка удалённого дерева
-    python tools/upload_dataset.py --prune     # загрузка + удаление устаревших файлов
-"""
 
 import argparse
 import json
@@ -30,11 +23,8 @@ from .verify import EXIT_ERROR, EXIT_OK, verify
 
 EXIT_NO_AUTH = 2
 
-#: Дата текущей перерисовки датасета (факт, а не вычисление).
 REGENERATION_DATE = "2026-10-22"
 
-#: ``.gitattributes`` — стандартный шаблон Hugging Face (PNG и прочие бинарники в LFS).
-#: Репозиторий уже содержит такой файл; скрипт его не перезаписывает, если он есть.
 GITATTRIBUTES_FALLBACK = (
     "*.png filter=lfs diff=lfs merge=lfs -text\n"
     "*.jsonl text eol=lf\n"
@@ -43,16 +33,10 @@ GITATTRIBUTES_FALLBACK = (
 
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 
-#: The token of the machine: ``.hf-cache/token`` (git-ignored).
 TOKEN_FILE = REPO_ROOT / ".hf-cache" / "token"
 
 
 def require_token(explicit: str | None) -> str:
-    """The HF token: the flag, the environment, the CLI token - or ``.hf-cache/token``.
-
-    ``tools.publish_hf.auth.require_token`` knows the first three but not the
-    project's own token file, which is where this machine keeps it.
-    """
     token = resolve_token(explicit)
     if token:
         return token
@@ -62,7 +46,6 @@ def require_token(explicit: str | None) -> str:
         value = ""
     if value:
         return value
-    # no token at all: the instructions of the publishing tool and exit code 2
     from tools.publish_hf.auth import AUTH_INSTRUCTIONS
     from tools.publish_hf.constants import EXIT_NO_AUTH
     log(AUTH_INSTRUCTIONS)
@@ -126,14 +109,12 @@ def main(argv: list[str] | None = None) -> int:
     log(f"labels found:    {len(types)}")
     log(f"real_shots (not published): {real_shots} PNG in {real_shots_files} files")
 
-    # Ни один файл из real_shots не должен попасть в план.
     for t in types:
         assert "real_shots" not in t.type_id.split("/"), t.type_id
 
     if args.verify:
         return verify(api, args.repo_id, types)
 
-    # Согласованность: в каждом типе число PNG должно совпадать с числом строк меток.
     mismatched = [(t.type_id, t.inventory["png_files"], t.inventory["samples"])
                   for t in types
                   if t.inventory["png_files"] != t.inventory["samples"]]
@@ -141,7 +122,6 @@ def main(argv: list[str] | None = None) -> int:
         warn(f"тип {type_id}: {pngs} PNG против {rows} строк в labels.jsonl")
 
     if not args.dry_run:
-        # 1. Убедиться, что репозиторий существует (существующий — не создаём новый).
         ensure_repo(api, args.repo_id, "dataset", token, args.private, False, user)
 
     log("")
@@ -199,7 +179,6 @@ def main(argv: list[str] | None = None) -> int:
         log("DRY RUN: nothing was uploaded, nothing was deleted.")
         return EXIT_OK
 
-    # 2. Карточка, сводка, LICENSE, .gitattributes — одним коммитом.
     labels_bytes = sum(t.labels_path.stat().st_size for t in types)
     card = build_card(inventory, args.repo_id, real_shots, real_shots_files, labels_bytes)
     license_text, leftovers = render_dataset_license(inventory, args.repo_id)
@@ -211,7 +190,6 @@ def main(argv: list[str] | None = None) -> int:
         INVENTORY_NAME: inventory_bytes,
         "LICENSE": license_text.encode("utf-8"),
     }
-    # .gitattributes: не трогаем, если на сервере уже есть (это LFS-шаблон хаба).
     if ".gitattributes" not in digests:
         metadata[".gitattributes"] = GITATTRIBUTES_FALLBACK.encode("utf-8")
     log("")
@@ -221,7 +199,6 @@ def main(argv: list[str] | None = None) -> int:
     upload_metadata(api, args.repo_id, metadata)
     log("  uploaded.")
 
-    # 3. Метки (сначала) и PNG (потом, по типам), кусками по --batch-files.
     log("")
     log("=== Данные ===")
     uploaded = 0
@@ -233,7 +210,6 @@ def main(argv: list[str] | None = None) -> int:
     log("")
     log(f"uploaded {uploaded} files in {chunks} data commits")
 
-    # 4. Prune: удалить устаревшие файлы (после добавлений), кусками.
     if args.prune:
         log("")
         log("=== Prune ===")
@@ -248,14 +224,12 @@ def main(argv: list[str] | None = None) -> int:
         log(f"  deleted {deleted} files ({human_bytes(deleted_bytes)}) "
             f"in {chunk_count(len(stale), args.batch_files)} commits")
 
-    # 5. Проверка удалённого дерева.
     log("")
     log("=== Проверка ===")
     return verify(api, args.repo_id, types)
 
 
 def run() -> int:
-    """The entry point of the old script: the exit codes are 0 / 1 / 2."""
     try:
         return main()
     except SystemExit:

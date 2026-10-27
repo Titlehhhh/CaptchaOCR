@@ -1,16 +1,3 @@
-"""The report of the CRNN run, collected from the artefacts of the run.
-
-    .venv-gpu\\Scripts\\python.exe train\\make_report.py crnn
-
-Reads (all of them written by the run itself):
-
-*   `val_report.json` - the trainer's held-out report;
-*   `eval_train_types.json` - `train/eval_ckpt.py` on the training types;
-*   `train.log` - the loss timeline.
-
-Every number in the report comes from one of those three files.
-"""
-
 import json
 import os
 import re
@@ -39,7 +26,6 @@ def pct(x):
 
 
 def summarise(per_type, order):
-    """Per-type percent metrics + the median over types + the micro over images."""
     types = {}
     for t in order:
         d = per_type.get(t)
@@ -78,11 +64,6 @@ def summarise(per_type, order):
 
 
 def parse_log(path):
-    """The loss timeline: every logged step and every epoch line.
-
-    Windows PowerShell 5.1's `Tee-Object` writes UTF-16LE, so the encoding is
-    detected from the byte-order mark rather than assumed.
-    """
     steps, epochs = [], []
     step_re = re.compile(r"step\s+(\d+)\s+loss\s+([0-9.]+)\s+([0-9.]+)\s+img/s\s+elapsed\s+([0-9.]+)")
     ep_re = re.compile(r"epoch\s+(\d+)/(\d+)\s+train loss\s+([0-9.]+)(.*)")
@@ -107,7 +88,6 @@ def parse_log(path):
 
 
 def build(run_dir):
-    """The report as a dict; the caller writes it."""
     with open(os.path.join(run_dir, "val_report.json"), encoding="utf-8") as f:
         val = json.load(f)
     with open(os.path.join(run_dir, "eval_train_types.json"), encoding="utf-8") as f:
@@ -121,7 +101,7 @@ def build(run_dir):
     below_1 = [st for st, ls in losses if ls < 1.0]
     below_01 = [st for st, ls in losses if ls < 0.1]
     below_001 = [st for st, ls in losses if ls < 0.01]
-    rates = [s["img_s"] for s in steps if s["step"] > 200]  # skip the warm-up window
+    rates = [s["img_s"] for s in steps if s["step"] > 200]
 
     out = {
         "report": "reports/TRAINING_CRNN_BIG.md",

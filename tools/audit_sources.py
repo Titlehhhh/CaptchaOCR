@@ -1,11 +1,3 @@
-"""Print the distinct `source` strings of a dataset, per type.
-
-    python tools/audit_sources.py dataset/out_ru
-
-Every shipped sample has to be traceable: the `source` field of `labels.jsonl` is the
-audit trail, so this prints one line per (type, source) pair.
-"""
-
 import json
 import os
 import sys

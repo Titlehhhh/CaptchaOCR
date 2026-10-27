@@ -1,3 +1,4 @@
+
 import argparse
 import json
 import shutil
@@ -13,12 +14,8 @@ from .results import detect_model_template, extract_results, ppocrv6_card_values
 from .upload import upload_dataset
 from .utils import human_bytes, log, warn
 
-# =====================================================================================
-# CLI
-# =====================================================================================
 
 def build_parser() -> argparse.ArgumentParser:
-    """Разобрать аргументы командной строки."""
     parser = argparse.ArgumentParser(
         prog="publish_hf.py",
         description="Публикация датасета и модели CaptchaOCR на Hugging Face Hub.",
@@ -81,7 +78,6 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def cmd_dataset(args) -> int:
-    """Команда dataset."""
     data_dir = Path(args.data_dir).resolve()
     if not data_dir.is_dir():
         raise SystemExit(f"Каталог с данными не найден: {data_dir}")
@@ -93,13 +89,6 @@ def cmd_dataset(args) -> int:
     for t in types:
         collect_type(t)
 
-    # По правилам проекта (AGENTS.md §8) материалы сторонних коммерческих сервисов
-    # не публикуются. Признак такого происхождения выводится из самих `labels.jsonl`:
-    # тип исключается, только если его `source` указывает на внешний URL (схема
-    # http(s):// или доменное имя). Собственные рендеры наших генераторов — в том числе
-    # чисто-румные реконструкции, собранные по референсным скриншотам, — внешнего URL
-    # не содержат и публикуются. Имён типов в скрипте нет: переименование каталога
-    # ничего в этом правиле не ломает.
     external = [t for t in types if t.inventory["external_url"]]
     if external:
         log(f"Типы с внешним URL в source: {len(external)} — "
@@ -174,7 +163,6 @@ def cmd_dataset(args) -> int:
 
 
 def cmd_model(args) -> int:
-    """Команда model."""
     meta, files, staging = collect_model(args)
     info = meta["info"]
     try:
@@ -183,13 +171,9 @@ def cmd_model(args) -> int:
         info["results_block"] = results_block
         info["results_warning"] = results_warning
 
-        # Шаблон карточки выбирается по типу модели (model_type / ключи весов) или
-        # флагом --template. Молча взять шаблон CRNN нельзя: это затрёт карточку
-        # PP-OCRv6. Если тип определить не удалось — инструмент останавливается.
         template_key, template_reason = detect_model_template(args, info)
         template_path = MODEL_CARD_TEMPLATES[template_key]
 
-        # Сводка по датасету — для чисел карточки (типы, сэмплы, плагины).
         dataset_totals: dict | None = None
         data_dir = Path(args.data_dir).resolve() if args.data_dir \
             else (REPO_ROOT / "dataset")
@@ -256,7 +240,6 @@ def cmd_model(args) -> int:
 
 
 def main(argv: list[str] | None = None) -> int:
-    """Точка входа."""
     args = build_parser().parse_args(argv)
     if args.command == "dataset":
         return cmd_dataset(args)
@@ -265,5 +248,3 @@ def main(argv: list[str] | None = None) -> int:
     if args.command == "check":
         return check_repo(args)
     return EXIT_ERROR
-
-

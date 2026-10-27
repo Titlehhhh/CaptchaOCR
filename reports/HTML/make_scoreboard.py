@@ -1,38 +1,3 @@
-"""Measure the PUBLISHED model on ALL 46 captcha types -> `reports/model_scoreboard.json`.
-
-    .venv-gpu\\Scripts\\python.exe reports\\HTML\\make_scoreboard.py            # full run
-    .venv-gpu\\Scripts\\python.exe reports\\HTML\\make_scoreboard.py --limit 5  # smoke test
-
-What is measured
-----------------
-The model is the **published** one: `train/run_ppocr/big/export_soup/` (PP-OCRv6_medium_rec
-+ WiSE-FT interpolation, alpha = 0.4, epoch 7 / step 1632) - the same weights that were
-uploaded to `Titlehhhh/captchaocr-ppocrv6` (commit 43a65582).
-
-The pipeline is **not** re-implemented here: it is imported from the training code, so the
-numbers cannot drift from the ones that produced the published numbers.
-
-* `train/ppocr_data.py`   - dataset discovery, band crop, the ink-box crop for the frames
-                            without a band, scaling to 48 px, the BGR swap, the Paddle
-                            normalisation `(x/255 - 0.5)/0.5`, the 48x320 tensor, the CER.
-* `train/finetune_ppocr.py` - `norm()` (the metric normalisation) and `aggregate()`
-                            (micro / median over types) - the very functions that produced
-                            the published 0.638 median / 0.6123 micro on the 7 held-out types.
-
-The decoding is the one of the released model: `AutoProcessor.from_pretrained(<export>)`
-and `processor.post_process_text_recognition(out)` (the field is `last_hidden_state`, not
-`.logits`). As a guard against a silent drift, the first batches are additionally decoded
-with the pipeline's own `greedy_decode()` and the two decodings are compared.
-
-Rules
------
-* `dataset/**` is read-only; nothing is written outside `reports/`.
-* The reference screenshots (`real_shots/`) are never touched: the type discovery of
-  `train/ppocr_data.py` walks the trees and only picks the directories that hold a
-  `labels.jsonl`; the `real_shots` folders hold no labels, and the guard below refuses
-  any path that contains them.
-"""
-
 from __future__ import annotations
 
 import argparse
@@ -58,13 +23,9 @@ from finetune_ppocr import aggregate, greedy_decode, norm  # noqa: E402
 from ppocr_data import (MAX_WIDTH, PPOCRDataset, Vocab, build_eval_items, cer,  # noqa: E402
                          collate, find_types, read_labels)
 
-#: the published model (byte-identical to the files uploaded to the Hugging Face model repo)
 EXPORT_DIR = os.path.join(ROOT, "train", "run_ppocr", "big", "export_soup")
-#: where the measured numbers go
 OUT_JSON = os.path.join(ROOT, "reports", "model_scoreboard.json")
-#: the roots of the dataset
 DATASET_ROOTS = [os.path.join(ROOT, "dataset", "out"), os.path.join(ROOT, "dataset", "out_ru")]
-#: the 7 held-out types the published numbers were measured on (`train/finetune_ppocr.py`)
 HELD_OUT = [
     "out/jonesdevelopment/sonar/standard",
     "out/jonesdevelopment/sonar/legacy",
@@ -74,20 +35,15 @@ HELD_OUT = [
     "out/laforetbrut/are-you-sure/code",
     "out/JSH32/Minecaptcha/map",
 ]
-#: the numbers that were published with the model (AGENTS.md, section 6)
 PUBLISHED = {"median_exact": 0.638, "micro_exact": 0.6123,
              "median_cer": 0.1503, "micro_cer": 0.2004,
              "types": 7, "images": 3500}
-#: how many examples per type are kept in the JSON
 N_EXAMPLES = 6
 
-
 def guard(path: str) -> str:
-    """The reference screenshots of other people never go anywhere."""
     if "real_shots" in path.replace(os.sep, "/").split("/"):
         raise RuntimeError(f"refusing to touch a real_shots path: {path}")
     return path
-
 
 def main() -> int:
     ap = argparse.ArgumentParser()
@@ -107,7 +63,6 @@ def main() -> int:
                           else ("cuda" if args.device == "cuda" else args.device))
     print(f"device: {device}   torch {torch.__version__}", flush=True)
 
-    # -- the dataset --------------------------------------------------------- #
     types = find_types(DATASET_ROOTS)
     print(f"types found: {len(types)}", flush=True)
     for tid, d in types:
@@ -116,7 +71,6 @@ def main() -> int:
                               no_roi_mode="content")
     print(f"evaluation items: {len(items)}", flush=True)
 
-    # -- the model ------------------------------------------------------------ #
     from huggingface_hub import hf_hub_download  # noqa: F401
     from transformers import AutoProcessor, PPOCRV6SmallRecForTextRecognition
 
@@ -125,7 +79,6 @@ def main() -> int:
     model.eval()
     processor = AutoProcessor.from_pretrained(EXPORT_DIR)
     if not hasattr(processor, "character_list"):
-        # some builds of the image processor do not read the dictionary on their own
         with open(os.path.join(EXPORT_DIR, "preprocessor_config.json"), encoding="utf-8") as f:
             processor.character_list = json.load(f)["character_list"]
     vocab = Vocab(processor.character_list)
@@ -137,7 +90,6 @@ def main() -> int:
     loader = DataLoader(ds, batch_size=args.batch_size, shuffle=False,
                         num_workers=args.workers, pin_memory=True, collate_fn=collate)
 
-    # -- the gallery samples only --------------------------------------------- #
     if args.examples_pass:
         from make_report import pick_rows
         gallery_items = []
@@ -195,7 +147,6 @@ def main() -> int:
         print(f"examples pass done: {len(got)} samples -> {args.out}")
         return 0
 
-    # -- the run -------------------------------------------------------------- #
     per_type = {}
     examples = {}
     lens = {}
@@ -213,7 +164,6 @@ def main() -> int:
             preds = [d["text"] for d in decoded]
             scores = [d.get("score", 0.0) for d in decoded]
 
-            # guard: the pipeline's own greedy decode must agree with the processor
             if checked < 8:
                 from finetune_ppocr import forward_logits
                 import torch.nn.functional as F
@@ -264,7 +214,6 @@ def main() -> int:
     print(f"decoded {done} images in {seconds:.0f}s   decode mismatches: {mismatches}",
           flush=True)
 
-    # -- the aggregates ------------------------------------------------------- #
     out_per_type = {}
     for t, d in per_type.items():
         cers = d["cer"]
@@ -322,7 +271,6 @@ def main() -> int:
     print("held-out:", json.dumps(agg_held, ensure_ascii=False))
     print("published:", json.dumps(PUBLISHED))
     return 0
-
 
 if __name__ == "__main__":
     sys.exit(main())

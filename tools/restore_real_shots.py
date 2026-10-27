@@ -1,29 +1,3 @@
-"""Restore the reference images into dataset/out_ru after a regeneration.
-
-`dev.captcha.Gen` writes into the same tree, so a clean rebuild of a plugin folder
-wipes the reference images. This script puts back the two sets that belong to the
-repository and are ours to redistribute:
-
-  research/jars/bf_dataset/  ->  dataset/out_ru/BotFilter/real_shots/
-      510 real upstream BotFilter renders (MIT community dataset); the file name is
-      the answer.
-
-  research/refout/  ->  dataset/out_ru/CaptchaVerifyZ/real_shots/
-      5 reference renders of the open-source CaptchaVerifyZ algorithm.
-
-Nothing else is restored: the gallery-style families under `dataset/out_ru/GalleryCaptcha/`
-have no reference material in the repository any more, and none is invented.
-
-When a source folder is not available the script warns and does nothing for that set -
-it never raises, so it is safe to call from a build step.
-
-It also re-creates the `README.md` that explains what each `real_shots/` folder holds
-(an existing one is never overwritten, so a hand-written note survives).
-
-Usage:
-    python tools/restore_real_shots.py [--dry-run] [--quiet]
-"""
-
 import argparse
 import os
 import shutil
@@ -34,8 +8,6 @@ from paths import REPO
 
 OUT_RU = os.path.join(REPO, "dataset", "out_ru")
 
-# The two reference sets: (source folder relative to the repo root, destination folder
-# relative to dataset/out_ru, a short name for the messages).
 SETS = [
     (os.path.join("research", "jars", "bf_dataset"),
      os.path.join("BotFilter", "real_shots"),
@@ -45,8 +17,6 @@ SETS = [
      "CaptchaVerifyZ"),
 ]
 
-# the note that explains what each real_shots/ folder holds; written only when it is
-# missing, so a hand-written one is never overwritten
 READMES = {
     os.path.join("BotFilter", "real_shots", "README.md"): """# BotFilter - 510 real upstream renders
 
@@ -83,7 +53,6 @@ The originals are in `research/refout/`.
 
 
 def write_readmes(dry_run=False):
-    """Re-create the real_shots/ notes that a clean rebuild would have wiped."""
     n = 0
     for rel, text in READMES.items():
         path = os.path.join(OUT_RU, rel)
@@ -98,7 +67,6 @@ def write_readmes(dry_run=False):
 
 
 def copy_tree(src_dir, dst_dir, dry_run=False):
-    """Copy every PNG of `src_dir` into `dst_dir`; returns the number of files copied."""
     n = 0
     for fn in sorted(os.listdir(src_dir)):
         if not fn.lower().endswith(".png"):

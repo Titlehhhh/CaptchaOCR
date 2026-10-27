@@ -1,4 +1,3 @@
-"""The README of the Parquet shards: the template and the tables that fill it."""
 
 from pathlib import Path
 

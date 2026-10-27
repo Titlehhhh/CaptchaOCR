@@ -1,19 +1,4 @@
 #!/usr/bin/env python
-"""Draw the cropper's rectangle on the frames it was given.
-
-    .venv-gpu\\Scripts\\python.exe webapp\\show_boxes.py --out reports\\cropper\\boxes.png
-
-Left: the frame as it arrived, with the band the cropper chose drawn on it.
-Right: that band, cropped and enlarged - what the recogniser actually reads.
-
-The rectangle that is drawn is the **winning proposal** - the band the
-recogniser was most confident about, after the cropper proposed its candidates
-and the model voted.  That is what the web app does; the purely geometric box
-of `cropper.crop()` is a different thing and is not always the right one.
-
-The frames are the owner's six real screenshots (`test/*.png`, the file name is
-the code) and a few samples of the dataset types.
-"""
 import argparse
 import glob
 import os
@@ -34,7 +19,6 @@ import pipeline                                         # noqa: E402
 TEST_DIR = os.path.join(ROOT, "test")
 DATASET = os.path.join(ROOT, "dataset", "out_ru", "LimboFilter", "digits")
 
-
 def draw(img, box, colour=(255, 0, 0), width=4):
     from PIL import ImageDraw
     d = ImageDraw.Draw(img)
@@ -42,7 +26,6 @@ def draw(img, box, colour=(255, 0, 0), width=4):
         x, y, w, h = box
         d.rectangle([x, y, x + w, y + h], outline=colour, width=width)
     return img
-
 
 def tile(img, box, title, crop_w=440):
     from PIL import Image, ImageDraw
@@ -64,6 +47,12 @@ def tile(img, box, title, crop_w=440):
     row.paste(band, (crop_w + 12, 20))
     return row
 
+def vote_with_backend(backend, img):
+    cands = cropper.candidates(img, limit=32)
+    best, meta = pipeline.vote_frame(backend, img, cands)
+    if best is None:
+        raise RuntimeError("no candidate")
+    return best["result"], meta
 
 def main():
     ap = argparse.ArgumentParser()
@@ -73,7 +62,6 @@ def main():
 
     from PIL import Image, ImageDraw
 
-    # the same model and the same vote as the web app
     path, kind = webapp.resolve_checkpoint()
     backend = webapp.PPOCRBackend(path, "cuda")
     print("model: %s (%d classes)" % (backend.name, backend.info.get("classes", 0)))
@@ -107,20 +95,6 @@ def main():
     sheet.save(args.out)
     print("written %s  (%dx%d)" % (args.out, sheet.width, sheet.height))
     return 0
-
-
-def vote_with_backend(backend, img):
-    """The app's rule: the cropper proposes, the recogniser votes.
-
-    The rule is the **shared** one (`webapp/pipeline.py::vote_frame`) - the
-    same function the web app and the measurement script call.
-    """
-    cands = cropper.candidates(img, limit=32)
-    best, meta = pipeline.vote_frame(backend, img, cands)
-    if best is None:
-        raise RuntimeError("no candidate")
-    return best["result"], meta
-
 
 if __name__ == "__main__":
     sys.exit(main())

@@ -1,15 +1,3 @@
-"""Measure the glyph heights and the text bands of the generated maps.
-
-    python tools/measure_glyphs.py dataset/out_ru/LimboFilter/map [n]
-    python tools/measure_glyphs.py dataset/out_ru/LimboFilter/symbols [n]
-
-This is what the H=32 scaling plan needs: how high a letter really is in the map, how
-high the band around it is, and how many lines the band carries.  The text is found by
-its saturated colours - the upstream paints it with the gradient, which runs over red,
-green, blue, olive, magenta and cyan, while the backdrop is a blend of two muted
-palette colours and the curves are black.
-"""
-
 import json
 import os
 import sys
@@ -18,11 +6,6 @@ from PIL import Image
 
 
 def row_profile(path):
-    """The rows that carry ink, found by the hard edges of the glyphs.
-
-    The backdrop is a smooth field, so a row of the text is a row with many colour
-    jumps; the curves are one pixel wide and contribute almost nothing.
-    """
     im = Image.open(path).convert("RGB")
     px = im.load()
     w, h = im.size
@@ -70,7 +53,6 @@ def main():
         if roi:
             band_h.append(roi[3])
             band_w.append(roi[2])
-        # the gaps between the line bands: that is the line advance
         for a, b in bs:
             line_h.append(b - a + 1)
         lines.append(len(bs))

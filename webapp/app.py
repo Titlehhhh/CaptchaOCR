@@ -1,47 +1,4 @@
 #!/usr/bin/env python
-"""CaptchaOCR — a tiny local web app that lets the owner poke the trained recogniser.
-
-    .venv-gpu\\Scripts\\python.exe webapp\\app.py
-
-Then open <http://127.0.0.1:8765/>.
-
-The app has three parts:
-
-* a **static page** (`webapp/static/index.html`) - a drop zone, a picker of demo
-  images from the dataset, a Predict button and a result panel;
-* a **JSON API** - `POST /predict` returns the prediction, the per-character
-  confidence, the ground truth of a dataset image and whether they match;
-* a **backend** - either the fine-tuned PP-OCRv6
-  (`train/runs/ppocrv6/universal_v1/best.pt`) or our own CRNN
-  (`train/run/**/ckpt/step_*.pt`).  Which one is served is decided by the
-  checkpoint of the backend, and it is printed on startup.
-
-This file is the **entry point only**: the routes of the HTTP API and
-`main()`.  The rest lives next door:
-
-| module | what |
-|---|---|
-| `webapp/filepaths.py` | where things are (the repository root, the dataset trees) |
-| `webapp/dataset.py` | the read-only index of the dataset (`Dataset`) |
-| `webapp/backends.py` | the checkpoint rule, the preprocessing, `PPOCRBackend`, `CRNNBackend` |
-| `webapp/pipeline.py` | the rule of the vote and the state of the app (`App`) |
-| `webapp/cropper.py` | the cropper - the "eye" (no model) |
-| `webapp/eval_cropper.py` | the measurement script (calls the same rule) |
-
-The names the measurement script imports (`Dataset`, `resolve_checkpoint`,
-`PPOCRBackend`, `CRNNBackend`, `DEFAULT_CHECKPOINT`) are re-exported here, so
-`app.<name>` keeps working.
-
-Everything runs offline: the Python standard library does the HTTP, the model
-weights come from the local disk, and the page has no CDN.
-
-The preprocessing is a **self-contained copy** of the one in `train/ppocr_data.py`
-(the PP-OCRv6 path) and `train/captcha_crnn.py` (the CRNN path); both of those
-files are read-only for this app.  On startup the app compares its own copy with
-`train/ppocr_data.py` (when that module imports) and prints the verdict, so the
-duplication is checked rather than trusted.
-"""
-
 import argparse
 import io
 import json
@@ -65,13 +22,9 @@ from backends import (CRNNBackend, DEFAULT_CHECKPOINT,  # noqa: F401
 from dataset import DATA_ROOTS, GROUP_C, Dataset        # noqa: F401
 from filepaths import ROOT, STATIC
 from pipeline import (App, answer_score, norm_text,     # noqa: F401
-                       read_candidates, vote_frame)
+                        read_candidates, vote_frame)
 
-# --------------------------------------------------------------------------- #
-# the HTTP handler
-# --------------------------------------------------------------------------- #
 def parse_multipart(body, boundary):
-    """A tiny multipart/form-data reader -> [(headers, data), ...]."""
     parts = []
     sep = b"--" + boundary
     for chunk in body.split(sep):
@@ -91,12 +44,10 @@ def parse_multipart(body, boundary):
         parts.append((headers, data))
     return parts
 
-
 class Handler(BaseHTTPRequestHandler):
     server_version = "CaptchaOCRWebapp/1.0"
     protocol_version = "HTTP/1.1"
 
-    # -- helpers ------------------------------------------------------------ #
     def _send(self, code, body=b"", ctype="application/json; charset=utf-8", extra=None):
         self.send_response(code)
         self.send_header("Content-Type", ctype)
@@ -118,7 +69,6 @@ class Handler(BaseHTTPRequestHandler):
     def log_message(self, fmt, *args):
         sys.stderr.write("[webapp] %s - %s\n" % (self.address_string(), fmt % args))
 
-    # -- routing ------------------------------------------------------------ #
     def do_GET(self):
         parsed = urllib.parse.urlparse(self.path)
         route = parsed.path
@@ -145,16 +95,12 @@ class Handler(BaseHTTPRequestHandler):
                 return self._error(404, f"unknown type {type_id!r}")
             limit = int((query.get("limit") or ["3"])[0])
             if query.get("random"):
-                # a random sample of the type - the demo is more fun when it
-                # does not show the same three pictures every time
                 rows = random.sample(rows, min(limit, len(rows)))
             else:
                 rows = rows[:limit]
             out = [Dataset.sample_json(r, type_id) for r in rows]
             return self._json({"type": type_id, "samples": out})
         if route == "/api/random":
-            # a random picture of the dataset: a random type and a random
-            # sample of that type.  `pool=demo` keeps the demo types.
             pool = (query.get("pool") or ["all"])[0]
             limit = int((query.get("limit") or ["1"])[0])
             ids = app.demo_types if pool == "demo" else [t["id"] for t in app.dataset.types]
@@ -243,11 +189,9 @@ class Handler(BaseHTTPRequestHandler):
                     fields[name] = data.decode("utf-8", "replace")
             path = fields.get("path")
             if file_bytes is not None and not path:
-                # a bare upload: look it up in the dataset by its name
                 candidate = os.path.abspath(os.path.join(ROOT, fields.get("path", "")))
                 path = None
         else:
-            # application/x-www-form-urlencoded (what Invoke-RestMethod sends)
             fields = urllib.parse.parse_qs(body.decode("utf-8", "replace"))
             path = (fields.get("path") or [None])[0]
             if fields.get("ground_truth"):
@@ -256,7 +200,6 @@ class Handler(BaseHTTPRequestHandler):
         if file_bytes is None and not path:
             return self._error(400, "neither a path nor an uploaded file was given")
 
-        # -- the image ------------------------------------------------------- #
         from PIL import Image
 
         row = None
@@ -280,16 +223,13 @@ class Handler(BaseHTTPRequestHandler):
         except Exception as exc:
             return self._error(400, f"cannot read the image: {exc}")
 
-        # -- inference ------------------------------------------------------- #
         t0 = time.perf_counter()
         crop_meta = {}
         try:
             if roi:
-                # the dataset knows the band - that is the measured-good path
                 result = app.predict(img, roi)
                 crop_meta = {"crop_method": "roi (labels.jsonl)", "crop_box": list(roi)}
             else:
-                # no band: the cropper proposes the bands and the model votes
                 result, crop_meta = app.predict_frame(img, row.get("_type") if row else None)
         except Exception as exc:
             return self._error(500, f"prediction failed: {type(exc).__name__}: {exc}")
@@ -335,7 +275,6 @@ class Handler(BaseHTTPRequestHandler):
         }
         return self._json(payload)
 
-    # -- static ------------------------------------------------------------- #
     def _serve_static(self, name):
         name = name.strip("/") or "index.html"
         target = os.path.abspath(os.path.join(STATIC, name))
@@ -350,7 +289,6 @@ class Handler(BaseHTTPRequestHandler):
             ctype += "; charset=utf-8"
         return self._send(200, data, ctype)
 
-
 class Server(ThreadingHTTPServer):
     daemon_threads = True
     allow_reuse_address = True
@@ -358,7 +296,6 @@ class Server(ThreadingHTTPServer):
     def __init__(self, addr, handler, app):
         super().__init__(addr, handler)
         self.app = app
-
 
 def main():
     ap = argparse.ArgumentParser(description="CaptchaOCR web app (local, offline)")
@@ -403,7 +340,6 @@ def main():
     finally:
         httpd.server_close()
     return 0
-
 
 if __name__ == "__main__":
     sys.exit(main())

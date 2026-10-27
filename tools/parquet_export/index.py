@@ -1,14 +1,11 @@
-"""The index over the dataset: every label row and every PNG it points at."""
 
 import json
 import sys
 from dataclasses import dataclass, field
 from pathlib import Path
 
-#: Trees of the local dataset, in the order samples are written.
 TREES = ("out", "out_ru")
 
-#: Rough per-row overhead (label strings, page indexes) used only for planning.
 ROW_OVERHEAD_BYTES = 384
 
 
@@ -66,11 +63,7 @@ class DatasetIndex:
 
 
 def find_label_files(data_dir: Path) -> list[tuple[str, Path]]:
-    """All ``labels.jsonl`` under the known trees, in deterministic order.
-
-    ``real_shots`` directories are reference screenshots and are never part of the
-    published dataset; they are skipped explicitly.
-    """
+    from .common import warn
     found: list[tuple[str, Path]] = []
     for tree in TREES:
         base = data_dir / tree
@@ -85,10 +78,7 @@ def find_label_files(data_dir: Path) -> list[tuple[str, Path]]:
 
 
 def build_index(data_dir: Path) -> DatasetIndex:
-    """Read every ``labels.jsonl`` and stat every referenced PNG.
-
-    Read-only: this function never creates or writes a file.
-    """
+    from .common import warn
     index = DatasetIndex()
     for tree, labels_path in find_label_files(data_dir):
         type_id = labels_path.parent.relative_to(data_dir).as_posix()

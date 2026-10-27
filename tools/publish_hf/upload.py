@@ -8,12 +8,8 @@ from .constants import EXIT_NO_CONFIRM, INVENTORY_NAME
 from .dataset import TypeDir
 from .utils import human_bytes, log, warn
 
-# =====================================================================================
-# Загрузка датасета
-# =====================================================================================
 
 def remote_file_sizes(api, repo_id: str, repo_type: str) -> dict[str, int]:
-    """Карта «путь в репозитории -> размер файла» для уже залитого."""
     sizes: dict[str, int] = {}
     try:
         entries = api.list_repo_tree(repo_id=repo_id, repo_type=repo_type, recursive=True)
@@ -32,7 +28,6 @@ def remote_file_sizes(api, repo_id: str, repo_type: str) -> dict[str, int]:
 
 def ensure_repo(api, repo_id: str, repo_type: str, token: str,
                 private: bool, confirm_create: bool, user: str) -> None:
-    """Создать репозиторий, если его нет. Чужой namespace — только с --confirm-create."""
     namespace = repo_id.split("/")[0]
     if user and namespace.lower() != user.lower():
         message = (f"Репозиторий {repo_id} находится в чужом namespace "
@@ -63,7 +58,6 @@ def ensure_repo(api, repo_id: str, repo_type: str, token: str,
 
 def upload_dataset(args, inventory: dict, card: str, types: list[TypeDir],
                    license_text: str = "") -> int:
-    """Залить датасет в репозиторий. Возвращает число загруженных файлов."""
     token = require_token(args.token)
     api = api_for(token)
     user = whoami_name(api)
@@ -77,7 +71,6 @@ def upload_dataset(args, inventory: dict, card: str, types: list[TypeDir],
     card_bytes = card.encode("utf-8")
     license_bytes = license_text.encode("utf-8")
 
-    # План: (путь в репозитории, локальный путь или None для bytes, размер)
     plan: list[tuple[str, Path | None, bytes | None, int]] = []
     for t in types:
         for png in t.pngs:
@@ -133,5 +126,3 @@ def upload_dataset(args, inventory: dict, card: str, types: list[TypeDir],
             batch_bytes = 0
     flush(batch)
     return uploaded
-
-

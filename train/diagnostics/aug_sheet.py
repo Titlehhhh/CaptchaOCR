@@ -1,16 +1,3 @@
-"""Contact sheet of the augmented training samples (HANDOVER.md M1).
-
-    .venv-gpu\\Scripts\\python.exe train\\aug_sheet.py --out reports\\augmented_minimal.png
-
-An augmentation that cannot be seen cannot be checked. The sheet shows 200
-samples of the minimal latin scope after the full augmentation chain
-(JPEG/WebP/brightness/contrast and, with --affine, the geometric jitter), so
-that a reviewer can see what the model is actually trained on - and whether the
-augmentation destroys a small type (the 5x7 pixel font of `Archy-X/Krypton/map`
-is 8 px tall in the source, so a rotation of 7 degrees is not a small change
-there).
-"""
-
 import argparse
 import os
 import sys

@@ -1,49 +1,3 @@
-"""One checker for the text bands of a dataset - three modes, one logic.
-
-The repository used to carry three overlapping band checkers:
-
-* ``check_band_vs_answer.py``          - per type: does the band carry the answer,
-  the drawn text, or is there no band at all?
-* ``check_bands_against_labels.py``    - per sample: does the band carry the answer's
-  ink and none of the other text's ink?
-* ``check_caption_outside_roi.py``     - per sample: is the caption's ink ever inside
-  the band of a composite?
-
-They are one script with a ``--mode`` now; the three old file names stay as thin
-wrappers, because the documentation and the runbooks point at them:
-
-    python tools/check_bands.py --mode summary dataset/out_ru
-    python tools/check_bands.py --mode ink     dataset/out dataset/out_ru --verbose
-    python tools/check_bands.py --mode caption dataset/out_ru/GalleryCaptcha/ru-numberword-caption
-
-    python tools/check_band_vs_answer.py       dataset/out_ru      # == --mode summary
-    python tools/check_bands_against_labels.py dataset/out dataset/out_ru   # == --mode ink
-    python tools/check_caption_outside_roi.py  dataset/out_ru/.../ru-numberword-caption
-
-The exit codes are the old ones: ``0`` - nothing found, ``1`` - a problem was found,
-``2`` - the arguments are wrong.
-
-What the modes mean
--------------------
-
-**summary** - the band is where the recogniser looks, so a type without one cannot be
-a recogniser's training target.  For every type the table says how many samples
-carry a band and how many of them have ``text == answer``.  The two differ on
-purpose for the number-word family (the map shows the number in Russian words, the
-player answers with the digits) and for the reversed family.
-
-**ink** - the colour-level rule: the answer is written in a colour of its own (red in
-a chat line, yellow on a map, aqua in a dialog), so a crop without that colour holds
-something else.  The rules are per type, in the ``RULES`` table; a type that is not in
-the table is reported with its colour census, so the table can be extended.
-
-**caption** - the caption of a composite is a *different* string from the answer, so a
-recogniser that is handed the text band must never see it.  The band of a composite
-is the band of the map, cut off at the first row the caption's ink is on - this mode
-checks that the cut really works, by looking for the caption's own fill colour inside
-the band.
-"""
-
 from __future__ import annotations
 
 import argparse
@@ -62,7 +16,6 @@ except ImportError:  # pragma: no cover
 # =====================================================================================
 
 def type_dirs(root: str) -> list[str]:
-    """Every directory of ``root`` that holds a ``labels.jsonl`` (real_shots excluded)."""
     out = []
     for dirpath, dirnames, filenames in os.walk(root):
         if "real_shots" in os.path.relpath(dirpath, root).split(os.sep):
@@ -73,7 +26,6 @@ def type_dirs(root: str) -> list[str]:
 
 
 def load_rows(dirpath: str) -> list[dict]:
-    """The label rows of one type directory."""
     path = os.path.join(dirpath, "labels.jsonl")
     with open(path, encoding="utf-8") as handle:
         return [json.loads(line) for line in handle if line.strip()]
@@ -88,7 +40,6 @@ def rel_of(dirpath: str, root: str) -> str:
 # =====================================================================================
 
 def mode_summary(roots: list[str]) -> int:
-    """Per type: how many samples carry a band, and how many have text == answer."""
     for root in roots:
         print(f"{'type':<40} {'n':>4} {'band':>5} {'text==answer':>13}  note")
         print("-" * 96)
@@ -165,12 +116,10 @@ RULES = {
 
 
 def census(im) -> dict:
-    """The colour histogram of an image: {colour: pixels}."""
     return {colour: n for n, colour in (im.getcolors(maxcolors=1 << 24) or [])}
 
 
 def mode_ink(roots: list[str], verbose: bool = False) -> int:
-    """Check every sample with a band under one dataset root."""
     total = 0
     failures: list[str] = []
     for root in roots:
@@ -230,7 +179,6 @@ WHITE = (255, 255, 255)
 
 
 def caption_pixels(path: str) -> dict:
-    """The rows that carry the caption: the ones with a long run of a caption colour."""
     with Image.open(path) as im:
         rgb = im.convert("RGB")
         px = rgb.load()
@@ -251,7 +199,6 @@ def caption_pixels(path: str) -> dict:
 
 
 def mode_caption(directory: str) -> int:
-    """Check one type directory: no caption ink inside the band."""
     rows = load_rows(directory)
     bad = 0
     checked = 0

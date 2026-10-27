@@ -1,12 +1,9 @@
+
 from .constants import DATASET_LICENSE_TEMPLATE
 from .utils import human_bytes
 
-# =====================================================================================
-# Карточки
-# =====================================================================================
 
 def render_template(template: str, values: dict[str, str]) -> tuple[str, list[str]]:
-    """Подставить ``{КЛЮЧ}`` в шаблон. Возвращает (текст, оставшиеся плейсхолдеры)."""
     out = template
     for key, value in values.items():
         out = out.replace("{" + key + "}", str(value))
@@ -23,7 +20,6 @@ def render_template(template: str, values: dict[str, str]) -> tuple[str, list[st
 
 
 def type_table(inventory: dict) -> str:
-    """Таблица типов для карточки датасета."""
     lines = ["| тип | дерево | PNG | с полосой | алфавит | длина text (мин/мед/макс) "
              "| уник. ответов | лицензия |",
              "|---|---|---|---|---|---|---|---|"]
@@ -38,7 +34,6 @@ def type_table(inventory: dict) -> str:
 
 
 def plugin_table(inventory: dict) -> str:
-    """Таблица плагинов для карточки датасета."""
     lines = ["| плагин | типов | PNG | лицензия | режим |", "|---|---|---|---|---|"]
     for p in inventory["plugins"]:
         lines.append(f"| `{p['plugin']}` | {len(p['types'])} | {p['png_files']} | "
@@ -47,7 +42,6 @@ def plugin_table(inventory: dict) -> str:
 
 
 def tree_table(inventory: dict) -> str:
-    """Таблица деревьев для карточки датасета."""
     lines = ["| дерево | типов | PNG | байт |", "|---|---|---|---|"]
     for t in inventory["trees"]:
         lines.append(f"| `{t['tree']}` | {t['types']} | {t['png_files']} | "
@@ -56,7 +50,6 @@ def tree_table(inventory: dict) -> str:
 
 
 def alphabet_block(inventory: dict) -> str:
-    """Полный список алфавитов по типам (таблица обрезает символы)."""
     lines = []
     for t in inventory["types"]:
         alphabet = t["alphabet"] or "(пусто)"
@@ -66,7 +59,6 @@ def alphabet_block(inventory: dict) -> str:
 
 
 def reconstructed_block(inventory: dict) -> str:
-    """Список типов, которые не являются faithful-портами (реконструкции)."""
     lines = []
     for t in inventory["types"]:
         if t["mode"] == "faithful":
@@ -79,7 +71,6 @@ def reconstructed_block(inventory: dict) -> str:
 
 
 def dataset_card_values(inventory: dict, repo_id: str) -> dict[str, str]:
-    """Значения для подстановки в шаблон карточки датасета."""
     totals = inventory["totals"]
     return {
         "REPO_ID": repo_id,
@@ -108,12 +99,7 @@ def dataset_card_values(inventory: dict, repo_id: str) -> dict[str, str]:
     }
 
 
-# =====================================================================================
-# Файл лицензии датасета
-# =====================================================================================
-
 def licence_summary_block(inventory: dict) -> str:
-    """Сводка «лицензия → сколько типов и PNG» по плагинам датасета."""
     groups: dict[str, dict] = {}
     for p in inventory["plugins"]:
         entry = groups.setdefault(p["licence"], {"types": 0, "png": 0,
@@ -131,7 +117,6 @@ def licence_summary_block(inventory: dict) -> str:
 
 
 def no_licence_note(inventory: dict) -> str:
-    """Оговорка про плагины без лицензии (их имена берутся из данных)."""
     without = [p["plugin"] for p in inventory["plugins"]
                if "no licence" in p["licence"].lower()
                or "all rights reserved" in p["licence"].lower()
@@ -146,7 +131,6 @@ def no_licence_note(inventory: dict) -> str:
 
 
 def agpl_note(inventory: dict) -> str:
-    """Оговорка про AGPL-типы (если такие есть в данных)."""
     agpl = [p["plugin"] for p in inventory["plugins"]
             if "agpl" in p["licence"].lower()]
     if not agpl:
@@ -160,7 +144,6 @@ def agpl_note(inventory: dict) -> str:
 
 
 def dataset_license_values(inventory: dict, repo_id: str) -> dict[str, str]:
-    """Значения для подстановки в шаблон файла лицензии датасета."""
     values = dataset_card_values(inventory, repo_id)
     values.update({
         "LICENCE_SUMMARY": licence_summary_block(inventory),
@@ -171,7 +154,5 @@ def dataset_license_values(inventory: dict, repo_id: str) -> dict[str, str]:
 
 
 def render_dataset_license(inventory: dict, repo_id: str) -> tuple[str, list[str]]:
-    """Собрать текст файла ``LICENSE`` для репозитория датасета."""
     template = DATASET_LICENSE_TEMPLATE.read_text(encoding="utf-8")
     return render_template(template, dataset_license_values(inventory, repo_id))
-

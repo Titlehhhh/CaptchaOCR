@@ -1,22 +1,4 @@
 #!/usr/bin/env python
-"""The recognisers: PP-OCRv6 and our own CRNN, and the preprocessing they need.
-
-Three things live here:
-
-* **the checkpoint rule** - which checkpoint is served (`DEFAULT_CHECKPOINT`,
-  `resolve_checkpoint`);
-* **the preprocessing** - a self-contained copy of `train/ppocr_data.py` (the
-  PP-OCRv6 path) and `train/captcha_crnn.py` (the CRNN path); both of those
-  files are read-only for this app;
-* **the backends** - `PPOCRBackend` and `CRNNBackend`, the two objects that
-  turn a picture into a reading.
-
-    from backends import PPOCRBackend, resolve_checkpoint
-    path, kind = resolve_checkpoint()
-    backend = PPOCRBackend(path, "cuda")
-    print(backend.predict(img, roi)["text"])
-"""
-
 import glob
 import json
 import os
@@ -24,28 +6,16 @@ import sys
 
 from filepaths import ROOT, TRAIN
 
-# --------------------------------------------------------------------------- #
-# the checkpoint preference order (the brief of this task)
-# --------------------------------------------------------------------------- #
 def _ck(path):
     return os.path.join(ROOT, path)
-
 
 def _latest_glob(pattern):
     hits = sorted(glob.glob(os.path.join(ROOT, pattern)))
     return hits[-1] if hits else None
 
-
 DEFAULT_CHECKPOINT = "train/runs/ppocrv6/universal_v1/best.pt"
 
-
 def resolve_checkpoint(explicit=None):
-    """(path, kind) of the checkpoint to serve, or (None, None).
-
-    One pinned default: DEFAULT_CHECKPOINT. Override with --checkpoint.
-    `kind` is "ppocr" or "crnn"; it follows from the directory the checkpoint
-    lives in, not from the file name.
-    """
     path = explicit or DEFAULT_CHECKPOINT
     if not path or not os.path.isfile(_ck(path)):
         return None, None
@@ -53,11 +23,6 @@ def resolve_checkpoint(explicit=None):
     kind = "ppocr" if ("ppocrv6" in flat or "run_ppocr" in flat) else "crnn"
     return _ck(path), kind
 
-
-# --------------------------------------------------------------------------- #
-# preprocessing - a self-contained copy of train/ppocr_data.py and
-# train/captcha_crnn.py (both read-only for this app)
-# --------------------------------------------------------------------------- #
 IMG_HEIGHT = 48
 MAX_WIDTH = 320
 MIN_WIDTH = 16
@@ -65,9 +30,7 @@ CRNN_GLYPH_HEIGHT = 32
 CRNN_MIN_WIDTH = 64
 CRNN_MAX_WIDTH = 400
 
-
 def clamp_crop(img, roi):
-    """The band crop of `train/ppocr_data.py::PPOCRDataset._load`."""
     x, y, w, h = [int(v) for v in roi]
     x = max(0, min(x, img.width - 1))
     y = max(0, min(y, img.height - 1))
@@ -75,14 +38,7 @@ def clamp_crop(img, roi):
     h = max(1, min(h, img.height - y))
     return img.crop((x, y, x + w, y + h))
 
-
 def ink_bbox(img, tol=24):
-    """The ink bounding box of `train/ppocr_data.py::PPOCRDataset.ink_bbox`.
-
-    Used when a picture arrives without a band: the frame is cropped to its
-    ink, which is the "per-plugin cropper" the project measured to be the
-    decisive component.
-    """
     import numpy as np
 
     a = np.asarray(img, dtype=np.int16)
@@ -102,9 +58,7 @@ def ink_bbox(img, tol=24):
     cols = np.flatnonzero(mask.any(axis=0))
     return int(cols[0]), int(rows[0]), int(cols[-1] - cols[0] + 1), int(rows[-1] - rows[0] + 1)
 
-
 def line_height(img):
-    """The height of one text line inside a band - `train/captcha_crnn.py`."""
     import numpy as np
 
     a = np.asarray(img.convert("L"), dtype=np.float32)
@@ -126,15 +80,7 @@ def line_height(img):
         return img.height
     return max(1, int(np.median(runs)))
 
-
 def ppocr_prepare(img_rgb, roi):
-    """-> (3, 48, 320) float32.
-
-    Exactly `train/ppocr_data.py::PPOCRDataset` with `glyph_scale="band"`,
-    `norm="paddle"`, `bgr=True`: crop the band, scale it to 48 px tall (the
-    width follows the aspect ratio and is capped at 320), swap RGB -> BGR,
-    normalise with (x - 0.5) / 0.5 and zero-pad on the right.
-    """
     import numpy as np
     from PIL import Image
 
@@ -155,14 +101,7 @@ def ppocr_prepare(img_rgb, roi):
     canvas[:, :, :w] = np.ascontiguousarray(a.transpose(2, 0, 1))
     return canvas, w
 
-
 def crnn_prepare(img_rgb, roi):
-    """-> (1, 32, W) float32.
-
-    Exactly `train/captcha_crnn.py::CaptchaDataset`: grey, crop the band, scale
-    so that the GLYPH (not the band) is 32 px tall, normalise with
-    (x - 0.5) / 0.5.
-    """
     import numpy as np
     from PIL import Image
 
@@ -182,7 +121,6 @@ def crnn_prepare(img_rgb, roi):
     a = (a - 0.5) / 0.5
     return a[None, :, :], w
 
-
 def geometric_mean(values):
     import numpy as np
 
@@ -190,17 +128,7 @@ def geometric_mean(values):
         return 0.0
     return float(np.exp(np.mean(np.log(np.clip(values, 1e-6, 1.0)))))
 
-
 def greedy_decode(probs, blank, decode):
-    """Greedy CTC decode of a (T, C) probability tensor -> the prediction dict.
-
-    Shared by the PP-OCRv6 backend and the CRNN backend: argmax per timestep,
-    skip the blanks, keep the first token of a run and its confidence, then map
-    the indices through the backend's own decoder.
-
-    The confidence is the geometric mean of the posteriors of the frames that
-    produced a character - a per-character score the solver can threshold on.
-    """
     best = probs.argmax(dim=-1)
     best_p = probs.max(dim=-1).values
     idxs, confs = [], []
@@ -217,10 +145,6 @@ def greedy_decode(probs, blank, decode):
     return {"text": text, "confidence": round(geometric_mean(confs), 4),
             "per_char": per_char}
 
-
-# --------------------------------------------------------------------------- #
-# the backends
-# --------------------------------------------------------------------------- #
 class Backend:
     name = "none"
 
@@ -231,10 +155,7 @@ class Backend:
     def predict(self, img_rgb, roi):        # pragma: no cover - interface
         raise NotImplementedError
 
-
 class PPOCRBackend(Backend):
-    """The fine-tuned PP-OCRv6 (`train/ppocr_data.py` + `train/finetune_ppocr.py`)."""
-
     name = "ppocrv6"
 
     def __init__(self, ckpt_path, device):
@@ -253,8 +174,6 @@ class PPOCRBackend(Backend):
 
         model = PPOCRV6SmallRecForTextRecognition.from_pretrained(
             self.repo, local_files_only=True)
-        # an --expand-charset checkpoint carries a bigger head and its own
-        # character list: grow the head first, then load, then use its list
         if ck.get("character_list"):
             old = model.head.head
             n = len(ck["character_list"])
@@ -309,17 +228,6 @@ class PPOCRBackend(Backend):
         return greedy_decode(probs, self.blank, self.decode_indices)
 
     def predict_batch(self, items):
-        """Read many bands in ONE forward pass.
-
-        `items` is a list of `(image, roi)` pairs.  Every canvas has the same
-        height (48 px) and the same padded width (320), so the whole list
-        stacks into one tensor and the time axis T is the same for every
-        sample - the CTC decode is then done per row.
-
-        Why it matters: the cropper proposes up to 32 bands and the model has
-        to read all of them (the vote).  One call per band cost ~30 ms each
-        (≈1 s per picture); a single batched pass costs a fraction of that.
-        """
         import numpy as np
         import torch
 
@@ -342,10 +250,7 @@ class PPOCRBackend(Backend):
             out.append(greedy_decode(probs[i], self.blank, self.decode_indices))
         return out
 
-
 class CRNNBackend(Backend):
-    """Our own CRNN + CTC (`train/captcha_crnn.py`)."""
-
     name = "crnn"
 
     def __init__(self, ckpt_path, device):

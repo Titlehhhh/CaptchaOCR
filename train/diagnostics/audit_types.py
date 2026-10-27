@@ -1,14 +1,3 @@
-"""Audit the dataset types: what survives the band filter and the charset filter.
-
-    .venv-gpu\\Scripts\\python.exe train\\audit_types.py
-    .venv-gpu\\Scripts\\python.exe train\\audit_types.py --json
-
-One line per type: samples, how many rows carry a text band, whether the label
-survives the charset, the length range of the drawn text and the number of
-distinct answers. The last column is the leak: a type with one distinct answer
-teaches the model a constant.
-"""
-
 import argparse
 import json
 import os

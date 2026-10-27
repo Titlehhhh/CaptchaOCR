@@ -1,3 +1,4 @@
+
 import json
 import os
 from pathlib import Path
@@ -5,17 +6,6 @@ from pathlib import Path
 from .constants import DATA_PREFIX, REPO_ROOT
 from .utils import charset_kind, has_external_url, median, mode_from_source
 
-# =====================================================================================
-# Лицензии плагинов
-# =====================================================================================
-#
-# Ключ — значение поля ``plugin`` в ``labels.jsonl`` (для дерева ``out/`` это
-# ``owner/repo``, для дерева ``out_ru/`` — плоское имя плагина).
-#
-# Значение — (лицензия апстрима, режим реконструкции): faithful / clean-room /
-# reconstructed. Это данные проекта (аудит апстримов), а не выдумка: если плагина
-# нет в таблице, лицензия помечается как «не установлена», и в сводку попадает
-# поле ``source`` — по нему всегда видно, откуда взялась строка.
 PLUGIN_LICENCES: dict[str, tuple[str, str]] = {
     "Archy-X/Krypton": ("no licence (all rights reserved)", "clean-room"),
     "China2B2T/Captcha": ("GPL-3.0", "clean-room"),
@@ -42,26 +32,18 @@ PLUGIN_LICENCES: dict[str, tuple[str, str]] = {
     "LimboFilter": ("AGPL-3.0", "clean-room"),
 }
 
-#: Пометка для плагина, которого нет в таблице выше.
 LICENCE_UNKNOWN = "не установлена (см. source в labels.jsonl)"
 MODE_UNKNOWN = "unknown"
-
-#: Что считать «прочим файлом» в каталоге типа — такие файлы не загружаются.
 IGNORED_SUFFIXES = (".html", ".htm")
 
-# =====================================================================================
-# Сбор датасета
-# =====================================================================================
 
 class TypeDir:
-    """Один тип капт: каталог с ``labels.jsonl`` и картинками рядом."""
-
     def __init__(self, directory: Path, data_dir: Path):
         self.directory = directory
         rel = Path(os.path.relpath(directory, data_dir))
         parts = rel.parts
         self.tree = parts[0] if len(parts) > 1 else data_dir.name
-        self.type_id = rel.as_posix()          # например out/LagBug/XProtect/code
+        self.type_id = rel.as_posix()
         self.short_id = "/".join(parts[1:]) if len(parts) > 1 else rel.as_posix()
         self.labels_path = directory / "labels.jsonl"
         self.rows: list[dict] = []
@@ -70,15 +52,12 @@ class TypeDir:
         self.inventory: dict = {}
 
     def repo_dir(self) -> str:
-        """Путь каталога типа внутри репозитория."""
         return f"{DATA_PREFIX}/{self.type_id}"
 
 
 def find_type_dirs(data_dir: Path) -> list[TypeDir]:
-    """Найти все каталоги с ``labels.jsonl`` под ``data_dir`` (дерево сверху вниз)."""
     found: list[TypeDir] = []
     for dirpath, dirs, files in os.walk(data_dir):
-        # real_shots — эталонные скриншоты, они не обучающие и в типы не входят.
         dirs[:] = [d for d in dirs if d != "real_shots"]
         if "labels.jsonl" not in files:
             continue
@@ -87,7 +66,6 @@ def find_type_dirs(data_dir: Path) -> list[TypeDir]:
 
 
 def read_labels(path: Path) -> list[dict]:
-    """Прочитать ``labels.jsonl``."""
     rows: list[dict] = []
     with open(path, encoding="utf-8") as handle:
         for line in handle:
@@ -98,7 +76,6 @@ def read_labels(path: Path) -> list[dict]:
 
 
 def collect_type(type_dir: TypeDir) -> None:
-    """Заполнить ``type_dir.rows``, ``pngs`` и посчитать сводку по типу."""
     type_dir.rows = read_labels(type_dir.labels_path)
     pngs = sorted(p for p in type_dir.directory.glob("*.png") if p.is_file())
     type_dir.pngs = pngs
@@ -125,8 +102,6 @@ def collect_type(type_dir: TypeDir) -> None:
     heights = [int(r["height"]) for r in rows if r.get("height")]
     sources = sorted({str(r.get("source") or "") for r in rows})
 
-    # Если плагина нет в таблице лицензий, режим реконструкции берём из самого `source`:
-    # там прямо написано, faithful это или clean-room. Ничего не додумываем.
     if mode == MODE_UNKNOWN:
         mode = mode_from_source(sources[0]) or MODE_UNKNOWN
 
@@ -169,7 +144,6 @@ def collect_type(type_dir: TypeDir) -> None:
 
 
 def build_inventory(types: list[TypeDir], data_dir: Path) -> dict:
-    """Машинно-читаемая сводка по всему датасету."""
     per_type = [t.inventory for t in types]
     plugin_map: dict[str, dict] = {}
     for t in types:
@@ -227,4 +201,3 @@ def build_inventory(types: list[TypeDir], data_dir: Path) -> dict:
         "plugins": sorted(plugin_map.values(), key=lambda e: e["plugin"]),
         "types": per_type,
     }
-

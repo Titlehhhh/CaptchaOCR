@@ -1,11 +1,8 @@
+
 import os
 
 from .constants import EXIT_NO_AUTH
 from .utils import log
-
-# =====================================================================================
-# Авторизация
-# =====================================================================================
 
 AUTH_INSTRUCTIONS = """\
 === Нужен токен Hugging Face =========================================
@@ -42,7 +39,6 @@ AUTH_INSTRUCTIONS = """\
 
 
 def resolve_token(explicit: str | None) -> str | None:
-    """Найти токен: флаг --token, переменная HF_TOKEN, сохранённый токен CLI."""
     if explicit:
         return explicit
     for name in ("HF_TOKEN", "HUGGING_FACE_HUB_TOKEN", "HUGGINGFACE_TOKEN"):
@@ -61,7 +57,6 @@ def resolve_token(explicit: str | None) -> str | None:
 
 
 def require_token(explicit: str | None) -> str:
-    """Токен или инструкция + выход с кодом 2. Интерактивного ввода не будет."""
     token = resolve_token(explicit)
     if token:
         return token
@@ -71,14 +66,12 @@ def require_token(explicit: str | None) -> str:
 
 
 def api_for(token: str):
-    """Создать HfApi с токеном."""
     from huggingface_hub import HfApi
 
     return HfApi(token=token)
 
 
 def whoami_name(api) -> str:
-    """Имя пользователя, которому принадлежит токен (пустая строка — не вышло)."""
     try:
         info = api.whoami()
     except Exception:  # noqa: BLE001 - токен может быть без прав на профиль
@@ -86,5 +79,3 @@ def whoami_name(api) -> str:
     if isinstance(info, dict):
         return str(info.get("name") or info.get("fullname") or "")
     return ""
-
-

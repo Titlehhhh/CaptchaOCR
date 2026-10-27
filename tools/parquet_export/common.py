@@ -1,4 +1,3 @@
-"""The small helpers of the Parquet export: logging and byte formatting."""
 
 import sys
 

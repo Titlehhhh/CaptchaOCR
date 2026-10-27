@@ -1,4 +1,3 @@
-"""The verification of the uploaded tree: the remote against the local one."""
 
 from tools.publish_hf.utils import human_bytes, log
 
@@ -9,7 +8,6 @@ EXIT_ERROR = 1
 
 
 def verify(api, repo_id: str, types: list) -> int:
-    """Сверить удалённое дерево с локальным: PNG, labels.jsonl, размер, коммит."""
     try:
         entries = list(api.list_repo_tree(repo_id=repo_id, repo_type="dataset",
                                           recursive=True))
@@ -60,7 +58,6 @@ def verify(api, repo_id: str, types: list) -> int:
     log(f"local bytes:     {local_bytes} ({human_bytes(local_bytes)})")
     log(f"stale remote paths: {stale_count}")
 
-    # История коммитов: публикация — это ДОБАВЛЕНИЕ, история не переписывается.
     log("")
     log("last commits:")
     try:
