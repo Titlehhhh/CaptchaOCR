@@ -470,6 +470,40 @@ class PPOCRBackend(Backend):
             probs = torch.softmax(logits.float(), dim=-1)[0]
         return greedy_decode(probs, self.blank, self.decode_indices)
 
+    def predict_batch(self, items):
+        """Read many bands in ONE forward pass.
+
+        `items` is a list of `(image, roi)` pairs.  Every canvas has the same
+        height (48 px) and the same padded width (320), so the whole list
+        stacks into one tensor and the time axis T is the same for every
+        sample - the CTC decode is then done per row.
+
+        Why it matters: the cropper proposes up to 32 bands and the model has
+        to read all of them (the vote).  One call per band cost ~30 ms each
+        (≈1 s per picture); a single batched pass costs a fraction of that.
+        """
+        import numpy as np
+        import torch
+
+        if not items:
+            return []
+        canvases = []
+        for img_rgb, roi in items:
+            canvas, _w = ppocr_prepare(img_rgb, roi)
+            canvases.append(canvas)
+        px = torch.from_numpy(np.stack(canvases)).to(self.device)
+        with torch.no_grad():
+            with torch.autocast("cuda", dtype=torch.float16,
+                                enabled=self.device.startswith("cuda")):
+                h = self.model.model(px).last_hidden_state
+                enc = self.model.head.encoder(h).last_hidden_state
+                logits = self.model.head.head(enc)
+            probs = torch.softmax(logits.float(), dim=-1)
+        out = []
+        for i in range(probs.shape[0]):
+            out.append(greedy_decode(probs[i], self.blank, self.decode_indices))
+        return out
+
 
 class CRNNBackend(Backend):
     """Our own CRNN + CTC (`train/captcha_crnn.py`)."""
@@ -635,16 +669,23 @@ class App:
         """
         from PIL import Image
 
-        votes = {}
-        tried = []
+        # build every view first, then read them all in ONE forward pass
+        views = []
         for c in cands:
             if c.image is not None:
                 view = Image.fromarray(c.image)
-                res = self.backend.predict(view, [0, 0, view.width, view.height])
+                views.append((view, [0, 0, view.width, view.height]))
             elif c.box:
-                res = self.backend.predict(img_rgb, c.box)
+                views.append((img_rgb, c.box))
             else:
-                res = self.backend.predict(img_rgb, None)
+                views.append((img_rgb, None))
+        if hasattr(self.backend, "predict_batch"):
+            results = self.backend.predict_batch(views)
+        else:
+            results = [self.backend.predict(v, r) for v, r in views]
+        votes = {}
+        tried = []
+        for c, res in zip(cands, results):
             tried.append({"method": c.method, "box": c.box, "text": res["text"],
                           "confidence": res["confidence"]})
             v = votes.setdefault(res["text"], {"votes": 0, "confidence": 0.0,

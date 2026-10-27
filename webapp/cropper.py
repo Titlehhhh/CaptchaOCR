@@ -110,13 +110,16 @@ def box_of(mask):
 # --------------------------------------------------------------------------- #
 # connected components (numpy only, run based)
 # --------------------------------------------------------------------------- #
-def label_components(mask):
+def label_components(mask, stats_only=False):
     """4-connected labelling of a boolean mask.
 
     Returns `(labels, n, stats)`; `labels` is an int32 array, 0 = background,
     `stats` holds `[x0, x1, y0, y1, area]` per label.  The implementation walks
     the horizontal runs of every row and unions the runs that overlap - the
     classic two-pass algorithm with a union-find, but without scipy.
+
+    `stats_only=True` skips the label array: the callers that only need the
+    geometry of the components (the colour bank) pay a third less.
     """
     mask = np.ascontiguousarray(mask, dtype=bool)
     h, w = mask.shape
@@ -182,6 +185,8 @@ def label_components(mask):
                 st[3] = y
                 st[4] += e - s
     labels = np.zeros((h, w), dtype=np.int32)
+    if stats_only:
+        return None, next_id - 1, stats
     for y, cur in enumerate(rows):
         for (s, e, lab) in cur:
             labels[y, s:e] = remap[find(lab)]
@@ -535,7 +540,7 @@ def _crop_render(canvas, box):
     return canvas[y:y + h, x:x + w]
 
 
-def _colour_bank(a, limit=6, scale=2, full_k=14):
+def _colour_bank(a, limit=6, scale=2, full_k=14, max_scan=20):
     """The most plausible "code colour" candidates, with their masks.
 
     A colour is plausible when its pixels form a few chunky components in the
@@ -555,6 +560,12 @@ def _colour_bank(a, limit=6, scale=2, full_k=14):
     # the colours are counted on the **full** frame: a thin translucent stroke
     # can vanish completely from the subsampled histogram
     for rank, (ref, count) in enumerate(color_candidates(a)):
+        if rank >= max_scan or len(out) >= limit * 2:
+            # enough plausible colours already - the labelling of every
+            # remaining colour is the expensive part
+            break
+        if count < 120:
+            continue                       # too few pixels to be a code
         full = color_mask(a, ref)
         if full.sum() < 120:
             continue
@@ -562,7 +573,8 @@ def _colour_bank(a, limit=6, scale=2, full_k=14):
             mask, mh, mw = full, height, width
         else:
             mask, mh, mw = full[::scale, ::scale], sh, sw
-        labels, n, stats = label_components(opening(mask, 2) if mask.sum() > 4000 else mask)
+        labels, n, stats = label_components(opening(mask, 2) if mask.sum() > 4000 else mask,
+                                           stats_only=True)
         glyphs = glyph_candidates(stats, mh, mw)
         if not glyphs:
             continue
