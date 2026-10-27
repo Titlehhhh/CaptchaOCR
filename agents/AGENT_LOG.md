@@ -243,6 +243,8 @@ the work, not of the ownership.
 | `webapp/static/index.html` | cropper agent | **modified** — кнопка «🎲 Random», галочка «random sample of this type», строка «cropper box» в результате |
 | `webapp/README.md` | cropper agent | **modified** — раздел про кроппер, новые роуты, пинованный чекпоинт `universal_v1` (прежний текст устарел) |
 | `reports/CROPPER.md` | cropper agent | **new** — дизайн кроппера и измеренные числа |
+| `reports/UNLIMITED_OCR.md` | research agent | **new** — разбор Baidu Unlimited OCR 2: что переносится в CaptchaOCR, что нет, и измеренный эксперимент с полосами-кандидатами |
+| `webapp/cropper.py` | cropper agent | **modified** — добавлен `strip_candidates()` (аналог gundam-тайлинга в масштабе капчи) |
 
 ### 2.1 The next open work, and who should take it
 

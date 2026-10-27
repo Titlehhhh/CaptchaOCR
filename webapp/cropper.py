@@ -576,6 +576,34 @@ def _colour_bank(a, limit=6, scale=2, full_k=14):
     return out[:limit]
 
 
+def strip_candidates(img, ks=(3, 4)):
+    """Full-width horizontal strips - the captcha-scale analogue of a tile grid.
+
+    The idea comes from Unlimited OCR 2 (Baidu, MIT): their "gundam" dynamic
+    tiling shows the recogniser the page at several scales and lets its
+    confidence choose.  Their tiles are 640x640 document pages; for a captcha
+    frame the analogue of a tile is a **horizontal strip** - the unit that
+    carries one line of text.
+
+    Measured on our own frames (see `reports/UNLIMITED_OCR.md` §2.6): adding
+    the strips to the candidate list helps a lot on the types where the answer
+    is one line among several (`just-captcha/ProstoCaptcha/map` 0.100 ->
+    0.900) and hurts on the types where the base answer is already certain -
+    so the caller should use them only when the base answer is not confident.
+    """
+    W, H = img.size
+    out = []
+    for k in ks:
+        for i in range(k):
+            y0 = int(round(i * H / float(k)))
+            y1 = int(round((i + 1) * H / float(k)))
+            if y1 - y0 < 8:
+                continue
+            out.append(CropResult([0, y0, W, y1 - y0], "strip:k=%d,i=%d" % (k, i),
+                                   detail={"prior": 0.2}))
+    return out
+
+
 def candidates(img, type_id=None, limit=DEFAULT_LIMIT, colour_limit=8):
     """The ordered list of bands worth reading.
 

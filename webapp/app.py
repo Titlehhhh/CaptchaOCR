@@ -624,24 +624,17 @@ class App:
             return f"parity check failed: {type(exc).__name__}: {exc}"
 
     # -- inference ---------------------------------------------------------- #
-    def predict_frame(self, img_rgb, type_id=None):
-        """Read a frame that carries no band.
+    def _vote(self, img_rgb, cands):
+        """Read every candidate band; the most *confident* answer wins.
 
-        The cropper ("the eye") proposes a handful of bands, the recogniser
-        reads each of them, and the **most confident** answer wins; the number
-        of proposals that agreed on it only breaks a tie.  Counting the votes
-        first is wrong: a crowd of bad proposals (the whole frame, a colour
-        that is not the code) outvotes one excellent proposal.
+        The number of proposals that agreed on it only breaks a tie.  Counting
+        the votes first is wrong: a crowd of bad proposals (the whole frame, a
+        colour that is not the code) outvotes one excellent proposal.
 
-        The proposals and their answers are returned, so the caller can see
-        what the eye did.
-
-        Returns `(result, meta)`.
+        Returns `(best, tried)`.
         """
         from PIL import Image
 
-        cands = cropper.candidates(img_rgb, type_id=type_id,
-                                    limit=self.args.crop_limit)
         votes = {}
         tried = []
         for c in cands:
@@ -664,15 +657,44 @@ class App:
                 v["box"] = c.box
                 v["result"] = res
         if not votes:
-            raise RuntimeError("the cropper proposed nothing")
-        # The winner is the most *confident* answer; the number of proposals
-        # that agreed on it only breaks a tie.  Counting the votes first is
-        # wrong: a crowd of bad proposals (the whole frame, a colour that is
-        # not the code) outvotes one excellent proposal.
+            return None, tried
         best = max(votes.values(), key=lambda v: (v["confidence"], v["votes"]))
+        return best, tried
+
+    def predict_frame(self, img_rgb, type_id=None):
+        """Read a frame that carries no band.
+
+        The cropper ("the eye") proposes the bands, the recogniser reads them
+        all, and the most confident answer wins.  When that answer is **not**
+        confident, a second round adds the horizontal strips of the frame -
+        the captcha-scale analogue of the "gundam" tiling of Unlimited OCR 2 -
+        and the strips may win instead.  The strips are not mixed into the
+        first round on purpose: a bigger candidate pool makes the "most
+        confident wins" rule find *confident rubbish* (measured: 6 samples of
+        210 broken, `reports/UNLIMITED_OCR.md` §2.6).
+
+        Returns `(result, meta)`.
+        """
+        from PIL import Image
+
+        cands = cropper.candidates(img_rgb, type_id=type_id,
+                                    limit=self.args.crop_limit)
+        best, tried = self._vote(img_rgb, cands)
+        if best is None:
+            raise RuntimeError("the cropper proposed nothing")
+        strips_used = 0
+        if best["confidence"] < self.args.crop_conf:
+            strips = cropper.strip_candidates(img_rgb)
+            if strips:
+                sbest, stried = self._vote(img_rgb, strips)
+                strips_used = len(strips)
+                tried = tried + stried
+                if sbest is not None and sbest["confidence"] > best["confidence"]:
+                    best = sbest
         meta = {"crop_method": best["method"], "crop_box": best["box"],
                 "crop_votes": best["votes"], "crop_candidates": len(tried),
-                "crop_tried": tried, "crop_alternatives": len(votes)}
+                "crop_tried": tried, "crop_alternatives": 0,
+                "crop_strips": strips_used}
         return best["result"], meta
 
     def predict(self, img_rgb, roi):
@@ -974,6 +996,7 @@ class Handler(BaseHTTPRequestHandler):
             "crop_box": crop_meta.get("crop_box"),
             "crop_votes": crop_meta.get("crop_votes"),
             "crop_candidates": crop_meta.get("crop_candidates"),
+            "crop_strips": crop_meta.get("crop_strips"),
             "crop_tried": crop_meta.get("crop_tried"),
             "model": app.backend.name if app.backend else None,
             "checkpoint": (os.path.relpath(app.checkpoint, ROOT).replace("\\", "/")
@@ -1023,6 +1046,9 @@ def main():
     ap.add_argument("--crop-limit", type=int, default=32,
                     help="how many bands the cropper may propose for a picture "
                          "that arrives without a band (more = slower, better)")
+    ap.add_argument("--crop-conf", type=float, default=0.99,
+                    help="the horizontal strips of the frame are tried as well "
+                         "only when the best base answer is less confident than this")
     args = ap.parse_args()
 
     app = App(args)

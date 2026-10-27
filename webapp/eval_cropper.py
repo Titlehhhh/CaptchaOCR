@@ -102,7 +102,10 @@ def run_screenshots(backend, verbose=True):
 # --------------------------------------------------------------------------- #
 # the vote (the same rule as the web app)
 # --------------------------------------------------------------------------- #
-def vote(backend, img, cands):
+def vote(backend, img, cands, strip_conf=0.99):
+    """The vote of the web app: the most confident answer wins; the horizontal
+    strips of the frame are tried as well when the base answer is not
+    confident (the captcha-scale "gundam" of Unlimited OCR 2)."""
     from PIL import Image
     votes = {}
     tried = []
@@ -125,10 +128,23 @@ def vote(backend, img, cands):
             v["method"] = c.method
             v["box"] = c.box
             v["result"] = res
+    if not votes:
+        raise RuntimeError("no candidate")
     best = max(votes.values(), key=lambda v: (v["confidence"], v["votes"]))
+    strips = 0
+    if best["confidence"] < strip_conf:
+        for c in cropper.strip_candidates(img):
+            res = backend.predict(img, c.box)
+            tried.append({"method": c.method, "box": c.box, "text": res["text"],
+                          "confidence": res["confidence"]})
+            strips += 1
+            if res["confidence"] > best["confidence"]:
+                best = {"votes": 1, "confidence": res["confidence"], "method": c.method,
+                        "box": c.box, "result": res}
     meta = {"crop_method": best["method"], "crop_box": best["box"],
             "crop_votes": best["votes"], "crop_candidates": len(tried),
-            "crop_tried": tried, "crop_alternatives": len(votes)}
+            "crop_tried": tried, "crop_alternatives": len(votes),
+            "crop_strips": strips}
     return best["result"], meta
 
 
