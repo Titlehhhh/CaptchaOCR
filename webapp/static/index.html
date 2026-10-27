@@ -40,6 +40,10 @@
   .preview.on{display:block}
   .preview img{max-width:100%;image-rendering:pixelated;background:#0d1015;
               border:1px solid var(--line);border-radius:8px;padding:6px}
+  .shotwrap{position:relative;display:inline-block;max-width:100%;
+            border:1px solid var(--line);border-radius:8px;padding:6px;background:#0d1015}
+  .shotwrap img{max-width:100%;image-rendering:pixelated;display:block;border-radius:4px}
+  .shotwrap canvas{position:absolute;left:6px;top:6px;pointer-events:none}
   .caps{margin-top:8px;color:var(--dim);font-size:12px}
   .gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px}
   .shot{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:8px;
@@ -90,7 +94,10 @@
       <input type="file" id="file" accept="image/*" hidden>
     </div>
     <div class="preview" id="preview">
-      <img id="preview-img" alt="the selected picture">
+      <div class="shotwrap" id="shotwrap">
+        <img id="preview-img" alt="the selected picture">
+        <canvas id="preview-box"></canvas>
+      </div>
       <div class="caps" id="preview-cap"></div>
     </div>
 
@@ -224,10 +231,47 @@ $("rand").onclick = async () => {
 };
 
 /* -------------------------------------------------------------- preview */
+let lastBox = null, lastMethod = null;
 function showPreview(url, cap){
   $("preview-img").src = url;
   $("preview-cap").textContent = cap || "";
   $("preview").classList.add("on");
+  drawBox(null);              // the old band is not the new picture's band
+}
+$("preview-img").onload = () => { if (lastBox) drawBox(lastBox, lastMethod); };
+
+/* the band the cropper chose, drawn on the picture */
+function drawBox(box, method){
+  const cv = $("preview-box"), img = $("preview-img");
+  if (!img.naturalWidth){ cv.width = 0; cv.height = 0; return; }
+  const w = img.clientWidth, h = img.clientHeight;
+  if (!w || !h){ cv.width = 0; cv.height = 0; return; }
+  cv.width = w; cv.height = h;
+  cv.style.width = w + "px"; cv.style.height = h + "px";
+  const ctx = cv.getContext("2d");
+  ctx.clearRect(0, 0, w, h);
+  if (!box) return;
+  const sx = w / img.naturalWidth, sy = h / img.naturalHeight;
+  const x = Math.round(box[0] * sx), y = Math.round(box[1] * sy);
+  const bw = Math.round(box[2] * sx), bh = Math.round(box[3] * sy);
+  // everything outside the band is dimmed
+  ctx.fillStyle = "rgba(6,10,16,.55)";
+  ctx.fillRect(0, 0, w, y);
+  ctx.fillRect(0, y + bh, w, h - (y + bh));
+  ctx.fillRect(0, y, x, bh);
+  ctx.fillRect(x + bw, y, w - (x + bw), bh);
+  // the band itself
+  ctx.strokeStyle = "#5ac8fa"; ctx.lineWidth = 3;
+  ctx.strokeRect(x + 1.5, y + 1.5, Math.max(2, bw - 3), Math.max(2, bh - 3));
+  // its label
+  const label = (method || "band") + "  [" + box.join(", ") + "]";
+  ctx.font = "12px Consolas, ui-monospace, monospace";
+  const tw = ctx.measureText(label).width + 10;
+  const ly = y > 18 ? y - 18 : y + bh + 2;
+  ctx.fillStyle = "rgba(90,200,250,.94)";
+  ctx.fillRect(x, ly, tw, 16);
+  ctx.fillStyle = "#06202b";
+  ctx.fillText(label, x + 5, ly + 12);
 }
 
 /* --------------------------------------------------------------- upload */
@@ -311,6 +355,11 @@ function showResult(d){
       + (d.crop_votes ? " · " + d.crop_votes + " votes" : "") : "-";
   $("k-lat").textContent = (d.latency_ms == null ? "-" : d.latency_ms + " ms");
   $("k-type").textContent = d.type || "-";
+
+  // the band, drawn on the picture
+  lastBox = d.crop_box || null;
+  lastMethod = d.used_band ? "roi (labels.jsonl)" : d.crop_method;
+  drawBox(lastBox, lastMethod);
 }
 
 $("clear").onclick = () => {

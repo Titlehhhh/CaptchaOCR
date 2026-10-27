@@ -959,6 +959,7 @@ class Handler(BaseHTTPRequestHandler):
             if roi:
                 # the dataset knows the band - that is the measured-good path
                 result = app.predict(img, roi)
+                crop_meta = {"crop_method": "roi (labels.jsonl)", "crop_box": list(roi)}
             else:
                 # no band: the cropper proposes the bands and the model votes
                 result, crop_meta = app.predict_frame(img, row.get("_type") if row else None)
