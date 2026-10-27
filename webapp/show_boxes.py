@@ -16,7 +16,6 @@ the code) and a few samples of the dataset types.
 """
 import argparse
 import glob
-import json
 import os
 import sys
 
@@ -30,6 +29,7 @@ os.environ.setdefault("HF_HUB_CACHE", os.path.join(ROOT, ".hf-cache", "hub"))
 
 import cropper                                          # noqa: E402
 import app as webapp                                    # noqa: E402
+import pipeline                                         # noqa: E402
 
 TEST_DIR = os.path.join(ROOT, "test")
 DATASET = os.path.join(ROOT, "dataset", "out_ru", "LimboFilter", "digits")
@@ -82,10 +82,7 @@ def main():
     for p in sorted(glob.glob(os.path.join(TEST_DIR, "*.png"))):
         name = os.path.basename(p)
         img = Image.open(p).convert("RGB")
-        res, meta = webapp.App._vote_standalone(backend, img) if hasattr(webapp.App, "_vote_standalone") \
-            else (None, None)
-        if res is None:
-            res, meta = vote_with_backend(backend, img)
+        res, meta = vote_with_backend(backend, img)
         rows.append(tile(img, meta["crop_box"],
                          "%s  ->  %s   box=%s   method=%s   conf=%s"
                          % (name, res["text"], meta["crop_box"], meta["crop_method"],
@@ -113,31 +110,15 @@ def main():
 
 
 def vote_with_backend(backend, img):
-    """The app's rule: the cropper proposes, the recogniser votes."""
-    from PIL import Image
+    """The app's rule: the cropper proposes, the recogniser votes.
+
+    The rule is the **shared** one (`webapp/pipeline.py::vote_frame`) - the
+    same function the web app and the measurement script call.
+    """
     cands = cropper.candidates(img, limit=32)
-    votes, tried = {}, []
-    for c in cands:
-        if c.image is not None:
-            view = Image.fromarray(c.image)
-            res = backend.predict(view, [0, 0, view.width, view.height])
-        elif c.box:
-            res = backend.predict(img, c.box)
-        else:
-            res = backend.predict(img, None)
-        tried.append({"method": c.method, "box": c.box, "text": res["text"],
-                      "confidence": res["confidence"]})
-        v = votes.setdefault(res["text"], {"votes": 0, "confidence": 0.0,
-                                            "method": c.method, "box": c.box, "result": res})
-        v["votes"] += 1
-        if res["confidence"] > v["confidence"]:
-            v["confidence"] = res["confidence"]
-            v["method"] = c.method
-            v["box"] = c.box
-            v["result"] = res
-    best = max(votes.values(), key=lambda v: (v["confidence"], v["votes"]))
-    meta = {"crop_method": best["method"], "crop_box": best["box"],
-            "crop_votes": best["votes"], "crop_candidates": len(tried)}
+    best, meta = pipeline.vote_frame(backend, img, cands)
+    if best is None:
+        raise RuntimeError("no candidate")
     return best["result"], meta
 
 

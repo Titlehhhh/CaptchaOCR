@@ -5,8 +5,9 @@
     .venv-gpu\\Scripts\\python.exe webapp\\eval_cropper.py --demo-sweep
     .venv-gpu\\Scripts\\python.exe webapp\\eval_cropper.py --out reports\\cropper\\eval_cropper.json
 
-Three measurements, all with the same model and the same preprocessing as the
-web app (`webapp/app.py`):
+Three measurements, all with the same model, the same preprocessing and the
+same **rule of the vote** as the web app (`webapp/backends.py`,
+`webapp/pipeline.py`):
 
   (A) the owner's six real screenshots (`test/*.png`).  The file name **is**
       the code inside the picture, so the gold label is the file name.  The
@@ -46,6 +47,7 @@ os.environ.setdefault("HF_HUB_CACHE", os.path.join(ROOT, ".hf-cache", "hub"))
 
 import app as webapp                                     # noqa: E402
 import cropper                                          # noqa: E402
+import pipeline                                         # noqa: E402
 
 TEST_DIR = os.path.join(ROOT, "test")
 DATA_ROOTS = [os.path.join(ROOT, "dataset", "out"),
@@ -100,51 +102,20 @@ def run_screenshots(backend, verbose=True):
 
 
 # --------------------------------------------------------------------------- #
-# the vote (the same rule as the web app)
+# the vote - the ONE rule, shared with the web app
 # --------------------------------------------------------------------------- #
 def vote(backend, img, cands, strip_conf=0.99):
     """The vote of the web app: the most confident answer wins; the horizontal
     strips of the frame are tried as well when the base answer is not
-    confident (the captcha-scale "gundam" of Unlimited OCR 2)."""
-    from PIL import Image
-    votes = {}
-    tried = []
-    for c in cands:
-        if c.image is not None:
-            view = Image.fromarray(c.image)
-            res = backend.predict(view, [0, 0, view.width, view.height])
-        elif c.box:
-            res = backend.predict(img, c.box)
-        else:
-            res = backend.predict(img, None)
-        tried.append({"method": c.method, "box": c.box, "text": res["text"],
-                      "confidence": res["confidence"]})
-        v = votes.setdefault(res["text"], {"votes": 0, "confidence": 0.0,
-                                            "method": c.method, "box": c.box,
-                                            "result": res})
-        v["votes"] += 1
-        if res["confidence"] > v["confidence"]:
-            v["confidence"] = res["confidence"]
-            v["method"] = c.method
-            v["box"] = c.box
-            v["result"] = res
-    if not votes:
+    confident (the captcha-scale "gundam" of Unlimited OCR 2).
+
+    The rule itself is **not** copied here - it lives in
+    `webapp/pipeline.py::vote_frame` and is called from here, so that the
+    measurer measures the application and not a copy of it.
+    """
+    best, meta = pipeline.vote_frame(backend, img, cands, strip_conf=strip_conf)
+    if best is None:
         raise RuntimeError("no candidate")
-    best = max(votes.values(), key=lambda v: (v["confidence"], v["votes"]))
-    strips = 0
-    if best["confidence"] < strip_conf:
-        for c in cropper.strip_candidates(img):
-            res = backend.predict(img, c.box)
-            tried.append({"method": c.method, "box": c.box, "text": res["text"],
-                          "confidence": res["confidence"]})
-            strips += 1
-            if res["confidence"] > best["confidence"]:
-                best = {"votes": 1, "confidence": res["confidence"], "method": c.method,
-                        "box": c.box, "result": res}
-    meta = {"crop_method": best["method"], "crop_box": best["box"],
-            "crop_votes": best["votes"], "crop_candidates": len(tried),
-            "crop_tried": tried, "crop_alternatives": len(votes),
-            "crop_strips": strips}
     return best["result"], meta
 
 
@@ -179,23 +150,9 @@ def read_types():
 
 def learn_type_bands(ds):
     """The relative band of every type that has one (the median band of the
-    type, normalised by the frame) - the same table the web app builds."""
-    import statistics
-
-    bands = {}
-    for t in ds.types:
-        rel = []
-        for r in ds.by_type.get(t["id"]) or []:
-            roi = r.get("roi")
-            w = r.get("width") or 0
-            h = r.get("height") or 0
-            if not roi or not w or not h:
-                continue
-            x, y, bw, bh = [float(v) for v in roi]
-            rel.append((x / w, y / h, bw / w, bh / h))
-        if rel:
-            bands[t["id"]] = [round(statistics.median(v), 6) for v in zip(*rel)]
-    return bands
+    type, normalised by the frame) - the shared table of the web app
+    (`webapp/pipeline.py::learn_type_bands`)."""
+    return pipeline.learn_type_bands(ds)
 
 
 def run_dataset(backend, n_per_type=40, seed=1234, limit_types=None, verbose=True,

@@ -1,0 +1,28 @@
+# The gallery thumbnails are a DERIVED OUTPUT, not a source.
+#
+# `reports/HTML/make_gallery.py` copies six samples of every type from the dataset into
+# this folder (`copy_thumbnails()`), and `reports/HTML/index.html` refers to them by the
+# relative path `img/t/<type>/<file>.png`.
+#
+# The dataset pictures themselves are NOT in this repository (ADR 0004: the dataset lives on
+# Hugging Face). A copy of dataset pictures inside the repository is therefore a duplicate
+# of a payload the repository has already decided not to carry, so these files are excluded
+# from git the same way `dataset/out/**/*.png` is.
+#
+# They stay on the machine of the owner, so `reports/HTML/index.html` opens with the full
+# gallery there. To restore them in a fresh clone, take them from the git history:
+#
+#     git log --diff-filter=D --name-only -- reports/HTML/img/t | head
+#     git checkout <commit>^ -- reports/HTML/img/t
+#
+# Measured on 2026-10-27: of the 276 pictures, 46 (the `001.png` of every type) are byte-identical
+# to the showcase `dataset/samples/<type>/001.png`, which stays in git; the other **230 are unique**
+# — they are samples of the old 46-type render, which is neither on disk nor on Hugging Face any
+# more (HF holds the new 20-type render in parquet). The git history is therefore the last copy of
+# them: keep that in mind before cleaning the history.
+#
+# The rule belongs to the root `.gitignore` as well (that file is owned by the main agent);
+# this nested copy makes the exclusion work without it.
+#
+# 2026-10-27 — cleanup of `reports/`
+*.png
