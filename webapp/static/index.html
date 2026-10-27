@@ -97,7 +97,11 @@
     <h2 style="margin-top:22px">Demo images from the dataset</h2>
     <div class="row">
       <select id="type"></select>
+      <button class="ghost" id="rand" title="a random picture of a random type">🎲 Random</button>
       <span class="caps" id="type-cap"></span>
+    </div>
+    <div class="row" style="margin-top:8px">
+      <label class="caps"><input type="checkbox" id="rand-same"> random sample of this type</label>
     </div>
     <div class="gallery" id="gallery"></div>
 
@@ -124,6 +128,7 @@
         <dt>ground truth (text)</dt><dd id="k-gt">—</dd>
         <dt>ground truth (answer)</dt><dd id="k-gtans">—</dd>
         <dt>band used</dt><dd id="k-band">—</dd>
+        <dt>cropper box</dt><dd id="k-crop">—</dd>
         <dt>latency</dt><dd id="k-lat">—</dd>
         <dt>type</dt><dd id="k-type">—</dd>
       </dl>
@@ -180,7 +185,8 @@ async function loadTypes(){
 
 async function loadDemo(){
   const id = $("type").value;
-  const d = await (await fetch("/api/demo?type=" + encodeURIComponent(id) + "&limit=3")).json();
+  const rnd = $("rand-same").checked ? "&random=1" : "";
+  const d = await (await fetch("/api/demo?type=" + encodeURIComponent(id) + "&limit=3" + rnd)).json();
   $("type-cap").textContent = d.samples.length + " pictures · ground truth shown under each";
   const g = $("gallery"); g.innerHTML = "";
   d.samples.forEach(s => {
@@ -201,6 +207,21 @@ async function loadDemo(){
     g.appendChild(div);
   });
 }
+
+/* ------------------------------------------------------------- random pick */
+$("rand").onclick = async () => {
+  const d = await (await fetch("/api/random?pool=all&limit=1")).json();
+  if (!d.samples || !d.samples.length){ $("err").textContent = "no samples"; return; }
+  const s = d.samples[0];
+  $("type").value = s.type;                       // follow the pick
+  selected = {path: s.path, file_name: s.file, gt: s.text, gtans: s.answer,
+              url: s.url, label: s.type + " / " + s.file};
+  showPreview(s.url, s.type + " / " + s.file + " · drawn: " + s.text +
+              " · answer: " + s.answer);
+  $("go").disabled = false;
+  $("hint").textContent = "random pick — press Predict";
+  await loadDemo();
+};
 
 /* -------------------------------------------------------------- preview */
 function showPreview(url, cap){
@@ -284,7 +305,10 @@ function showResult(d){
   $("k-file").textContent = d.file_name || "-";
   $("k-gt").textContent = d.ground_truth == null ? "-" : d.ground_truth;
   $("k-gtans").textContent = d.ground_truth_answer == null ? "-" : d.ground_truth_answer;
-  $("k-band").textContent = d.used_band ? "yes (roi)" : "no (ink crop of the frame)";
+  $("k-band").textContent = d.used_band ? "yes (roi)"
+      : (d.crop_method ? "no (cropper: " + d.crop_method + ")" : "no (ink crop of the frame)");
+  $("k-crop").textContent = d.crop_box ? JSON.stringify(d.crop_box)
+      + (d.crop_votes ? " · " + d.crop_votes + " votes" : "") : "-";
   $("k-lat").textContent = (d.latency_ms == null ? "-" : d.latency_ms + " ms");
   $("k-type").textContent = d.type || "-";
 }
@@ -298,6 +322,7 @@ $("clear").onclick = () => {
   $("err").textContent = "";
 };
 $("type").onchange = () => { loadDemo(); };
+$("rand-same").onchange = () => { loadDemo(); };
 
 loadStatus();
 loadTypes();

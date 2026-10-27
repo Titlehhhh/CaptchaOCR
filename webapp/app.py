@@ -31,6 +31,7 @@ import io
 import json
 import mimetypes
 import os
+import random
 import sys
 import threading
 import time
@@ -42,6 +43,11 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 TRAIN = os.path.join(ROOT, "train")
 STATIC = os.path.join(HERE, "static")
+
+if HERE not in sys.path:
+    sys.path.insert(0, HERE)
+
+import cropper          # the "eye": finds the band that holds the answer
 
 # The machine's Hugging Face cache lives inside the repository and holds the
 # PP-OCRv6 weights; it must be pointed at BEFORE huggingface_hub is imported
@@ -184,6 +190,21 @@ class Dataset:
                 continue
             return self.by_path.get(candidate), candidate
         return None, candidate
+
+    @staticmethod
+    def sample_json(r, type_id):
+        """The JSON of one dataset sample (the demo and the random picker)."""
+        return {
+            "file": r["file"],
+            "type": type_id,
+            "text": r.get("text"),
+            "answer": r.get("answer"),
+            "roi": r.get("roi"),
+            "width": r.get("width"),
+            "height": r.get("height"),
+            "url": "/api/image?path=" + urllib.parse.quote(r["_abs"]),
+            "path": os.path.relpath(r["_abs"], ROOT).replace("\\", "/"),
+        }
 
 
 # --------------------------------------------------------------------------- #
@@ -505,8 +526,38 @@ class App:
         self.checkpoint, self.kind = resolve_checkpoint(args.checkpoint)
         self.dataset = Dataset(DATA_ROOTS)
         self.demo_types = self.dataset.demo_types(args.demo_types)
+        self.type_bands = self.learn_type_bands()
+        cropper.set_type_bands(self.type_bands)
         self.preproc_parity = "not checked"
         self.started = time.time()
+
+    def learn_type_bands(self):
+        """The relative band of every type that has one, learned from
+        `labels.jsonl` (the median band of the type, normalised by the frame).
+
+        This is the "per-plugin constant" the cropper should be: a picture of
+        a **known** type is cropped exactly where its answer is, without
+        anyone drawing the rectangle by hand.  A picture of an unknown type
+        falls back to the generic layers of `webapp/cropper.py`.
+        """
+        import statistics
+
+        bands = {}
+        for t in self.dataset.types:
+            rows = self.dataset.by_type.get(t["id"]) or []
+            rel = []
+            for r in rows:
+                roi = r.get("roi")
+                w = r.get("width") or 0
+                h = r.get("height") or 0
+                if not roi or not w or not h:
+                    continue
+                x, y, bw, bh = [float(v) for v in roi]
+                rel.append((x / w, y / h, bw / w, bh / h))
+            if not rel:
+                continue
+            bands[t["id"]] = [round(statistics.median(v), 6) for v in zip(*rel)]
+        return bands
 
     # -- model -------------------------------------------------------------- #
     def load(self):
@@ -573,6 +624,57 @@ class App:
             return f"parity check failed: {type(exc).__name__}: {exc}"
 
     # -- inference ---------------------------------------------------------- #
+    def predict_frame(self, img_rgb, type_id=None):
+        """Read a frame that carries no band.
+
+        The cropper ("the eye") proposes a handful of bands, the recogniser
+        reads each of them, and the **most confident** answer wins; the number
+        of proposals that agreed on it only breaks a tie.  Counting the votes
+        first is wrong: a crowd of bad proposals (the whole frame, a colour
+        that is not the code) outvotes one excellent proposal.
+
+        The proposals and their answers are returned, so the caller can see
+        what the eye did.
+
+        Returns `(result, meta)`.
+        """
+        from PIL import Image
+
+        cands = cropper.candidates(img_rgb, type_id=type_id,
+                                    limit=self.args.crop_limit)
+        votes = {}
+        tried = []
+        for c in cands:
+            if c.image is not None:
+                view = Image.fromarray(c.image)
+                res = self.backend.predict(view, [0, 0, view.width, view.height])
+            elif c.box:
+                res = self.backend.predict(img_rgb, c.box)
+            else:
+                res = self.backend.predict(img_rgb, None)
+            tried.append({"method": c.method, "box": c.box, "text": res["text"],
+                          "confidence": res["confidence"]})
+            v = votes.setdefault(res["text"], {"votes": 0, "confidence": 0.0,
+                                                "method": c.method, "box": c.box,
+                                                "result": res})
+            v["votes"] += 1
+            if res["confidence"] > v["confidence"]:
+                v["confidence"] = res["confidence"]
+                v["method"] = c.method
+                v["box"] = c.box
+                v["result"] = res
+        if not votes:
+            raise RuntimeError("the cropper proposed nothing")
+        # The winner is the most *confident* answer; the number of proposals
+        # that agreed on it only breaks a tie.  Counting the votes first is
+        # wrong: a crowd of bad proposals (the whole frame, a colour that is
+        # not the code) outvotes one excellent proposal.
+        best = max(votes.values(), key=lambda v: (v["confidence"], v["votes"]))
+        meta = {"crop_method": best["method"], "crop_box": best["box"],
+                "crop_votes": best["votes"], "crop_candidates": len(tried),
+                "crop_tried": tried, "crop_alternatives": len(votes)}
+        return best["result"], meta
+
     def predict(self, img_rgb, roi):
         if not self.ready.wait(timeout=300):
             raise RuntimeError("the model is still loading")
@@ -692,20 +794,31 @@ class Handler(BaseHTTPRequestHandler):
             if rows is None:
                 return self._error(404, f"unknown type {type_id!r}")
             limit = int((query.get("limit") or ["3"])[0])
-            out = []
-            for r in rows[:limit]:
-                out.append({
-                    "file": r["file"],
-                    "type": type_id,
-                    "text": r.get("text"),
-                    "answer": r.get("answer"),
-                    "roi": r.get("roi"),
-                    "width": r.get("width"),
-                    "height": r.get("height"),
-                    "url": "/api/image?path=" + urllib.parse.quote(r["_abs"]),
-                    "path": os.path.relpath(r["_abs"], ROOT).replace("\\", "/"),
-                })
+            if query.get("random"):
+                # a random sample of the type - the demo is more fun when it
+                # does not show the same three pictures every time
+                rows = random.sample(rows, min(limit, len(rows)))
+            else:
+                rows = rows[:limit]
+            out = [Dataset.sample_json(r, type_id) for r in rows]
             return self._json({"type": type_id, "samples": out})
+        if route == "/api/random":
+            # a random picture of the dataset: a random type and a random
+            # sample of that type.  `pool=demo` keeps the demo types.
+            pool = (query.get("pool") or ["all"])[0]
+            limit = int((query.get("limit") or ["1"])[0])
+            ids = app.demo_types if pool == "demo" else [t["id"] for t in app.dataset.types]
+            ids = ids or [t["id"] for t in app.dataset.types]
+            if not ids:
+                return self._error(404, "no types")
+            picked = []
+            for type_id in random.sample(ids, min(limit, len(ids))):
+                rows = app.dataset.by_type.get(type_id) or []
+                if not rows:
+                    continue
+                r = random.choice(rows)
+                picked.append(Dataset.sample_json(r, type_id))
+            return self._json({"samples": picked})
         if route == "/api/image":
             rel = (query.get("path") or [""])[0]
             row, abs_path = app.dataset.resolve(rel)
@@ -819,8 +932,14 @@ class Handler(BaseHTTPRequestHandler):
 
         # -- inference ------------------------------------------------------- #
         t0 = time.perf_counter()
+        crop_meta = {}
         try:
-            result = app.predict(img, roi)
+            if roi:
+                # the dataset knows the band - that is the measured-good path
+                result = app.predict(img, roi)
+            else:
+                # no band: the cropper proposes the bands and the model votes
+                result, crop_meta = app.predict_frame(img, row.get("_type") if row else None)
         except Exception as exc:
             return self._error(500, f"prediction failed: {type(exc).__name__}: {exc}")
         latency_ms = (time.perf_counter() - t0) * 1000.0
@@ -851,6 +970,11 @@ class Handler(BaseHTTPRequestHandler):
             "exact_match_answer": (norm_text(pred) == norm_text(ground_truth_answer)
                                    if ground_truth_answer else None),
             "used_band": bool(roi),
+            "crop_method": crop_meta.get("crop_method"),
+            "crop_box": crop_meta.get("crop_box"),
+            "crop_votes": crop_meta.get("crop_votes"),
+            "crop_candidates": crop_meta.get("crop_candidates"),
+            "crop_tried": crop_meta.get("crop_tried"),
             "model": app.backend.name if app.backend else None,
             "checkpoint": (os.path.relpath(app.checkpoint, ROOT).replace("\\", "/")
                            if app.checkpoint else None),
@@ -896,6 +1020,9 @@ def main():
                     help="how many types the demo picker offers")
     ap.add_argument("--no-model", action="store_true",
                     help="start without loading a model (the page still works)")
+    ap.add_argument("--crop-limit", type=int, default=32,
+                    help="how many bands the cropper may propose for a picture "
+                         "that arrives without a band (more = slower, better)")
     args = ap.parse_args()
 
     app = App(args)

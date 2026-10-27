@@ -5,11 +5,41 @@ model's prediction back. It is **local and offline**: the Python standard librar
 the weights come from the disk, the page has no CDN and no external references.
 
 ```
-browser  ──HTTP──>  webapp/app.py  ──torch──>  PP-OCRv6 (train/run_ppocr/*/best.pt)
+browser  ──HTTP──>  webapp/app.py  ──torch──>  PP-OCRv6 (train/runs/ppocrv6/universal_v1/best.pt)
    ▲                      │
    │                      └── reads (read-only) dataset/out/** , dataset/out_ru/**
-   └── /api/demo , /api/image
+   └── /api/demo , /api/image , /api/random
 ```
+
+---
+
+## 0. The cropper — the "eye"
+
+A picture that arrives **without** a band (an upload, a file the dataset does
+not know) used to be cropped to its *ink*: the pixels that differ from the
+frame's most common colour. On a frame full of interference that degenerates —
+the interference counts as ink, the box becomes the whole canvas, and the
+recogniser reads noise. Measured on the owner's own screenshots: **2 of 6**
+read correctly.
+
+`webapp/cropper.py` replaces that fallback with a layered decision:
+
+| layer | what it does |
+|---|---|
+| (a) per-type heuristics | a table keyed by the captcha style (the layout of the plugin) |
+| (b) the strengthened ink box | the background is estimated from *local stability*, the thin strokes are removed by a morphological opening |
+| (c) the glyph detector | colour clustering, connected components, a search for a row of glyph-shaped components |
+
+The layers **propose**, they do not decide: the cropper returns an ordered list
+of candidate bands (each with a rendering), the recogniser reads every one of
+them, and the answer that **most of the proposals agree on** wins (a tie is
+broken by the confidence). The tiny detector proposes, the model disposes.
+
+The rendering that works best is the **original pixels of the glyphs on a
+white canvas** — the anti-aliased edge of the stroke is kept, otherwise a 6 is
+read as an `l`.
+
+Measured on the owner's six screenshots (`test/*.png`): **6/6** (was 2/6).
 
 ---
 
@@ -65,8 +95,10 @@ guaranteed in advance. All 46 types are still listed in the dropdown.
 |---|---|
 | `GET /` | the page (`webapp/static/index.html`) |
 | `GET /api/status` | backend, checkpoint, device, model info, preprocessing parity |
-| `GET /api/types` | all 46 types + the demo type ids |
+| `GET /api/types` | all the types + the demo type ids |
 | `GET /api/demo?type=<type id>&limit=3` | the demo pictures of a type with their ground truth |
+| `GET /api/demo?type=<type id>&limit=3&random=1` | the same, but a **random sample** of that type |
+| `GET /api/random?pool=all\|demo&limit=1` | a **random picture of a random type** |
 | `GET /api/image?path=<path>` | the PNG itself (only inside `dataset/out` and `dataset/out_ru`) |
 | `POST /predict` | the prediction |
 
@@ -100,12 +132,21 @@ The answer:
  "ground_truth_answer": "zPyf",
  "exact_match_answer": true,
  "used_band": true,
+ "crop_method": null,
+ "crop_box": null,
  "model": "ppocrv6",
- "checkpoint": "train/run_ppocr/big/best.pt",
+ "checkpoint": "train/runs/ppocrv6/universal_v1/best.pt",
  "device": "cuda",
  "latency_ms": 28.1
 }
 ```
+
+* `used_band` is `true` when the picture came from the dataset and the band of
+  `labels.jsonl` was used — that is the measured-good path.
+* When there is **no** band, the cropper proposes the bands
+  (`crop_method`, `crop_box`, `crop_votes`, `crop_candidates`, `crop_tried`):
+  `crop_method` is the winning proposal, `crop_votes` how many proposals
+  agreed on the answer.
 
 * `ground_truth` is the **drawn** string (`text` in `labels.jsonl`) — that is what the
   recogniser reads and what the comparison uses (letters and digits only, the same rule as
@@ -124,6 +165,7 @@ The answer:
 | `--device auto\|cuda\|cpu` | `auto` | `auto` = cuda when available |
 | `--checkpoint PATH` | the preference order below | serve this checkpoint instead |
 | `--demo-types N` | `10` | how many types the demo picker offers |
+| `--crop-limit N` | `32` | how many bands the cropper may propose for a picture without a band (more = slower, better) |
 | `--no-model` | off | start without loading a model (the page still works) |
 
 ### Change the port
@@ -134,20 +176,20 @@ The answer:
 
 ### Change the checkpoint
 
-Without a flag the app takes the **first one that exists**, in this order:
+The app serves **one pinned checkpoint**:
 
-1. `train/run_ppocr/big/best.pt` — the fine-tuned PP-OCRv6 (the current run)
-2. `train/run_ppocr/final/best.pt` — the earlier PP-OCRv6 checkpoint
-3. `train/run/crnn_big/ckpt/step_*.pt` — the newest CRNN step, if that run exists
-4. `train/run/foldA/ckpt/step_0006578.pt` — the older CRNN checkpoint
-
-To serve one explicitly:
-
-```powershell
-.venv-gpu\Scripts\python.exe webapp\app.py --checkpoint "train\run\foldA\ckpt\step_0006578.pt"
+```
+train/runs/ppocrv6/universal_v1/best.pt     # PP-OCRv6_medium_rec, head extended to 18 762 classes
 ```
 
-The kind of the checkpoint is taken from the directory it lives in (`run_ppocr` → PP-OCRv6,
+It is the universal model of the 2026-10-26 session (18 types, held-out median
+exact 0.8875 — `reports/TRAINING_LIMBO_DIGITS.md` §8). To serve another one:
+
+```powershell
+.venv-gpu\Scripts\python.exe webapp\app.py --checkpoint "train\runs\ppocrv6\limbo_digits3\best.pt"
+```
+
+The kind of the checkpoint is taken from the directory it lives in (`ppocrv6` → PP-OCRv6,
 anything else → our CRNN). A PP-OCRv6 checkpoint needs the transformers model
 `PaddlePaddle/PP-OCRv6_medium_rec_safetensors`; it is already in the local Hugging Face cache
 (`.hf-cache/`), and the app asks the hub for local files only — **no network is used**.
@@ -169,14 +211,33 @@ automatically. To force the CPU from the start:
 
 ---
 
-## 6. Files
+## 6. Measure the cropper
+
+```powershell
+$env:PYTHONIOENCODING="utf-8"
+.venv-gpu\Scripts\python.exe webapp\eval_cropper.py --selftest      # the cropper alone, no model
+.venv-gpu\Scripts\python.exe webapp\eval_cropper.py --demo-sweep    # the 30-picture regression
+.venv-gpu\Scripts\python.exe webapp\eval_cropper.py --out reports\cropper\eval_cropper.json
+```
+
+The last one measures the three inputs on the same seeded sample of the
+dataset — the **oracle band** of `labels.jsonl`, the **cropper's** band and the
+**whole frame** — and prints them per type and per tree, against `answer` and
+against `text`. The report is `reports/CROPPER.md`.
+
+---
+
+## 7. Files
 
 | file | what |
 |---|---|
 | `webapp/app.py` | the server (standard library only) |
+| `webapp/cropper.py` | the cropper — the "eye" (numpy + Pillow, no model) |
+| `webapp/eval_cropper.py` | the measurement script |
 | `webapp/static/index.html` | the page (self-contained: CSS and JS inline, no CDN) |
 | `webapp/README.md` | this file |
-| `reports/WEBAPP.md` | what was built and measured |
+| `reports/WEBAPP.md` | what was built and measured (the server) |
+| `reports/CROPPER.md` | the cropper: the design and the measured numbers |
 
-Nothing outside `webapp/` (and the report) is written by the app. The dataset is opened
+Nothing outside `webapp/` (and the reports) is written by the app. The dataset is opened
 **read-only**; the app refuses any path outside `dataset/out` and `dataset/out_ru`.
