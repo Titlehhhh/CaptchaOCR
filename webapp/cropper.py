@@ -313,16 +313,8 @@ def glyph_candidates(stats, height, width):
     return out
 
 
-def best_row(glyphs, height, width):
-    """The best horizontal row of glyph candidates.
-
-    A row is a set of glyphs that overlap vertically, share a similar height
-    and are spread horizontally.  The digits of a captcha are exactly that:
-    a few characters of a similar height, side by side, in the middle of the
-    frame.
-    """
-    if not glyphs:
-        return None
+def row_groups(glyphs):
+    """Split the glyph candidates into horizontal rows (overlapping in y)."""
     groups = []
     for g in sorted(glyphs, key=lambda d: d["cy"]):
         for grp in groups:
@@ -334,9 +326,23 @@ def best_row(glyphs, height, width):
                 break
         else:
             groups.append([g])
+    return groups
 
-    best = None
-    for grp in groups:
+
+def rows_with_boxes(glyphs, height, width):
+    """Every horizontal row of glyph candidates, best first.
+
+    A row is a set of glyphs that overlap vertically, share a similar height
+    and are spread horizontally.  The digits of a captcha are exactly that:
+    a few characters of a similar height, side by side.
+
+    **Every** row is returned, not only the best one: in a chat scene the
+    frame holds the title, the counter and the code, and only the caller
+    (the recogniser + the shape of the answer) can tell which of them is the
+    answer.  The best row by the geometric score is often the *title*.
+    """
+    out = []
+    for grp in row_groups(glyphs):
         grp = sorted(grp, key=lambda d: d["x0"])
         heights = np.array([d["h"] for d in grp], dtype=np.float64)
         med = float(np.median(heights))
@@ -355,10 +361,16 @@ def best_row(glyphs, height, width):
             continue
         score = len(keep) * (0.6 + 0.4 * near_center) * (0.5 + 0.5 * min(1.0, span / 0.6))
         score *= min(1.0, area / 600.0) ** 0.35
-        if best is None or score > best["score"]:
-            best = {"score": score, "n": len(keep), "box": [x0, y0, x1 - x0 + 1, y1 - y0 + 1],
-                    "area": area, "span": span}
-    return best
+        out.append({"score": score, "n": len(keep), "area": area, "span": span,
+                    "box": [x0, y0, x1 - x0 + 1, y1 - y0 + 1]})
+    out.sort(key=lambda r: -r["score"])
+    return out
+
+
+def best_row(glyphs, height, width):
+    """The best horizontal row of glyph candidates (kept for the old API)."""
+    rows = rows_with_boxes(glyphs, height, width)
+    return rows[0] if rows else None
 
 
 def detect_glyph_band(a):
@@ -540,7 +552,7 @@ def _crop_render(canvas, box):
     return canvas[y:y + h, x:x + w]
 
 
-def _colour_bank(a, limit=6, scale=2, full_k=14, max_scan=20):
+def _colour_bank(a, limit=6, scale=2, full_k=14, max_scan=20, max_rows=4):
     """The most plausible "code colour" candidates, with their masks.
 
     A colour is plausible when its pixels form a few chunky components in the
@@ -578,12 +590,15 @@ def _colour_bank(a, limit=6, scale=2, full_k=14, max_scan=20):
         glyphs = glyph_candidates(stats, mh, mw)
         if not glyphs:
             continue
-        row = best_row(glyphs, mh, mw)
-        if row is None:
+        rows = rows_with_boxes(glyphs, mh, mw)
+        if not rows:
             continue
+        row = rows[0]
         score = row["score"] * (0.6 + 0.4 * min(1.0, count / (0.02 * mh * mw)))
         out.append({"color": tuple(int(x) for x in ref), "count": count, "mask": full,
-                    "score": score, "n_glyphs": row["n"]})
+                    "score": score, "n_glyphs": row["n"],
+                    "rows": [{"box": r["box"], "score": r["score"], "n": r["n"]}
+                             for r in rows[:max_rows]]})
     out.sort(key=lambda d: -d["score"])
     return out[:limit]
 
@@ -668,6 +683,17 @@ def candidates(img, type_id=None, limit=DEFAULT_LIMIT, colour_limit=8):
             ("crop", None),
         ]
         per_colour.append((cand, box, variants, 0.005 * i))
+
+    # every text line of every plausible colour is a candidate of its own: in
+    # a chat scene the frame holds a title, a counter and the code, and only
+    # the recogniser (with the shape of the answer) can tell them apart
+    for i, cand in enumerate(banks):
+        for j, row in enumerate(cand.get("rows", [])[:3]):
+            rbox = clamp_box(row["box"], width, height)
+            if rbox is None:
+                continue
+            out.append(CropResult(rbox, "row:%s:%d" % (cand["color"], j),
+                                  detail={"prior": 0.9 - 0.02 * i - 0.05 * j}))
 
     depth = max((len(v) for (_c, _b, v, _p) in per_colour), default=0)
     for rank in range(depth):

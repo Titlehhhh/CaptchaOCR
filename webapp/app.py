@@ -336,6 +336,30 @@ def crnn_prepare(img_rgb, roi):
     return a[None, :, :], w
 
 
+def answer_score(text):
+    """How much does this reading look like the *answer* of a captcha?
+
+    The answer is a random string of 3-10 letters and digits.  The text around
+    it in a scene is words: a title ("Captcha"), a counter ("Tries Left: 2").
+
+    The test is deliberately blunt, because it is the difference between the
+    title and the code in a chat scene:
+      * anything with a space or punctuation is not an answer;
+      * a single capitalised word ("Captcha", "Enter") is not an answer;
+      * a random-looking string ("izND", "A7k2p", "1651") is.
+    """
+    t = (text or "").strip()
+    if not t:
+        return 0.0
+    if not t.isalnum():
+        return 0.10                      # spaces, ':', '+' - a phrase
+    if not (3 <= len(t) <= 10):
+        return 0.25                      # too short or too long for a code
+    if t[0].isupper() and t[1:].islower():
+        return 0.30                      # "Captcha" - a word, not a code
+    return 1.0
+
+
 def norm_text(s):
     """The comparison form of a string - letters, digits and the arithmetic
     operators, everything else dropped (the same rule as
@@ -688,18 +712,26 @@ class App:
         for c, res in zip(cands, results):
             tried.append({"method": c.method, "box": c.box, "text": res["text"],
                           "confidence": res["confidence"]})
+            shape = answer_score(res["text"])
             v = votes.setdefault(res["text"], {"votes": 0, "confidence": 0.0,
-                                                "method": c.method, "box": c.box,
-                                                "result": res})
+                                                "shape": shape, "method": c.method,
+                                                "box": c.box, "result": res})
             v["votes"] += 1
-            if res["confidence"] > v["confidence"]:
+            # the winner is the most confident answer **that looks like an
+            # answer**; the shape of the reading is what tells the code from
+            # the title of a scene (the title is read with a high confidence
+            # too, and used to win)
+            score = res["confidence"] * (0.05 + 0.95 * shape)
+            if score > v["confidence"] * (0.05 + 0.95 * v["shape"]):
                 v["confidence"] = res["confidence"]
+                v["shape"] = shape
                 v["method"] = c.method
                 v["box"] = c.box
                 v["result"] = res
         if not votes:
             return None, tried
-        best = max(votes.values(), key=lambda v: (v["confidence"], v["votes"]))
+        best = max(votes.values(),
+                   key=lambda v: (v["confidence"] * (0.05 + 0.95 * v["shape"]), v["votes"]))
         return best, tried
 
     def predict_frame(self, img_rgb, type_id=None):
