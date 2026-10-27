@@ -1,0 +1,5 @@
+# The pictures here are derived output: the explore/ scripts write them, and the
+# real_*.png are copies of the owner's own screenshots (test/*.png in the repo
+# root) used as the detector's sample frames.  Both are regenerable, so they
+# stay out of git.
+*.png

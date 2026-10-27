@@ -117,11 +117,11 @@ this repository's history: `McUi.drawColored` and `TextBand`. Everything else go
 
 | Half | What it is | Where |
 |---|---|---|
-| **Dataset** | A Java 21 generator that re-renders, pixel-faithfully, the captchas that real open-source Minecraft anti-bot plugins produce — 46 types, 23 000 labelled PNGs. | `dataset/generator/`, `dataset/generator_ru/`, output in `dataset/out/` and `dataset/out_ru/` |
+| **Dataset** | A Java 21 generator that re-renders, pixel-faithfully, the captchas that real open-source Minecraft anti-bot plugins produce — 46 types in the generator tree, 21 of them rendered (210 000 labelled PNGs). | `dataset/generator/`, `dataset/generator_ru/`, output in `dataset/out/` and `dataset/out_ru/` |
 | **Models** | Benchmark harnesses over existing OCR/captcha models, and a CRNN+CTC trained from scratch on our data. | `bench/`, `train/` |
 
-The best measured baseline is 0.552 exact match on the answer band and 0.035 on the whole frame — the
-**cropper** decides, not the model (`reports/bench_models/ppocrv6-medium.json`). Details, dataset contract and the type table: `agents/INDEX.md`.
+The best measured result: with the **cropper**, 62 % exact match against 44 % for the whole frame
+(21 types × 40 = 840) — **the cropper decides, not the model**. Details: `reports/CROPPER.md`.
 
 ## 2. The goal (stated by the project owner)
 
@@ -137,7 +137,7 @@ publish a model (or an ensemble) on Hugging Face that is actually useful on this
 | path | что лежит | подробности |
 |---|---|---|
 | `dataset/generator/`, `dataset/generator_ru/` | Java-генераторы 23 плагинов | `dataset/generator/AGENTS.md` — как добавить тип, house rules, правило полосы |
-| `dataset/out/`, `dataset/out_ru/` | **сгенерированный** датасет: 46 типов × 500 PNG + `labels.jsonl` | **артефакт машины**: **генераторы не засеяны** — шрифты AWT те же, сами сэмплы случайны, пересборка даст другой набор |
+| `dataset/out/`, `dataset/out_ru/` | **сгенерированный** датасет: 21 тип × 10 000 PNG + `labels.jsonl` | **артефакт машины**: **генераторы не засеяны** — шрифты AWT те же, сами сэмплы случайны, пересборка даст другой набор |
 | `dataset/out_ru/*/real_shots/` | 517 эталонных скриншотов — **не публикуются** (чужие скриншоты) | в публичный репозиторий и в датасет на HF они не идут |
 | `train/` | CRNN+CTC (`captcha_crnn.py`), тренажер (`train.py`), PP-OCRv6 (`finetune_ppocr.py`, `soup_eval.py`, `export_ppocr_hf.py`) | `train/AGENTS.md` — как запускать эксперименты, плато CTC, правило полосы |
 | `bench/` | 6 харнессов для чужих моделей + `bench_models.py` (единый протокол) | результаты в `reports/bench_models/` |
@@ -202,21 +202,16 @@ pretty, дефекты апстрима воспроизводятся, `source(
 Состояние живёт в **`HANDOVER.md`** (цифры и что не сделано) и в **`reports/`** (измерения).
 Коротко, чтобы не искать:
 
-- **Датасет готов**: 46 типов, **23 000** размеченных PNG (было 46 × 100), 23 апстрим-плагина
-  (12 faithful, 10 clean-room, 1 reconstructed; по типам — 25 / 16 / 5), 517 эталонных скриншотов
-  (не публикуются). Разбивка типов на группы A/B/C — `agents/INDEX.md` §4.
-- **Опубликовано на Hugging Face**: датасет — `Titlehhhh/captchaocr-dataset`, коммит `6248c5b9…`
-  (23 000 PNG + 46 `labels.jsonl`); модель — `Titlehhhh/captchaocr-ppocrv6`, коммит `43a65582…`
-  (8 файлов, 77 085 348 Б) — WiSE-FT-интерполяция `θ = 0.4·θ_ft + 0.6·θ_pretrained`.
-- **PP-OCRv6 на 7 удержанных типах / 5 плагинах / 3 500 картинках** (один и тот же пайплайн):
-
-  | вариант | median exact | median CER | micro exact | micro CER |
-  |---|---|---|---|---|
-  | предобученная (нулевой шаг) | 0.588 | 0.1657 | 0.5646 | 0.2446 |
-  | дообученная как есть | 0.480 | 0.2233 | 0.5480 | 0.2181 |
-  | **+ интерполяция α = 0.4 (опубликована)** | **0.638** | 0.1503 | 0.6123 | 0.2004 |
-
-  α и эпоху выбирали **на том же удержанном наборе** — число оптимистично.
+- **Датасет готов**: дерево генераторов — 46 типов; **на диске сейчас 21 обучаемый тип × 10 000
+  = 210 000** размеченных PNG, 23 апстрим-плагина (12 faithful, 10 clean-room, 1 reconstructed),
+  517 эталонных скриншотов (не публикуются). Разбивка типов на группы A/B/C — `agents/INDEX.md` §4.
+- **Опубликовано на Hugging Face**: датасет — `Titlehhhh/captchaocr-dataset`, коммит `dd4d7479…`
+  (200 000 PNG в parquet, 20 типов; тип `LimboFilter/digits` ещё не опубликован); модель —
+  `Titlehhhh/captchaocr-ppocrv6`, веса `27eb6fec…` / карточка `37556a88…` (8 файлов, 77 128 999 Б)
+  — `universal_v1`, голова расширена до 18 762 классов, **без интерполяции весов** (α = 1.0).
+- **Опубликованная `universal_v1`** (18 типов / 11 400 примеров, 6 удержанных): median exact
+  **0.8875**, CER 0.0344, micro **0.7797**, CER 0.0755; нулевой шаг: median 0.875, micro 0.6499.
+  Прежняя публикация (WiSE-FT α = 0.4, median 0.638 на 7 типах) — в силе как история, её больше нет.
 - **Наш CRNN+CTC с нуля** (7 типов учили, 4 удержали): на невиданных плагинах median **0.372** /
   CER 0.322, micro **0.381** / 0.410; на своих типах **1.000** — разрыв запоминания 62.8 п.п.
   (на старом рендере 100/тип было 0.000) — `reports/TRAINING_CRNN_BIG.md`.

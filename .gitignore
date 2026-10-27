@@ -67,13 +67,17 @@ pip-*
 torchinductor_*
 *.raw
 
-# Разметка датасета живёт на Hugging Face (внутри parquet), в git не нужна
+# Р Р°Р·РјРµС‚РєР° РґР°С‚Р°СЃРµС‚Р° Р¶РёРІС‘С‚ РЅР° Hugging Face (РІРЅСѓС‚СЂРё parquet), РІ git РЅРµ РЅСѓР¶РЅР°
 dataset/out/**/labels.jsonl
 dataset/out_ru/**/labels.jsonl
 
-# Одноразовая проверочная выборка из отдельного прогона генератора
+# РћРґРЅРѕСЂР°Р·РѕРІР°СЏ РїСЂРѕРІРµСЂРѕС‡РЅР°СЏ РІС‹Р±РѕСЂРєР° РёР· РѕС‚РґРµР»СЊРЅРѕРіРѕ РїСЂРѕРіРѕРЅР° РіРµРЅРµСЂР°С‚РѕСЂР°
 dataset/eval_fresh/
 
-# Данные прогонов и опубликованные веса - на диске и на HF, не в git
+# Р”Р°РЅРЅС‹Рµ РїСЂРѕРіРѕРЅРѕРІ Рё РѕРїСѓР±Р»РёРєРѕРІР°РЅРЅС‹Рµ РІРµСЃР° - РЅР° РґРёСЃРєРµ Рё РЅР° HF, РЅРµ РІ git
 train/runs/
 train/published/
+
+# The gallery thumbnails are a derived output of reports/HTML/make_gallery.py
+# (copies of dataset pictures, which live on Hugging Face - ADR 0004).
+reports/HTML/img/t/**/*.png

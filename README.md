@@ -4,12 +4,13 @@
 и опубликованная на Hugging Face модель с настоящими весами.**
 Лабораторная работа по машинному зрению: Java 21 (генераторы) и Python (модели).
 
+На диске сейчас 21 тип × 10 000 = 210 000 PNG (добавлен тип `LimboFilter/digits`, он ещё не опубликован на Hugging Face).
+
 > **Коротко:** 20 типов капч × **10 000 картинок** = **200 000** размеченных PNG — 12 типов
 > в `dataset/out/`, 8 в `dataset/out_ru/`. На Hugging Face датасет лежит **9 Parquet-шардами**
 > (200 000 строк, 1.91 GiB). Модель **выпущена** — на Hugging Face лежат **настоящие веса**
-> (8 файлов, 77 МБ). Точность опубликованной модели на **прежнем** датасете: **65.1 %** median /
-> **50.2 %** micro по всем его типам и **63.8 %** median на 7 типах из невиданных плагинов —
-> см. оговорку об актуальности измерений ниже.
+> (8 файлов, 77 МБ). Опубликованная модель — `universal_v1`, измерена на 18 типах / 11 400 примерах: median exact **0.8875**, CER median 0.0344,
+> micro exact **0.7797**, CER micro 0.0755; нулевой шаг (до дообучения): median 0.875, micro 0.6499.
 
 В Minecraft плагины-антиботы показывают игроку картинку с кодом и просят ввести этот код в чат,
 чтобы отсечь ботов. Такие картинки называют **капчами** (captcha); открытых Minecraft-плагинов,
@@ -109,7 +110,7 @@ dataset/out_ru/<Plugin>/<type>/NNN.png     + labels.jsonl     # 8 типов, п
 | что | где | что внутри |
 |---|---|---|
 | **Датасет** | <https://huggingface.co/datasets/Titlehhhh/captchaocr-dataset> | 9 Parquet-шардов, 200 000 строк, 2 047 757 145 Б (1.91 GiB), коммит `dd4d7479a95f8e4c8ea19643dfe5889fe5dea113` |
-| **Модель (с весами)** | <https://huggingface.co/Titlehhhh/captchaocr-ppocrv6> | 8 файлов, 77 085 348 Б (`model.safetensors` — 76 747 448 Б), коммит `43a65582a9171ae5fb8cf2dd688c0bd4340bca0c` |
+| **Модель (с весами)** | <https://huggingface.co/Titlehhhh/captchaocr-ppocrv6> | 8 файлов, **77 128 999 Б** (`model.safetensors` — 76 787 592 Б, sha256 `a65c8756b1a86174ca49e1028a3f6c8b4986886e99708c55fc4b89fc26a018ae`); коммит **весов** `27eb6fecbce4689a3550e9984d1a984f3ac9dd3a`, коммит **карточки** `37556a884d34e08173e20d55cc9c36b71d250f2e` («model card: describe universal_v1, not the previous all20 run»); **18 762 классов, без интерполяции весов; карточка обновлена 2026-10-27** |
 
 ### Датасет: Parquet-шарды
 
@@ -187,35 +188,37 @@ map_rows = pq.read_table(f"{root}/data", filters=[("type_id", "=", "out/haq/mapc
 
 ### Модель: что именно опубликовано
 
-**PP-OCRv6_medium_rec + интерполяция весов (WiSE-FT, α = 0.4)**:
+**PP-OCRv6_medium_rec, дообученная без интерполяции весов** (публикуется сам чекпоинт):
 
 ```
-θ = 0.4 · θ_дообученной  +  0.6 · θ_предобученной
+θ = 1.0 · θ_дообученной  +  0.0 · θ_предобученной
 ```
 
-`θ_дообученной` — наш чекпоинт (эпоха 7 из 20, шаг 1632), `θ_предобученной` —
-`PaddlePaddle/PP-OCRv6_medium_rec_safetensors` (Apache-2.0, 19 134 326 параметров).
+`θ_дообученной` — наш чекпоинт `train/runs/ppocrv6/universal_v1/best.pt` (5 эпох, 2 440 шагов,
+CTC-голова расширена до **18 762 классов**: предобученная голова сохранена, добавлена кириллица),
+`θ_предобученной` — `PaddlePaddle/PP-OCRv6_medium_rec_safetensors` (Apache-2.0, 19 134 326 параметров).
 
-Измерено на **7 удержанных типах из 5 плагинов, 3 500 картинок** (один и тот же пайплайн:
-кроп по полосе, нормализация paddle, жадный CTC-декод):
+Измерено на **18 типах / 11 400 примерах** (6 удержанных типов + 12 остальных; один и тот же
+пайплайн: кроп по полосе, нормализация paddle, жадный CTC-декод):
 
 | вариант | median exact | median CER | micro exact | micro CER |
 |---|---|---|---|---|
-| предобученная база (нулевой шаг) | 0.588 (58.8 %) | 0.1657 | 0.5646 (56.5 %) | 0.2446 |
-| дообученная как есть | **0.480** (48.0 %) | 0.2233 | 0.5480 (54.8 %) | 0.2181 |
-| **+ интерполяция α = 0.4 (это опубликовано)** | **0.638** (63.8 %) | 0.1503 | **0.6123** (61.2 %) | 0.2004 |
+| предобученная база (нулевой шаг) | 0.875 | — | 0.6499 | — |
+| **опубликованные веса `universal_v1`** | **0.8875** | **0.0344** | **0.7797** | **0.0755** |
 
-Источник: `reports/TRAINING_PPOCR_V6_BIG.md` §5–§6, `train/run_ppocr/big/soup.json`.
-Тот же замер **опубликованных** весов по всему прежнему датасету:
+Источник: `train/runs/ppocrv6/universal_v1/result.json`, карточка — `train/MODEL_CARD.md`.
+Прежний замер **прежней** публикации (интерполяция весов с базой) по всему прежнему датасету:
 **median 0.651 (65.1 %)**, **micro 0.502 (50.2 %)** (`reports/model_scoreboard.json`).
 
-> **Честно, без прикрас:** чистое дообучение **на 10.8 п.п. хуже базы** (0.480 = 48.0 % против
-> 0.588 = 58.8 %) — модель забывает предобучение. Именно поэтому публикуется **не** `best.pt`,
-> а интерполяция с базой.
+> **Честно, без прикрас:** на прежнем 7-типовом наборе (3 500 картинок) чистое дообучение было
+> **на 10.8 п.п. хуже базы** (0.480 = 48.0 % против 0.588 = 58.8 %) — тогда публиковалась
+> интерполяция с базой (median 0.638). Сейчас правило другое: интерполяция на **расширенной**
+> CTC-голове разрушает добавленные кириллические классы, поэтому публикуется чистый чекпоинт
+> (`--soup-alpha 1.0`).
 >
-> **И α, и эпоху выбирали на том же удержанном наборе, на котором потом измеряли** → 0.638 / 0.6123
-> (63.8 % / 61.2 %) — **оптимистичная** оценка. На втором удержанном наборе выбор α не проверялся.
-> Смягчает то, что кривая гладкая: прирост есть на всём диапазоне α ∈ [0.25, 0.6], а не в одной точке.
+> Числа прежнего эксперимента — **исторические**: они сняты на прежнем датасете и на прежнем
+> наборе из 7 удержанных типов, где и α, и эпоху выбирали на тех же данных, на которых потом
+> мерили (0.638 / 0.6123 — **оптимистичная** оценка). К текущей публикации они не относятся.
 
 ## Наша собственная модель (CRNN+CTC с нуля)
 
@@ -251,18 +254,21 @@ $env:PYTHONIOENCODING="utf-8"
 $env:HF_HOME      = (Resolve-Path .\.hf-cache).Path
 $env:HF_HUB_CACHE = Join-Path $env:HF_HOME "hub"
 
-# 1) дообучить с мягким lr=1e-5  →  train\run_ppocr\<прогон>\best.pt
-.venv-gpu\Scripts\python.exe train\finetune_ppocr.py --out train\run_ppocr\big `
-    --epochs 20 --batch-size 32 --lr 1e-5 --head-lr 1e-5 `
-    --workers 6 --eval-every 1 --save-every 100 --max-minutes 36
+# 1) дообучить модель (рецепт прогона universal_v1)  →  train\runs\ppocrv6\universal_v1\best.pt
+.venv-gpu\Scripts\python.exe train\finetune_ppocr.py --out train\runs\ppocrv6\universal_v1 `
+    --init-from train\runs\ppocrv6\limbo_cyr3\best.pt --expand-charset --train-frames `
+    --epochs 5 --batch-size 32 --lr 8e-6 --head-lr 8e-6 --workers 0 --seed 42 `
+    --limit-per-type 1500 --holdout-per-type 200 --eval-every 5 --save-every 400 --max-minutes 60 `
+    --val-types out/jonesdevelopment/sonar/standard out/jonesdevelopment/sonar/legacy out/jonesdevelopment/sonar/complex out_ru/BotFilter/map out_ru/CaptchaVerifyZ/map out/laforetbrut/are-you-sure/code out/JSH32/Minecaptcha/map `
+    --exclude-types ru-numberword ru-numberword-caption LimboFilter/map
 
-# 2) интерполяция весов с базой (WiSE-FT, α = 0.4)  →  soup_best.pt + soup.json
-.venv-gpu\Scripts\python.exe train\soup_eval.py
+# 2) экспорт чекпоинта БЕЗ интерполяции весов (--soup-alpha 1.0 = сам чекпоинт)
+.venv-gpu\Scripts\python.exe train\export_ppocr_hf.py `
+    --ckpt train\runs\ppocrv6\universal_v1\best.pt --soup-alpha 1.0 `
+    --out train\runs\ppocrv6\universal_v1\export_hf
 
-# 3) экспорт + выкладка модели на Hugging Face
-.venv-gpu\Scripts\python.exe train\export_ppocr_hf.py --ckpt train\run_ppocr\big\soup_best.pt `
-    --out train\run_ppocr\big\export
-hf upload Titlehhhh/captchaocr-ppocrv6 train\run_ppocr\big\export --repo-type model
+# 3) публикация: ТОЛЬКО экспорт текущего прогона
+hf upload Titlehhhh/captchaocr-ppocrv6 train\runs\ppocrv6\universal_v1\export_hf --repo-type model
 
 # 4) датасет: PNG → Parquet-шарды → выкладка (и удаление старого loose-дерева на Hub)
 .venv-gpu\Scripts\python.exe tools\export_parquet.py --dry-run
@@ -270,6 +276,16 @@ hf upload Titlehhhh/captchaocr-ppocrv6 train\run_ppocr\big\export --repo-type mo
 .venv-gpu\Scripts\python.exe tools\export_parquet.py --out build\parquet --upload
 .venv-gpu\Scripts\python.exe tools\export_parquet.py --out build\parquet --verify
 ```
+
+> **Публиковать можно только экспорт текущего прогона.** Загружать надлежит лишь папку
+> `train\runs\ppocrv6\universal_v1\export_hf` — то, что шаг 2 собрал **из этого же** чекпоинта.
+> Прежние папки экспорта (прежняя схема каталогов `train\run_pp*` — там лежит экспорт с
+> интерполяцией весов и со старой головой модели) при `hf upload` **перезапишут** уже
+> опубликованные веса `universal_v1` более старыми.
+>
+> И ещё одно: у экспортёра `--soup-alpha` по умолчанию **0.4**, то есть интерполяция с базой.
+> Для текущей модели (голова расширена кириллицей) это нужно отключать явно —
+> `--soup-alpha 1.0`, как в шаге 2.
 
 `tools/export_parquet.py` — **три режима**: `--dry-run` (план: сэмплы, шарды, байты, разбивка
 по деревьям; ничего не пишется), `--upload` (шарды в `data/`, карточка в корень, затем удаление
@@ -294,8 +310,8 @@ scheduler, GradScaler и номер шага, так что это точное 
 **Оценка без обучения:** `--zero-step` (нулевой шаг: мераем предобученную модель и выходим).
 Подробности, флаги и разбор типичных ошибок — `docs/HOW_TO_TRAIN.md`.
 
-> **Никогда не публикуем чистое дообучение** (`--soup-alpha` без 0.4 / `best.pt` напрямую) —
-> это на 10.8 п.п. хуже базы.
+> Правило больше не действует: опубликована именно чистая дообучка (alpha = 1.0, без интерполяции),
+> потому что WiSE-FT на расширенной CTC-голове разрушает добавленные кириллические классы.
 
 ## Браузерная демка
 
@@ -320,6 +336,10 @@ scheduler, GradScaler и номер шага, так что это точное 
 PP-OCRv6_medium_rec даёт **0.5517** (55.2 %) exact match по полосе и **0.0345** (3.5 %) по целому
 кадру — **в 16 раз хуже**. На всех типах прежнего датасета: 0.4043 (40.4 %) по полосе против
 0.0783 (7.8 %) по кадру.
+
+Актуальный замер кроппера от 2026-10-27 (через код приложения, 21 тип × 40 сэмплов = 840):
+oracle 69 %, кроппер **62 %**, весь кадр **44 %**; на шести реальных скриншотах владельца
+кроппер даёт **6/6**.
 
 | что подаём на вход | micro exact (29 типов с полосой) | медиана по типам |
 |---|---|---|
@@ -363,7 +383,7 @@ TrOCR-small-printed (обученный на тех же 7 типах) — **н�
 | путь | что внутри |
 |---|---|
 | `dataset/generator/`, `dataset/generator_ru/` | Java 21-генераторы апстрим-капч (датасет строится по 13 плагинам); правила — [`dataset/generator/AGENTS.md`](dataset/generator/AGENTS.md) |
-| `dataset/out/`, `dataset/out_ru/` | сгенерированный датасет: 20 типов × 10 000 PNG + `labels.jsonl` (ни PNG, ни метки в git не лежат) |
+| `dataset/out/`, `dataset/out_ru/` | сгенерированный датасет: **21** тип × 10 000 PNG (20 типов опубликованы на Hugging Face) |
 | `dataset/samples/` | витрина: 230 PNG + `dataset/samples/index.html` — выдержка из **прежнего** рендера |
 | `train/` | CRNN+CTC с нуля, дообучение PP-OCRv6, интерполяция весов, экспорт в HF |
 | `bench/` | харнессы для чужих моделей, единый протокол [`bench/bench_models.py`](bench/bench_models.py) |
