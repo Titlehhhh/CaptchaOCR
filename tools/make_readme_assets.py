@@ -116,7 +116,7 @@ def make_pipeline():
 
     box_x, box_width, box_height = 344, 252, 44
     centers = [100, 180, 260]
-    labels = ["полоса из разметки", "кроппер AUTO", "весь кадр"]
+    labels = ["строка из разметки", "выбор автоматически", "целиком"]
 
     source_x = image_x + image_side
     first_trunk = 322
